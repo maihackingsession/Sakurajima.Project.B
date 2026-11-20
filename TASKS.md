@@ -11,6 +11,7 @@ Status: todo / doing / done / blocked
 | 4 Main flow UI: Analysieren → router + gaps → Rückfragen → editierbarer Entwurf → Word / PDF (Druckansicht) | Builder | done |
 | 5 Voice input: Web Speech API de-DE, Aufnahme-Status, Hinweis auf Tastatur-Diktat wenn nicht unterstützt | Builder | done |
 | 6 Deviation checker: Tab „Tagesbericht prüfen“, Karten nach Schwere, „Anzeige entwerfen“ springt in den Schreiben-Ablauf | Builder | done |
+| 7 Summariser: Tab „Zusammenfassen“, Fristen hervorgehoben, offene Punkte als Tabelle, Risiken | Builder | done |
 
 ## Setup
 | Task | Owner | Status |
@@ -40,7 +41,7 @@ Status: todo / doing / done / blocked
 | Voice input (Web Speech API, German) + keyboard dictation fallback | Builder | done (test on iPad Safari + Android Chrome) |
 | Router: one input box → letter / daily report / summary | Builder | done (mock mode; live untested) |
 | Deviation checker vs sample plan in /data → offer matching notice | Builder | done (mock mode; live untested) |
-| Summariser: diary / minutes / emails → summary with open items + deadlines | Builder | todo |
+| Summariser: diary / minutes / emails → summary with open items + deadlines | Builder | done (mock mode; live untested) |
 | Mobile layout polish: big buttons, simple screens | Builder | todo |
 | Sample plan + sample emails/reports in /data | Prompt + test | done (v1 by Builder, please review) |
 | 10–20 test situations in /tests (incl. messy/incomplete) | Prompt + test | done (15, v1 by Builder, please review) |

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { LetterType } from "@/lib/types";
 import DeviationTab from "./components/DeviationTab";
 import LetterFlow, { type LetterFlowHandle } from "./components/LetterFlow";
+import SummaryTab from "./components/SummaryTab";
 
 type Tab = "situation" | "bericht" | "zusammenfassen";
 
@@ -61,7 +62,9 @@ export default function Home() {
           onDraft={draftFromDeviation}
         />
       </div>
-      {tab === "zusammenfassen" && <p className="text-neutral-600">Kommt in Phase 7.</p>}
+      <div hidden={tab !== "zusammenfassen"}>
+        <SummaryTab key={handed("zusammenfassen")?.id ?? "zusammenfassen"} initialText={handed("zusammenfassen")?.text} />
+      </div>
     </main>
   );
 }
