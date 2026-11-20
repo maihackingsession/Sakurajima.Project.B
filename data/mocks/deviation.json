@@ -1,0 +1,29 @@
+{
+  "deviations": [
+    {
+      "activity": "Erdarbeiten / Aushub BA 2",
+      "planned": "16.11.–25.11.2026, Erdbau Huber – Aushub sollte laufen",
+      "actual": "Seit 17.11.2026 Stillstand: Zufahrt Nord wegen Leitungsarbeiten der Stadtwerke gesperrt, Bagger kommt nicht aufs Baufeld",
+      "severity": "hoch",
+      "suggested_letter": "behinderung",
+      "explanation": "Die Sperrung liegt außerhalb unseres Verantwortungsbereichs und gefährdet den Beginn der Bodenplatte am 23.11. Behinderung unverzüglich anzeigen."
+    },
+    {
+      "activity": "Verbau (Trägerbohlwand)",
+      "planned": "04.11.–13.11.2026, Erdbau Huber – abgeschlossen",
+      "actual": "Holzbohlen Nordseite Achse C–D nicht hinterfüllt, Boden ausgewaschen, Bereich gesperrt",
+      "severity": "mittel",
+      "suggested_letter": "maengel",
+      "explanation": "Mangelhafte Leistung des Nachunternehmers mit Sicherheitsrelevanz. Mängelanzeige mit Frist an Erdbau Huber senden."
+    },
+    {
+      "activity": "Grundleitungen",
+      "planned": "19.11.–24.11.2026, Rohbau Schneider",
+      "actual": "Laut Bericht noch nicht begonnen (Aushub BA 2 fehlt)",
+      "severity": "niedrig",
+      "suggested_letter": null,
+      "explanation": "Folge der Behinderung beim Aushub; in der Behinderungsanzeige als betroffene Leistung mit aufführen."
+    }
+  ],
+  "summary": "Demo-Modus: Zwei relevante Abweichungen – Stillstand beim Aushub BA 2 (Behinderungsanzeige) und ein Mangel am Verbau (Mängelanzeige an Erdbau Huber)."
+}

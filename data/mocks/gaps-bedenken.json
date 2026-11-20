@@ -1,0 +1,7 @@
+{
+  "complete": false,
+  "questions": [
+    { "field": "Grund", "question": "Warum halten Sie die vorgesehene Ausführung für problematisch?", "example": "Abdichtung nur bis 30 cm, Bemessungswasserstand laut Gutachten aber höher" },
+    { "field": "mögliche Folgen", "question": "Welche Folgen drohen, wenn so ausgeführt wird?", "example": "Wassereintritt im UG, Feuchteschäden" }
+  ]
+}

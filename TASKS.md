@@ -2,6 +2,10 @@
 
 Status: todo / doing / done / blocked
 
+## Build phases (BUILD_PROMPT.md)
+| Phase | Owner | Status |
+|---|---|---|
+| 1 Core plumbing: data/project.json, lib/claude.ts (mock mode), API routes, Demo-Modus badge | Builder | done |
 
 ## Setup
 | Task | Owner | Status |

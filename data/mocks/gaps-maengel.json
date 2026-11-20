@@ -1,0 +1,8 @@
+{
+  "complete": false,
+  "questions": [
+    { "field": "Feststellungsdatum", "question": "Wann wurde der Mangel festgestellt?", "example": "18.11.2026" },
+    { "field": "Ort", "question": "Wo genau befindet sich der Mangel (Bauteil, Achse, Geschoss)?", "example": "Verbau Nordseite, Achse C–D" },
+    { "field": "Frist", "question": "Bis wann soll der Nachunternehmer den Mangel beseitigen?", "example": "27.11.2026" }
+  ]
+}

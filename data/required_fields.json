@@ -1,0 +1,7 @@
+{
+  "_hinweis": "Pflichtangaben je Schreibenart für den Gap-Checker. Frei bearbeitbar; Schlüssel (behinderung, mehrkosten, bedenken, maengel) nicht umbenennen.",
+  "behinderung": ["Datum Beginn", "Ursache", "betroffene Leistung", "voraussichtliche Auswirkung", "Verursacher/Verantwortungsbereich"],
+  "mehrkosten": ["Art der Zusatz-/Änderungsleistung", "Anordnung durch wen + wann", "betroffene Leistung", "Beginn der Ausführung"],
+  "bedenken": ["Gegenstand der Bedenken", "Grund", "mögliche Folgen", "betroffene Leistung"],
+  "maengel": ["Nachunternehmer", "Mangelbeschreibung", "Ort", "Feststellungsdatum", "Frist"]
+}

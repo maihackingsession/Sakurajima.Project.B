@@ -1,0 +1,8 @@
+{
+  "complete": false,
+  "questions": [
+    { "field": "Datum Beginn", "question": "An welchem Datum hat die Behinderung begonnen?", "example": "17.11.2026" },
+    { "field": "Verursacher/Verantwortungsbereich", "question": "Was ist die Ursache – liegt sie im Bereich des Auftraggebers?", "example": "Zufahrt Nord wegen Leitungsarbeiten der Stadtwerke im Auftrag des AG gesperrt" },
+    { "field": "voraussichtliche Auswirkung", "question": "Wie lange wird sich der Bauablauf voraussichtlich verzögern?", "example": "ca. 5 Arbeitstage, Bodenplatte verschiebt sich entsprechend" }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "intent": "letter",
+  "letter_type": "behinderung",
+  "facts": {
+    "ursache": "Bagger ausgefallen",
+    "datum_beginn": "seit Dienstag",
+    "betroffene_leistung": "Erdarbeiten / Aushub"
+  },
+  "reason": "Demo-Modus: Die Schreibenart wurde anhand von Stichwörtern geschätzt."
+}
