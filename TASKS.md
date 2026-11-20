@@ -12,6 +12,7 @@ Status: todo / doing / done / blocked
 | 5 Voice input: Web Speech API de-DE, Aufnahme-Status, Hinweis auf Tastatur-Diktat wenn nicht unterstützt | Builder | done |
 | 6 Deviation checker: Tab „Tagesbericht prüfen“, Karten nach Schwere, „Anzeige entwerfen“ springt in den Schreiben-Ablauf | Builder | done |
 | 7 Summariser: Tab „Zusammenfassen“, Fristen hervorgehoben, offene Punkte als Tabelle, Risiken | Builder | done |
+| 8 Test runner: `npm run test:letters [-- <URL>]` → tests/results/*.json + report.md (verweigert Demo-Modus) | Builder | done |
 
 ## Setup
 | Task | Owner | Status |
@@ -49,7 +50,7 @@ Status: todo / doing / done / blocked
 ## After freeze (bug fixes + pitch only)
 | Task | Owner | Status |
 |---|---|---|
-| Run full test set, save outputs | Prompt + test | todo |
+| Run full test set, save outputs (`npm run test:letters`, needs API key) | Prompt + test | todo |
 | Rate letters: usable / needs edits / wrong | Domain + pitch | todo |
 | Pitch deck | Domain + pitch | todo |
 | Backup demo video (Sat night) | Domain + pitch | todo |
