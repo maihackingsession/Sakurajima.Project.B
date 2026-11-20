@@ -73,7 +73,7 @@ user input ──► Router ──► Gap checker ──(missing info?)──►
 - **Next.js** (frontend + API routes in one project)
 - **Claude API** via the official Anthropic SDK; key in `.env.local` only
 - **Vercel** for hosting (connect GitHub repo → auto-deploy)
-- **docx** library for Word export, a PDF library or print-to-PDF for PDF
+- **docx** library for Word export, **jsPDF** for PDF (both run in the browser)
 - Browser speech recognition (Web Speech API) for voice; fallback = phone keyboard dictation
 - **No database** unless clearly needed. Supabase only if there is time left.
 
