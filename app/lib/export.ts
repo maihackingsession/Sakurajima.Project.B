@@ -13,9 +13,8 @@ export function paragraphs(text: string) {
   return text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 }
 
-function fileBase(letter: Letter) {
-  const kind = (letter.subject.split(/[–-]/)[0] || "Schreiben").trim();
-  const safe = kind.replace(/[^\p{L}\p{N}]+/gu, "_").replace(/_+$/, "");
+function fileBase(kind: string) {
+  const safe = kind.split("(")[0].trim().replace(/[^\p{L}\p{N}]+/gu, "_");
   return `ENTWURF_${safe || "Schreiben"}_${new Date().toISOString().slice(0, 10)}`;
 }
 
@@ -31,7 +30,7 @@ function download(blob: Blob, name: string) {
 }
 
 /** Word export in the browser, DIN 5008-like layout. Nothing is sent anywhere. */
-export async function exportDocx(letter: Letter) {
+export async function exportDocx(letter: Letter, kind = "Schreiben") {
   const { Document, Packer, Paragraph, TextRun, AlignmentType, Footer, BorderStyle } = await import("docx");
   const lines = (s: string, opts: { bold?: boolean; size?: number } = {}) =>
     s.split("\n").map((line, i) => new TextRun({ text: line, break: i > 0 ? 1 : 0, ...opts }));
@@ -80,5 +79,5 @@ export async function exportDocx(letter: Letter) {
       },
     ],
   });
-  download(await Packer.toBlob(doc), `${fileBase(letter)}.docx`);
+  download(await Packer.toBlob(doc), `${fileBase(kind)}.docx`);
 }

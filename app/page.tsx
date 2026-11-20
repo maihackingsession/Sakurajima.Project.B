@@ -11,7 +11,7 @@ type Tab = "situation" | "bericht" | "zusammenfassen";
 const TABS: { id: Tab; label: string }[] = [
   { id: "situation", label: "Situation" },
   { id: "bericht", label: "Tagesbericht prüfen" },
-  { id: "zusammenfassen", label: "Zusammenfassen" },
+  { id: "zusammenfassen", label: "Zusammen­fassen" },
 ];
 
 export default function Home() {
@@ -42,7 +42,7 @@ export default function Home() {
             key={t.id}
             onClick={() => setTab(t.id)}
             aria-current={tab === t.id ? "page" : undefined}
-            className={`min-h-12 rounded-lg px-1 text-sm font-semibold leading-tight sm:text-base ${
+            className={`min-h-12 rounded-lg px-1 text-sm break-words font-semibold leading-tight sm:text-base ${
               tab === t.id ? "bg-white text-neutral-900 shadow-sm" : "text-neutral-700"
             }`}
           >

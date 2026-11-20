@@ -25,7 +25,7 @@ export default function DraftEditor({ title, draft, onChange, onBack, onRestart 
     setExporting(true);
     setError("");
     try {
-      await exportDocx(draft);
+      await exportDocx(draft, title);
     } catch {
       setError("Word-Export fehlgeschlagen. Bitte erneut versuchen.");
     } finally {
@@ -72,7 +72,7 @@ export default function DraftEditor({ title, draft, onChange, onBack, onRestart 
       </div>
       <div>
         <label htmlFor="subject" className={label}>Betreff</label>
-        <textarea id="subject" rows={2} className={field} value={draft.subject} onChange={set("subject")} />
+        <textarea id="subject" rows={3} className={field} value={draft.subject} onChange={set("subject")} />
       </div>
       <div>
         <label htmlFor="salutation" className={label}>Anrede</label>

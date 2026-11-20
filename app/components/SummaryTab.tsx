@@ -88,28 +88,27 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
           {result.open_items.length > 0 && (
             <div className={card}>
               <h3 className="text-lg font-bold">Offene Punkte</h3>
-              <div className="mt-2 overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-neutral-300">
-                      <th className="py-2 pr-2">Aufgabe</th>
-                      <th className="py-2 pr-2">Wer</th>
-                      <th className="py-2">Bis</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.open_items.map((o, i) => (
-                      <tr key={i} className="border-b border-neutral-100 align-top">
-                        <td className="py-2 pr-2">{o.task}</td>
-                        <td className="py-2 pr-2">{o.owner}</td>
-                        <td className={`py-2 font-semibold ${o.due && o.due !== "offen" ? "text-red-800" : "text-neutral-500"}`}>
+              <table className="mt-2 w-full table-fixed text-left text-sm">
+                <thead>
+                  <tr className="border-b border-neutral-300">
+                    <th className="py-2 pr-2">Aufgabe</th>
+                    <th className="w-[40%] py-2">Wer / bis wann</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {result.open_items.map((o, i) => (
+                    <tr key={i} className="border-b border-neutral-100 align-top">
+                      <td className="break-words py-2 pr-2">{o.task}</td>
+                      <td className="break-words py-2">
+                        <span className="block">{o.owner || "offen"}</span>
+                        <span className={`block font-semibold ${o.due && o.due !== "offen" ? "text-red-800" : "text-neutral-500"}`}>
                           {o.due || "offen"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
 

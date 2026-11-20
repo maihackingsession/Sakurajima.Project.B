@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bauleiter-Assistent
 
-## Getting Started
+*Ein Assistent für den Bauleiter – kein Ersatz.* Hackathon project (TUM.ai × BBIV, Challenge B). Scope and rules: see `HANDOVER.md`. Task board: `TASKS.md`.
 
-First, run the development server:
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without `ANTHROPIC_API_KEY` the app runs in **Demo-Modus**: grey badge in the header, fixed example answers from `data/mocks/`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Switch on real Claude calls
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create `.env.local` in the project root (it is gitignored, never commit it):
+   ```
+   ANTHROPIC_API_KEY=sk-ant-...
+   # optional, default claude-sonnet-5-5
+   ANTHROPIC_MODEL=
+   ```
+2. Restart `npm run dev`. The Demo-Modus badge disappears.
+3. On Vercel, go to Project → Settings → Environment Variables, add `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`) for Production + Preview, then redeploy.
 
-## Learn More
+## Files the prompt/domain people edit
 
-To learn more about Next.js, take a look at the following resources:
+| File | What |
+|---|---|
+| `prompts/letter.xml` | Letter writer (all 4 letter types, legal rules) |
+| `prompts/gaps.xml` | Follow-up questions for missing facts |
+| `prompts/router.xml` | Decides letter / Tagesbericht / summary |
+| `prompts/deviation.xml` | Compares Tagesbericht to `data/plan.json` |
+| `prompts/summary.xml` | Summarises minutes / diary / emails |
+| `data/required_fields.json` | Required facts per letter type (used by the gap checker) |
+| `data/project.json` | Project, client, our company, Bauleiter, subcontractors |
+| `data/plan.json`, `data/samples/*.txt` | Sample schedule and documents |
+| `tests/situations.json` | Test set for the pitch numbers |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Placeholders like `{user_input}` and `{project_context}` are filled by the code. Keep them and keep the JSON keys in `<output_format>` unchanged.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Test a prompt change
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Edit the XML file and save it. The dev server reads prompts on every request, so no restart is needed.
+2. Try it in the browser (with a key set).
+3. Run the full test set: `npm run test:letters` (against localhost:3000) or `npm run test:letters -- https://<vercel-url>`.
+   Results go to `tests/results/report.md`; rate each letter there (brauchbar / Nacharbeit / falsch).
