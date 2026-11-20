@@ -7,10 +7,10 @@ export const maxDuration = 60;
 function guess(text: string): Pick<RouterResult, "intent" | "letter_type"> {
   const t = text.toLowerCase();
   if (/tagesbericht|bautagebuch|wetter:|anwesend/.test(t)) return { intent: "deviation", letter_type: null };
-  if (/protokoll|besprechung|von:|betreff:|e-mail|zusammenfass/.test(t)) return { intent: "summary", letter_type: null };
-  if (/mangel|mängel|riss|undicht|nachunternehmer|nacharbeit|schief|fehlerhaft/.test(t)) return { intent: "letter", letter_type: "maengel" };
-  if (/bedenken|ungeeignet|statik|planung falsch|passt nicht|zweifel|nicht geeignet/.test(t)) return { intent: "letter", letter_type: "bedenken" };
-  if (/zusätzlich|mehrkosten|nachtrag|angeordnet|änderung|soll noch|extra/.test(t)) return { intent: "letter", letter_type: "mehrkosten" };
+  if (/protokoll|top \d|^von:|^betreff:|zusammenfass/m.test(t)) return { intent: "summary", letter_type: null };
+  if (/mangel|mängel|riss|undicht|nacharbeit|beseitigung|falsch verlegt|nicht ordentlich|nicht bestanden|hinterfüllt|fehlerhaft/.test(t)) return { intent: "letter", letter_type: "maengel" };
+  if (/bedenken|ungeeignet|nicht ausreichend|zu gering|zu wenig|passt nicht|nicht geeignet|zweifel/.test(t)) return { intent: "letter", letter_type: "bedenken" };
+  if (/zusätzlich|mehrkosten|nachtrag|angeordnet|angewiesen|änderung|will jetzt|andere|nicht im lv/.test(t)) return { intent: "letter", letter_type: "mehrkosten" };
   return { intent: "letter", letter_type: "behinderung" };
 }
 

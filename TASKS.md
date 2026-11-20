@@ -8,6 +8,7 @@ Status: todo / doing / done / blocked
 | 1 Core plumbing: data/project.json, lib/claude.ts (mock mode), API routes, Demo-Modus badge | Builder | done |
 | 2 Prompts v1 (router, gaps, letter, deviation, summary), data/required_fields.json, data/mocks/ | Builder | done |
 | 3 Sample data: data/plan.json, data/samples/ (3 Tagesberichte, 1 Protokoll, 3 E-Mails), tests/situations.json (15) | Builder | done |
+| 4 Main flow UI: Analysieren → router + gaps → Rückfragen → editierbarer Entwurf → Word / PDF (Druckansicht) | Builder | done |
 
 ## Setup
 | Task | Owner | Status |
@@ -33,9 +34,9 @@ Status: todo / doing / done / blocked
 ## Saturday — until 18:00 feature freeze
 | Task | Owner | Status |
 |---|---|---|
-| Gap checker: follow-up questions for missing facts (date, cause, affected work, delay) | Builder | todo |
+| Gap checker: follow-up questions for missing facts (date, cause, affected work, delay) | Builder | done (mock mode; live untested) |
 | Voice input (Web Speech API, German) + keyboard dictation fallback | Builder | todo |
-| Router: one input box → letter / daily report / summary | Builder | todo |
+| Router: one input box → letter / daily report / summary | Builder | done (mock mode; live untested) |
 | Deviation checker vs sample plan in /data → offer matching notice | Builder | todo |
 | Summariser: diary / minutes / emails → summary with open items + deadlines | Builder | todo |
 | Mobile layout polish: big buttons, simple screens | Builder | todo |
