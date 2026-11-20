@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import type { LetterType } from "@/lib/types";
+import DeviationTab from "./components/DeviationTab";
 import LetterFlow, { type LetterFlowHandle } from "./components/LetterFlow";
 
 type Tab = "situation" | "bericht" | "zusammenfassen";
@@ -14,13 +16,22 @@ const TABS: { id: Tab; label: string }[] = [
 export default function Home() {
   const [tab, setTab] = useState<Tab>("situation");
   const letterFlow = useRef<LetterFlowHandle>(null);
+  // Text handed over from the router; the key remounts the target tab with it.
   const [incoming, setIncoming] = useState<{ tab: Tab; text: string; id: number } | null>(null);
 
   function redirect(target: "bericht" | "zusammenfassen", text: string) {
     setIncoming({ tab: target, text, id: Date.now() });
     setTab(target);
+    window.scrollTo({ top: 0 });
   }
-  void incoming;
+
+  function draftFromDeviation(text: string, letterType: LetterType) {
+    setTab("situation");
+    window.scrollTo({ top: 0 });
+    letterFlow.current?.start(text, letterType);
+  }
+
+  const handed = (t: Tab) => (incoming?.tab === t ? incoming : null);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-4">
@@ -39,10 +50,17 @@ export default function Home() {
         ))}
       </nav>
 
+      {/* Tabs stay mounted (hidden) so switching does not lose input. */}
       <div hidden={tab !== "situation"}>
         <LetterFlow ref={letterFlow} onRedirect={redirect} />
       </div>
-      {tab === "bericht" && <p className="text-neutral-600">Kommt in Phase 6.</p>}
+      <div hidden={tab !== "bericht"}>
+        <DeviationTab
+          key={handed("bericht")?.id ?? "bericht"}
+          initialText={handed("bericht")?.text}
+          onDraft={draftFromDeviation}
+        />
+      </div>
       {tab === "zusammenfassen" && <p className="text-neutral-600">Kommt in Phase 7.</p>}
     </main>
   );

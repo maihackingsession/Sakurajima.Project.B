@@ -10,6 +10,7 @@ Status: todo / doing / done / blocked
 | 3 Sample data: data/plan.json, data/samples/ (3 Tagesberichte, 1 Protokoll, 3 E-Mails), tests/situations.json (15) | Builder | done |
 | 4 Main flow UI: Analysieren → router + gaps → Rückfragen → editierbarer Entwurf → Word / PDF (Druckansicht) | Builder | done |
 | 5 Voice input: Web Speech API de-DE, Aufnahme-Status, Hinweis auf Tastatur-Diktat wenn nicht unterstützt | Builder | done |
+| 6 Deviation checker: Tab „Tagesbericht prüfen“, Karten nach Schwere, „Anzeige entwerfen“ springt in den Schreiben-Ablauf | Builder | done |
 
 ## Setup
 | Task | Owner | Status |
@@ -38,7 +39,7 @@ Status: todo / doing / done / blocked
 | Gap checker: follow-up questions for missing facts (date, cause, affected work, delay) | Builder | done (mock mode; live untested) |
 | Voice input (Web Speech API, German) + keyboard dictation fallback | Builder | done (test on iPad Safari + Android Chrome) |
 | Router: one input box → letter / daily report / summary | Builder | done (mock mode; live untested) |
-| Deviation checker vs sample plan in /data → offer matching notice | Builder | todo |
+| Deviation checker vs sample plan in /data → offer matching notice | Builder | done (mock mode; live untested) |
 | Summariser: diary / minutes / emails → summary with open items + deadlines | Builder | todo |
 | Mobile layout polish: big buttons, simple screens | Builder | todo |
 | Sample plan + sample emails/reports in /data | Prompt + test | done (v1 by Builder, please review) |
