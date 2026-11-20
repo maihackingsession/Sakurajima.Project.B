@@ -6,6 +6,8 @@ Status: todo / doing / done / blocked
 | Phase | Owner | Status |
 |---|---|---|
 | 1 Core plumbing: data/project.json, lib/claude.ts (mock mode), API routes, Demo-Modus badge | Builder | done |
+| 2 Prompts v1 (router, gaps, letter, deviation, summary), data/required_fields.json, data/mocks/ | Builder | done |
+| 3 Sample data: data/plan.json, data/samples/ (3 Tagesberichte, 1 Protokoll, 3 E-Mails), tests/situations.json (15) | Builder | done |
 
 ## Setup
 | Task | Owner | Status |
@@ -37,8 +39,8 @@ Status: todo / doing / done / blocked
 | Deviation checker vs sample plan in /data → offer matching notice | Builder | todo |
 | Summariser: diary / minutes / emails → summary with open items + deadlines | Builder | todo |
 | Mobile layout polish: big buttons, simple screens | Builder | todo |
-| Sample plan + sample emails/reports in /data | Prompt + test | todo |
-| 10–20 test situations in /tests (incl. messy/incomplete) | Prompt + test | todo |
+| Sample plan + sample emails/reports in /data | Prompt + test | done (v1 by Builder, please review) |
+| 10–20 test situations in /tests (incl. messy/incomplete) | Prompt + test | done (15, v1 by Builder, please review) |
 
 ## After freeze (bug fixes + pitch only)
 | Task | Owner | Status |

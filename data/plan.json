@@ -1,0 +1,19 @@
+{
+  "bauvorhaben": "Neubau Bürogebäude Forschungscampus Garching",
+  "stand": "02.11.2026",
+  "vorgaenge": [
+    { "id": 1, "vorgang": "Baustelleneinrichtung", "start": "02.11.2026", "ende": "04.11.2026", "gewerk": "Allgemein", "verantwortlich": "Musterbau GmbH" },
+    { "id": 2, "vorgang": "Verbau (Trägerbohlwand)", "start": "04.11.2026", "ende": "13.11.2026", "gewerk": "Erdbau / Verbau", "verantwortlich": "Erdbau Huber GmbH & Co. KG" },
+    { "id": 3, "vorgang": "Erdarbeiten / Aushub BA 1", "start": "09.11.2026", "ende": "18.11.2026", "gewerk": "Erdbau", "verantwortlich": "Erdbau Huber GmbH & Co. KG" },
+    { "id": 4, "vorgang": "Erdarbeiten / Aushub BA 2", "start": "16.11.2026", "ende": "25.11.2026", "gewerk": "Erdbau", "verantwortlich": "Erdbau Huber GmbH & Co. KG" },
+    { "id": 5, "vorgang": "Grundleitungen", "start": "19.11.2026", "ende": "24.11.2026", "gewerk": "Rohbau / Entwässerung", "verantwortlich": "Rohbau Schneider GmbH" },
+    { "id": 6, "vorgang": "Bodenplatte (Sauberkeitsschicht, Bewehrung, Beton)", "start": "23.11.2026", "ende": "04.12.2026", "gewerk": "Rohbau", "verantwortlich": "Rohbau Schneider GmbH", "voraussetzung": "Bewehrungspläne vom Tragwerksplaner (AG) bis 20.11.2026" },
+    { "id": 7, "vorgang": "Kellerwände UG", "start": "07.12.2026", "ende": "15.12.2026", "gewerk": "Rohbau", "verantwortlich": "Rohbau Schneider GmbH" },
+    { "id": 8, "vorgang": "Decke über UG", "start": "14.12.2026", "ende": "18.12.2026", "gewerk": "Rohbau", "verantwortlich": "Rohbau Schneider GmbH" },
+    { "id": 9, "vorgang": "Elektro-Rohinstallation UG (Leerrohre, Erdung)", "start": "09.12.2026", "ende": "18.12.2026", "gewerk": "Elektro", "verantwortlich": "Elektro Wagner GmbH" },
+    { "id": 10, "vorgang": "Wände und Decke EG", "start": "21.12.2026", "ende": "23.12.2026", "gewerk": "Rohbau", "verantwortlich": "Rohbau Schneider GmbH", "hinweis": "Weiterführung nach Winterpause ab 07.01.2027" },
+    { "id": 11, "vorgang": "Wände und Decke 1. OG", "start": "07.01.2027", "ende": "20.01.2027", "gewerk": "Rohbau", "verantwortlich": "Rohbau Schneider GmbH" },
+    { "id": 12, "vorgang": "Wände und Decke 2. OG", "start": "21.01.2027", "ende": "03.02.2027", "gewerk": "Rohbau", "verantwortlich": "Rohbau Schneider GmbH" }
+  ],
+  "winterpause": "24.12.2026 – 06.01.2027"
+}
