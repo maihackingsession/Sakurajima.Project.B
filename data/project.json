@@ -1,0 +1,50 @@
+{
+  "bauvorhaben": "Neubau Bürogebäude Forschungscampus Garching",
+  "baustelle": "Lichtenbergstraße 8, 85748 Garching bei München",
+  "vertragsnummer": "BV-2026-0417",
+  "vertragsgrundlage": "VOB/B",
+  "auftraggeber": {
+    "name": "Campus Garching Projektgesellschaft mbH",
+    "ansprechpartner": "Frau Dr. Andrea Lindner, Projektleitung Bauherr",
+    "strasse": "Boltzmannstraße 15",
+    "plz_ort": "85748 Garching bei München"
+  },
+  "auftragnehmer": {
+    "name": "Musterbau GmbH",
+    "strasse": "Industriestraße 42",
+    "plz_ort": "80939 München",
+    "telefon": "089 123456-0",
+    "email": "bauleitung@musterbau.example"
+  },
+  "bauleiter": {
+    "name": "Thomas Berger",
+    "funktion": "Bauleiter",
+    "telefon": "0171 2345678"
+  },
+  "nachunternehmer": [
+    {
+      "name": "Erdbau Huber GmbH & Co. KG",
+      "gewerk": "Erdbau / Aushub / Verbau",
+      "ansprechpartner": "Herr Josef Huber",
+      "strasse": "Kiesweg 3",
+      "plz_ort": "85386 Eching",
+      "vertragsnummer": "NU-0417-01"
+    },
+    {
+      "name": "Rohbau Schneider GmbH",
+      "gewerk": "Rohbau / Stahlbeton",
+      "ansprechpartner": "Herr Markus Schneider",
+      "strasse": "Betonring 17",
+      "plz_ort": "85221 Dachau",
+      "vertragsnummer": "NU-0417-02"
+    },
+    {
+      "name": "Elektro Wagner GmbH",
+      "gewerk": "Elektroinstallation",
+      "ansprechpartner": "Frau Sabine Wagner",
+      "strasse": "Stromstraße 5",
+      "plz_ort": "85356 Freising",
+      "vertragsnummer": "NU-0417-03"
+    }
+  ]
+}

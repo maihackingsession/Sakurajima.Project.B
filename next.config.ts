@@ -1,12 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  // The letter route reads prompts/letter.xml at runtime; make sure it ships.
+  // API routes read prompts/*.xml and data/**/* at runtime; make sure they ship to Vercel.
   outputFileTracingIncludes: {
-    "/api/letter": ["./prompts/**/*"],
+    "/api/**/*": ["./prompts/**/*", "./data/**/*"],
   },
   turbopack: {
     rules: {

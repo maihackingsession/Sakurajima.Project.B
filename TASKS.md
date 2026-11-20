@@ -2,12 +2,13 @@
 
 Status: todo / doing / done / blocked
 
+
 ## Setup
 | Task | Owner | Status |
 |---|---|---|
 | Next.js skeleton, folders, CLAUDE.md, TASKS.md | Builder | done |
 | /api/health route | Builder | done |
-| Push to GitHub | Builder | todo |
+| Push to GitHub | Builder | done |
 | Connect Vercel, test live URL on iPad | Builder | todo |
 | Add ANTHROPIC_API_KEY to .env.local and Vercel (when credits arrive) | Builder | todo |
 | Draft prompts/letter.xml (starter in repo; replace content + add mentor example) | Prompt + test | todo |
