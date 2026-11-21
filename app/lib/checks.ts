@@ -29,6 +29,8 @@ export function checklist(letterType: LetterType, letter: Letter, facts: Record<
   const body = letter.body;
   // A paragraph that still has a placeholder does not count as "present".
   const filled = (re: RegExp) => body.split(/\n\s*\n/).some((p) => re.test(p) && placeholders(p).length === 0);
+  // Same, per sentence: for points that often share a paragraph with an open deadline placeholder.
+  const said = (re: RegExp) => body.split(/(?<=[.;:])\s+/).some((x) => re.test(x) && placeholders(x).length === 0);
   const deadline = /bis (?:spätestens |zum )+(?!\[)[^\s,.]/i.test(body);
   const evidence = (re: RegExp) => hasReport || filled(re);
 
@@ -38,7 +40,7 @@ export function checklist(letterType: LetterType, letter: Letter, facts: Record<
       { label: "Folgen", ok: filled(/drohen|folge|schäden|schaden|risiko|gefahr/i) },
       { label: "Alternative / Vorschlag", ok: filled(/schlagen[^.]*vor|vorschlag|alternativ|empfehlen/i) },
       { label: "Frist für Entscheidung", ok: deadline },
-      { label: "Vor Ausführung", ok: filled(/vor (?:ihrer entscheidung|beginn|der ausführung)|nicht (?:ausführen|beginnen)/i) },
+      { label: "Vor Ausführung", ok: said(/vor (?:ihrer entscheidung|beginn|der ausführung)|nicht (?:ausführen|beginnen)/i) },
       { label: "Nachweise", ok: evidence(/anlage|foto|protokoll|gutachten/i) },
     ];
   }
