@@ -25,9 +25,14 @@ export type Letter = {
   missing: string[];
 };
 
+/** Router verdict for a letter situation: notice needed, no notice needed, or cause possibly in our own area. */
+export const OUTCOMES = ["anzeige", "keine_anzeige", "eigener_bereich"] as const;
+export type Outcome = (typeof OUTCOMES)[number];
+
 export type RouterResult = {
   intent: "letter" | "deviation" | "summary";
   letter_type: LetterType | null;
+  outcome: Outcome;
   facts: Record<string, unknown>;
   reason: string;
 };
@@ -42,6 +47,12 @@ export type Deviation = {
   severity: "niedrig" | "mittel" | "hoch";
   suggested_letter: LetterType | null;
   explanation: string;
+  /** One line: why this notice (e.g. "Ursache im Bereich des Auftraggebers: fehlende Ausführungspläne"). */
+  reason: string;
+  /** Date the deviation started (dd.mm.yyyy), used for urgency + letter date. */
+  event_date: string;
+  /** Facts from the report, passed into the draft flow so only 1–2 questions remain. */
+  facts: Record<string, unknown>;
 };
 export type DeviationResult = { deviations: Deviation[]; summary: string };
 

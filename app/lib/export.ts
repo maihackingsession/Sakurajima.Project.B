@@ -5,8 +5,25 @@ const company = project.auftragnehmer;
 export const senderLine = `${company.name} · ${company.strasse} · ${company.plz_ort}`;
 export const signature = [company.name, "", "", project.bauleiter.name, project.bauleiter.funktion];
 
-export function dateLine() {
-  return `München, ${new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`;
+/** "Garching, 21.11.2026": place from project.json + the given date (dd.mm.yyyy). */
+export function dateLine(date: string) {
+  return `${project.ort}, ${date}`;
+}
+
+/** Evidence page for the export: what the draft is based on. */
+export type Appendix = { input: string; answers: Record<string, string>; createdAt: string; report?: string };
+
+export function appendixSections(a: Appendix): { title: string; text: string }[] {
+  const created = new Date(a.createdAt);
+  const answers = Object.entries(a.answers).map(([k, v]) => `${k}: ${v}`).join("\n");
+  const day = created.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const time = created.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  return [
+    { title: "Erstellt", text: `${day}, ${time} Uhr` },
+    ...(a.report ? [{ title: "Auszug Bautagesbericht", text: a.report.trim() }] : []),
+    { title: "Ursprüngliche Eingabe", text: a.input.trim() || "–" },
+    { title: "Antworten auf Rückfragen", text: answers || "–" },
+  ];
 }
 
 export function paragraphs(text: string) {
@@ -60,9 +77,9 @@ function download(blob: Blob, name: string) {
 }
 
 /** Word export in the browser, DIN 5008-like layout. Nothing is sent anywhere. */
-export async function exportDocx(letter: Letter, kind = "Schreiben", isDraft = true) {
+export async function exportDocx(letter: Letter, kind: string, isDraft: boolean, date: string, appendix?: Appendix) {
   const {
-    Document, Packer, Paragraph, TextRun, AlignmentType, Footer, Header, BorderStyle, ImageRun,
+    Document, Packer, Paragraph, TextRun, AlignmentType, Footer, Header, BorderStyle, ImageRun, PageBreak,
     HorizontalPositionRelativeFrom, VerticalPositionRelativeFrom, HorizontalPositionAlign, VerticalPositionAlign,
   } = await import("docx");
   const lines = (s: string, opts: { bold?: boolean; size?: number } = {}) =>
@@ -126,12 +143,22 @@ export async function exportDocx(letter: Letter, kind = "Schreiben", isDraft = t
             spacing: { after: 120 },
           }),
           new Paragraph({ children: lines(letter.recipient), spacing: { after: 720 } }),
-          new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun(dateLine())], spacing: { after: 480 } }),
+          new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun(dateLine(date))], spacing: { after: 480 } }),
           new Paragraph({ children: lines(letter.subject, { bold: true }), spacing: { after: 480 } }),
           new Paragraph({ children: [new TextRun(letter.salutation)], spacing: { after: 240 } }),
           ...paragraphs(letter.body).map((p) => new Paragraph({ children: lines(p), spacing: { after: 240 } })),
           new Paragraph({ children: lines(letter.closing), spacing: { before: 240 } }),
           new Paragraph({ children: lines(signature.join("\n")) }),
+          ...(appendix
+            ? [
+                new Paragraph({ children: [new PageBreak()] }),
+                new Paragraph({ children: [new TextRun({ text: "Anlage – Dokumentation", bold: true, size: 28 })], spacing: { after: 240 } }),
+                ...appendixSections(appendix).flatMap((sec) => [
+                  new Paragraph({ children: [new TextRun({ text: sec.title, bold: true })], spacing: { before: 200, after: 80 } }),
+                  new Paragraph({ children: lines(sec.text, { size: 20 }) }),
+                ]),
+              ]
+            : []),
         ],
       },
     ],

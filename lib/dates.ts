@@ -42,3 +42,12 @@ export function daysBetween(a: Date, b: Date) {
   const utc = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
   return Math.round((utc(b) - utc(a)) / 86_400_000);
 }
+
+/** Urgency line for a notice, from the date the event started. */
+export function urgency(eventDate: string): { days: number | null; text: string; late: boolean } {
+  const d = parseGermanDate(eventDate);
+  if (!d) return { days: null, text: "Unverzüglich anzeigen", late: false };
+  const days = Math.max(0, daysBetween(d, today()));
+  if (days <= 1) return { days, text: "Unverzüglich anzeigen – heute", late: false };
+  return { days, text: `Seit ${days} Tagen – sofort anzeigen`, late: true };
+}

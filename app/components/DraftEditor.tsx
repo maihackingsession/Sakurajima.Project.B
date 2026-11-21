@@ -1,29 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { createPortal } from "react-dom";
 import project from "@/data/project.json";
-import type { Letter } from "@/lib/types";
-import { dateLine, exportDocx, paragraphs, plainText, senderLine, signature, stripDraftLines } from "../lib/export";
-import { btnPrimary, btnSecondary, field, label } from "../lib/ui";
+import { LETTER_LABELS, type Letter, type LetterType } from "@/lib/types";
+import { checklist, euro, numberFact, placeholders } from "../lib/checks";
+import {
+  appendixSections,
+  dateLine,
+  exportDocx,
+  paragraphs,
+  plainText,
+  senderLine,
+  signature,
+  stripDraftLines,
+  type Appendix,
+} from "../lib/export";
+import { btnPrimary, btnSecondary, card, field, h2, hint, label, linkBtn } from "../lib/ui";
+import Chip from "./Chip";
 
-/** Review status of a draft. Only the user changes it, with the buttons below. Kept in memory, no database. */
-export type Approval =
-  | { status: "entwurf" }
-  | { status: "geprueft" }
-  | { status: "freigegeben"; by: string; at: string };
-
+/** Review status of a draft. Only the user changes it. Approvals are remembered in this browser only. */
+export type Approval = { status: "entwurf" } | { status: "freigegeben"; by: string; at: string };
 export const NEW_APPROVAL: Approval = { status: "entwurf" };
 
-const STEPS = [
-  { id: "entwurf", label: "Entwurf" },
-  { id: "geprueft", label: "Geprüft" },
-  { id: "freigegeben", label: "Freigegeben" },
-] as const;
+/** What the draft is based on (evidence appendix) + real AI time of this flow. */
+export type FlowInfo = Appendix & { aiSeconds: number | null };
 
 export function approvalTime(iso: string) {
   const d = new Date(iso);
   return `${d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}, ${d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr`;
+}
+
+function remember(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Private mode / blocked storage: approval still works for this session.
+  }
+}
+function recall<T>(key: string, fallback: T): T {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? (JSON.parse(v) as T) : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 async function copyText(text: string) {
@@ -46,46 +67,80 @@ async function copyText(text: string) {
   if (!ok) throw new Error("copy failed");
 }
 
+/** Text with [Platzhalter] visibly highlighted. */
+function Highlighted({ text }: { text: string }) {
+  const parts = text.split(/(\[[^\]\n]{2,}\])/g);
+  return (
+    <>
+      {parts.map((p, i) =>
+        /^\[[^\]]+\]$/.test(p) ? (
+          <mark key={i} className="rounded bg-[#ffe3b3] px-1 text-[var(--warning-text)] ring-1 ring-[var(--warning-border)]">{p}</mark>
+        ) : (
+          <Fragment key={i}>{p}</Fragment>
+        ),
+      )}
+    </>
+  );
+}
+
 type Props = {
-  title: string;
+  letterType: LetterType;
   draft: Letter;
   onChange: (d: Letter) => void;
   approval: Approval;
   onApprovalChange: (a: Approval) => void;
   onBack: () => void;
   onRestart: () => void;
+  facts: Record<string, unknown>;
+  /** Start of the event (dd.mm.yyyy) if known, e.g. from the Tagesbericht. */
+  eventDate: string;
+  /** Date in the letter's date line (dd.mm.yyyy). */
+  letterDate: string;
+  flow: FlowInfo;
 };
 
-export default function DraftEditor({ title, draft, onChange, approval, onApprovalChange, onBack, onRestart }: Props) {
+type EditKey = "recipient" | "subject" | "salutation" | "body" | "closing";
+
+export default function DraftEditor(props: Props) {
+  const { letterType, draft, onChange, approval, onApprovalChange, onBack, onRestart, facts, eventDate, letterDate, flow } = props;
+  const title = LETTER_LABELS[letterType];
+  const [editing, setEditing] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [asking, setAsking] = useState(false);
-  const [approver, setApprover] = useState(project.bauleiter.name);
+  const [approver, setApprover] = useState(() => recall("baufrist:freigeber", project.bauleiter.name));
 
   const isDraft = approval.status !== "freigegeben";
+  const checks = checklist(draft, facts, eventDate, !!flow.report);
+  const open = checks.filter((c) => !c.ok).length;
+  const holes = placeholders(`${draft.recipient}\n${draft.subject}\n${draft.body}`).length;
+  const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };
 
-  const set = (key: "recipient" | "subject" | "salutation" | "body" | "closing") =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      onChange({ ...draft, [key]: e.target.value });
-      // Editing an approved letter voids the approval.
-      if (approval.status === "freigegeben") onApprovalChange({ status: "geprueft" });
-    };
+  const set = (key: EditKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    onChange({ ...draft, [key]: e.target.value });
+    // Editing an approved letter voids the approval.
+    if (approval.status === "freigegeben") onApprovalChange(NEW_APPROVAL);
+  };
 
   function approve(e: React.FormEvent) {
     e.preventDefault();
     const name = approver.trim();
     if (!name) return;
+    const at = new Date().toISOString();
     onChange({ ...draft, subject: stripDraftLines(draft.subject), body: stripDraftLines(draft.body) });
-    onApprovalChange({ status: "freigegeben", by: name, at: new Date().toISOString() });
+    onApprovalChange({ status: "freigegeben", by: name, at });
+    remember("baufrist:freigeber", name);
+    remember("baufrist:letzte-freigabe", { betreff: draft.subject, von: name, am: at });
     setAsking(false);
+    setEditing(false);
   }
 
   async function word() {
     setExporting(true);
     setError("");
     try {
-      await exportDocx(draft, title, isDraft);
+      await exportDocx(draft, title, isDraft, letterDate, appendix);
     } catch {
       setError("Word-Export fehlgeschlagen. Bitte erneut versuchen.");
     } finally {
@@ -100,170 +155,253 @@ export default function DraftEditor({ title, draft, onChange, approval, onApprov
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setError("Kopieren fehlgeschlagen. Bitte den Text manuell markieren und kopieren.");
+      setError("Kopieren fehlgeschlagen. Bitte den Text markieren und manuell kopieren.");
     }
   }
 
-  const current = STEPS.findIndex((s) => s.id === approval.status);
+  const editField = "w-full resize-none rounded-md border border-dashed border-[var(--border)] bg-[#fffdf7] px-2 py-1 focus:border-[var(--navy)] focus:outline-none [field-sizing:content]";
 
   return (
     <section className="flex flex-col gap-4">
       {isDraft ? (
-        <div className="rounded-xl border-2 border-amber-500 bg-amber-300 px-4 py-3 text-center text-lg font-extrabold uppercase tracking-wide text-amber-950">
+        <div className="rounded-xl border border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2.5 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
           Entwurf – vor Versand prüfen
         </div>
       ) : (
-        <div role="status" className="rounded-xl border-2 border-green-600 bg-green-100 px-4 py-3 text-center text-lg font-bold text-green-950">
+        <div role="status" className="rounded-xl border border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2.5 text-center text-base font-bold text-[var(--success-text)]">
           Freigegeben von {approval.by} am {approvalTime(approval.at)}
         </div>
       )}
-      <div>
-        <h2 className="text-xl font-bold">{title}</h2>
-        <p className="text-sm text-neutral-600">
-          Alle Felder sind bearbeitbar. Es wird nichts automatisch versendet – Sie exportieren und versenden selbst.
-        </p>
-      </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-white p-4">
-        <p className={label}>Status</p>
-        <ol className="grid grid-cols-3 gap-1" aria-label="Status des Schreibens">
-          {STEPS.map((s, i) => (
-            <li
-              key={s.id}
-              aria-current={i === current ? "step" : undefined}
-              className={`rounded-lg px-1 py-2 text-center text-sm font-semibold ${
-                i === current
-                  ? s.id === "freigegeben" ? "bg-green-600 text-white" : "bg-blue-600 text-white"
-                  : i < current ? "bg-neutral-200 text-neutral-800" : "bg-neutral-100 text-neutral-500"
-              }`}
-            >
-              {i < current ? "✓ " : ""}{s.label}
-            </li>
-          ))}
-        </ol>
-
-        <div className="mt-3 flex flex-col gap-2">
-          {approval.status === "entwurf" && (
-            <button className={btnPrimary} onClick={() => onApprovalChange({ status: "geprueft" })}>
-              Als geprüft markieren
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
+        {/* Left: the letter as a sheet of paper. */}
+        <div className="flex min-w-0 flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold text-[var(--navy)]">{title}</h2>
+            <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
+              {editing ? "Fertig" : "Text bearbeiten"}
             </button>
-          )}
-          {approval.status === "geprueft" && !asking && (
-            <>
-              <button className={btnPrimary} onClick={() => setAsking(true)}>Freigeben</button>
-              <button className={btnSecondary} onClick={() => onApprovalChange({ status: "entwurf" })}>
-                Zurück auf Entwurf
-              </button>
-            </>
-          )}
-          {approval.status === "geprueft" && asking && (
-            <form onSubmit={approve} className="flex flex-col gap-2">
-              <label htmlFor="approver" className={label}>Name der freigebenden Person</label>
-              <input
-                id="approver"
-                className={field}
-                value={approver}
-                onChange={(e) => setApprover(e.target.value)}
-                autoComplete="name"
-                autoFocus
-                required
-              />
-              <button type="submit" className={btnPrimary} disabled={!approver.trim()}>Freigabe bestätigen</button>
-              <button type="button" className={btnSecondary} onClick={() => setAsking(false)}>Abbrechen</button>
-            </form>
-          )}
-          {approval.status === "freigegeben" && (
-            <p className="text-sm text-neutral-600">
-              Wenn Sie den Text jetzt noch ändern, geht der Status zurück auf „Geprüft“ und muss neu freigegeben werden.
+          </div>
+          <article
+            className="relative rounded-lg border border-[var(--border)] bg-white px-5 py-6 text-[16px] leading-relaxed text-[#111827] shadow-[0_1px_3px_rgba(31,42,68,0.08)] sm:px-12 sm:py-10 lg:text-[17px]"
+            aria-label="Schreiben"
+            onDoubleClick={() => !editing && setEditing(true)}
+          >
+            <p className="border-b border-[var(--border)] pb-1 text-xs text-[var(--muted)]">{senderLine}</p>
+            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:justify-between">
+              {editing ? (
+                <textarea aria-label="Empfänger" rows={4} className={`${editField} sm:max-w-[60%]`} value={draft.recipient} onChange={set("recipient")} />
+              ) : (
+                <p className="whitespace-pre-line"><Highlighted text={draft.recipient} /></p>
+              )}
+              <p className="shrink-0 sm:pt-[4.5em] sm:text-right">{dateLine(letterDate)}</p>
+            </div>
+            <div className="mt-6 font-bold">
+              {editing ? (
+                <textarea aria-label="Betreff" rows={2} className={`${editField} font-bold`} value={draft.subject} onChange={set("subject")} />
+              ) : (
+                <p className="whitespace-pre-line"><Highlighted text={draft.subject} /></p>
+              )}
+            </div>
+            <div className="mt-5">
+              {editing ? (
+                <input aria-label="Anrede" className={editField} value={draft.salutation} onChange={set("salutation")} />
+              ) : (
+                <p>{draft.salutation}</p>
+              )}
+            </div>
+            <div className="mt-3">
+              {editing ? (
+                <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
+              ) : (
+                paragraphs(draft.body).map((p, i) => (
+                  <p key={i} className="mt-3 whitespace-pre-line first:mt-0"><Highlighted text={p} /></p>
+                ))
+              )}
+            </div>
+            <div className="mt-5">
+              {editing ? (
+                <input aria-label="Gruß" className={editField} value={draft.closing} onChange={set("closing")} />
+              ) : (
+                <p>{draft.closing}</p>
+              )}
+              <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
+            </div>
+          </article>
+          {holes > 0 && (
+            <p className="text-sm font-semibold text-[var(--warning-text)]">
+              {holes === 1 ? "1 Platzhalter" : `${holes} Platzhalter`} [ … ] im Text – bitte ergänzen („Text bearbeiten“).
             </p>
           )}
-        </div>
-      </div>
-
-      {(draft.legal_basis || draft.deadline_hint) && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-blue-950">
-          {draft.legal_basis && (
-            <p><span className="font-semibold">Rechtsgrundlage:</span> {draft.legal_basis}</p>
+          {(draft.legal_basis || draft.deadline_hint) && (
+            <div className={`${card} bg-[var(--surface)] text-[15px]`}>
+              {draft.legal_basis && <p><span className="font-semibold">Rechtsgrundlage:</span> {draft.legal_basis}</p>}
+              {draft.deadline_hint && <p className="mt-1"><span className="font-semibold">Frist / Form:</span> {draft.deadline_hint}</p>}
+            </div>
           )}
-          {draft.deadline_hint && (
-            <p className="mt-1"><span className="font-semibold">Frist / Form:</span> {draft.deadline_hint}</p>
+          {draft.missing.length > 0 && (
+            <div className={`${card} text-[15px]`}>
+              <p className="font-semibold">Noch offen:</p>
+              <ul className="mt-1 list-disc pl-5">{draft.missing.map((m, i) => <li key={i}>{m}</li>)}</ul>
+            </div>
           )}
         </div>
-      )}
 
-      {draft.missing.length > 0 && (
-        <div className="rounded-xl border border-amber-400 bg-amber-50 p-4 text-amber-950">
-          <p className="mb-1 font-semibold">Noch offen – bitte im Text ergänzen:</p>
-          <ul className="list-disc pl-5">
-            {draft.missing.map((m, i) => <li key={i}>{m}</li>)}
-          </ul>
-          <p className="mt-2 text-sm">Platzhalter im Text stehen in [eckigen Klammern].</p>
-        </div>
-      )}
+        {/* Right: status, Prüfliste, cost, export. */}
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-4">
+          <div className={card}>
+            <div className="flex items-center justify-between gap-2">
+              <p className={h2}>Status</p>
+              <Chip kind={isDraft ? "entwurf" : "freigegeben"} />
+            </div>
+            {isDraft && !asking && (
+              <div className="mt-3 flex flex-col gap-2">
+                <button className={`${btnPrimary} sm:w-full`} onClick={() => setAsking(true)}>Freigeben</button>
+                <p className={hint}>
+                  {open > 0 ? <span className="font-semibold text-[var(--warning-text)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste. </span> : null}
+                  Nur Sie geben frei. Es wird nichts automatisch versendet.
+                </p>
+              </div>
+            )}
+            {isDraft && asking && (
+              <form onSubmit={approve} className="mt-3 flex flex-col gap-2">
+                <label htmlFor="approver" className={label}>Freigegeben von</label>
+                <input id="approver" className={field} value={approver} onChange={(e) => setApprover(e.target.value)} autoComplete="name" autoFocus required />
+                {open > 0 && <p className="text-sm font-semibold text-[var(--warning-text)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</p>}
+                <div className="flex gap-2">
+                  <button type="submit" className={`${btnPrimary} flex-1`} disabled={!approver.trim()}>Freigabe bestätigen</button>
+                  <button type="button" className={`${btnSecondary} flex-1`} onClick={() => setAsking(false)}>Abbrechen</button>
+                </div>
+              </form>
+            )}
+            {!isDraft && (
+              <p className={`${hint} mt-3`}>Wenn Sie den Text ändern, wird das Schreiben wieder zum Entwurf.</p>
+            )}
+            {flow.aiSeconds !== null && flow.aiSeconds > 0 && (
+              <p className={`${hint} mt-2`}>Entwurf in {flow.aiSeconds} s erstellt</p>
+            )}
+          </div>
 
-      <div>
-        <label htmlFor="recipient" className={label}>Empfänger</label>
-        <textarea id="recipient" rows={4} className={field} value={draft.recipient} onChange={set("recipient")} />
-      </div>
-      <div>
-        <label htmlFor="subject" className={label}>Betreff</label>
-        <textarea id="subject" rows={3} className={field} value={draft.subject} onChange={set("subject")} />
-      </div>
-      <div>
-        <label htmlFor="salutation" className={label}>Anrede</label>
-        <input id="salutation" className={field} value={draft.salutation} onChange={set("salutation")} />
-      </div>
-      <div>
-        <label htmlFor="body" className={label}>Text</label>
-        <textarea id="body" className={`${field} min-h-96`} value={draft.body} onChange={set("body")} />
-      </div>
-      <div>
-        <label htmlFor="closing" className={label}>Gruß</label>
-        <input id="closing" className={field} value={draft.closing} onChange={set("closing")} />
-        <p className="mt-1 text-sm text-neutral-600">Darunter: {signature.filter(Boolean).join(", ")}</p>
+          <div className={card}>
+            <p className={h2}>Prüfliste vor Versand</p>
+            <ul className="mt-2 flex flex-col">
+              {checks.map((c) => (
+                <li key={c.label} className="flex items-baseline justify-between gap-3 border-b border-[var(--border)] py-1.5 text-[15px] last:border-0">
+                  <span>{c.label}</span>
+                  {c.ok ? (
+                    <span className="shrink-0 font-semibold text-[var(--success-text)]">✓ {c.note && c.label === "Unverzüglich" ? c.note : ""}</span>
+                  ) : (
+                    <span className="shrink-0 text-right font-semibold text-[var(--accent-hover)]">{c.note && c.label === "Unverzüglich" ? c.note : "fehlt"}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {letterType === "behinderung" && <CostCard facts={facts} />}
+
+          <div className={card}>
+            <p className={h2}>Export</p>
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-3">
+              <button className={`${isDraft ? btnSecondary : btnPrimary} sm:w-full`} onClick={word} disabled={exporting}>
+                {exporting ? "…" : "Word"}
+              </button>
+              <button className={`${btnSecondary} sm:w-full`} onClick={() => window.print()}>PDF</button>
+              <button className={`${btnSecondary} sm:w-full`} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
+            </div>
+            <p className={`${hint} mt-2`}>
+              {isDraft ? "Word und PDF tragen das Wasserzeichen „ENTWURF“, bis Sie freigeben. " : ""}
+              Mit Anlage „Dokumentation“. PDF: im Druckdialog „Als PDF speichern“ wählen.
+            </p>
+            {error && <p role="alert" className="mt-2 font-semibold text-[var(--error-text)]">{error}</p>}
+          </div>
+        </aside>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <button className={btnPrimary} onClick={word} disabled={exporting}>
-          {exporting ? "Wird erstellt …" : "Word (.docx)"}
-        </button>
-        <button className={btnPrimary} onClick={() => window.print()}>
-          PDF
-        </button>
-        <button className={btnPrimary} onClick={copy}>
-          {copied ? "Kopiert ✓" : "Kopieren"}
-        </button>
-      </div>
-      <p className="text-sm text-neutral-600">
-        {isDraft && "Word und PDF tragen das Wasserzeichen „ENTWURF“, bis das Schreiben freigegeben ist. "}
-        PDF: Druckansicht öffnet sich → „Als PDF sichern“ wählen. Auf iPad/iPhone: Teilen → Drucken → mit zwei Fingern aufziehen → PDF.
-      </p>
-      {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-red-800">{error}</p>}
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <button className={btnSecondary} onClick={onBack}>Zurück zu den Angaben</button>
-        <button className={btnSecondary} onClick={onRestart}>Neue Situation</button>
+      <div className="flex flex-wrap gap-x-6">
+        <button className={linkBtn} onClick={onBack}>Zurück zu den Angaben</button>
+        <button className={linkBtn} onClick={onRestart}>Neue Situation</button>
       </div>
 
-      {typeof document !== "undefined" && createPortal(<PrintSheet draft={draft} isDraft={isDraft} />, document.body)}
+      {typeof document !== "undefined" &&
+        createPortal(<PrintSheet draft={draft} isDraft={isDraft} date={letterDate} appendix={appendix} />, document.body)}
     </section>
   );
 }
 
+/** Standstill cost estimate. Pure arithmetic; unknown values stay empty instead of being guessed. */
+function CostCard({ facts }: { facts: Record<string, unknown> }) {
+  const [workers, setWorkers] = useState(numberFact(facts.arbeitskraefte_ohne_produktive_arbeit));
+  const [hours, setHours] = useState(String(project.kosten.arbeitsstunden_pro_tag));
+  const [rate, setRate] = useState(String(project.kosten.verrechnungssatz_eur_h));
+  const [days, setDays] = useState(numberFact(facts.tage_bisher));
+  const n = (s: string) => (s.trim() === "" ? NaN : Number(s.replace(",", ".")));
+  const perDay = n(workers) * n(hours) * n(rate);
+  const total = perDay * n(days);
+  const ok = Number.isFinite(perDay) && perDay >= 0;
+  const inputs: [string, string, string, (v: string) => void, string][] = [
+    ["cost-workers", "Arbeitskräfte ohne produktive Arbeit", workers, setWorkers, "1"],
+    ["cost-hours", "Stunden pro Tag", hours, setHours, "0.5"],
+    ["cost-rate", "Verrechnungssatz (€/h)", rate, setRate, "1"],
+    ["cost-days", "Tage", days, setDays, "1"],
+  ];
+  return (
+    <div className={`${card} border-[var(--navy)]/30`}>
+      <div className="flex items-start justify-between gap-2">
+        <p className={h2}>Was kostet der Stillstand?</p>
+      </div>
+      <p className="text-sm text-[var(--muted)]">Schätzung – zur internen Information</p>
+      <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
+        {inputs.map(([id, text, value, setter, step]) => (
+          <div key={id} className="flex flex-col justify-end">
+            <label htmlFor={id} className="mb-1 text-sm leading-tight text-[var(--muted)]">{text}</label>
+            <input
+              id={id}
+              type="number"
+              inputMode="decimal"
+              min="0"
+              step={step}
+              className={`${field} py-2 text-lg font-semibold`}
+              value={value}
+              onChange={(e) => setter(e.target.value)}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 rounded-lg bg-[var(--surface)] p-3" aria-live="polite">
+        {ok ? (
+          <>
+            <p className="text-sm text-[var(--muted)]">
+              {workers} Arbeitskräfte × {hours} h × {rate} €/h
+            </p>
+            <p className="text-2xl font-bold text-[var(--navy)]">{euro(perDay)} <span className="text-base font-semibold">pro Tag</span></p>
+            {Number.isFinite(total) && (
+              <p className="text-lg font-semibold text-[var(--navy)]">
+                bisher {days} {n(days) === 1 ? "Tag" : "Tage"}: {euro(total)}
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="font-semibold text-[var(--muted)]">Bitte fehlende Werte eintragen.</p>
+        )}
+      </div>
+      <p className="mt-2 text-sm text-[var(--muted)]">Nur Personal. Geräte (z. B. Kran) und Baustellengemeinkosten kommen hinzu.</p>
+    </div>
+  );
+}
+
 /** Hidden on screen; the only thing visible when printing (see globals.css). */
-function PrintSheet({ draft, isDraft }: { draft: Letter; isDraft: boolean }) {
+function PrintSheet({ draft, isDraft, date, appendix }: { draft: Letter; isDraft: boolean; date: string; appendix: Appendix }) {
   return (
     <div id="print-sheet" className="hidden bg-white font-sans text-[11pt] leading-snug text-black">
-      {isDraft && (
-        <div aria-hidden className="print-watermark">ENTWURF</div>
-      )}
+      {isDraft && <div aria-hidden className="print-watermark">ENTWURF</div>}
       <div className="text-right">
         <p className="text-[13pt] font-bold">{signature[0]}</p>
         <p className="text-[9pt]">{senderLine.split(" · ").slice(1).join(", ")}</p>
       </div>
       <p className="mt-10 border-b border-neutral-500 pb-0.5 text-[8pt]">{senderLine}</p>
       <p className="mt-2 whitespace-pre-line">{draft.recipient}</p>
-      <p className="mt-12 text-right">{dateLine()}</p>
+      <p className="mt-12 text-right">{dateLine(date)}</p>
       <p className="mt-8 whitespace-pre-line font-bold">{draft.subject}</p>
       <p className="mt-8">{draft.salutation}</p>
       {paragraphs(draft.body).map((p, i) => (
@@ -271,9 +409,16 @@ function PrintSheet({ draft, isDraft }: { draft: Letter; isDraft: boolean }) {
       ))}
       <p className="mt-6 whitespace-pre-line">{draft.closing}</p>
       <p className="whitespace-pre-line">{signature.join("\n")}</p>
-      {isDraft && (
-        <p className="mt-10 text-center text-[9pt] font-bold text-amber-700">ENTWURF – vor Versand prüfen</p>
-      )}
+      {isDraft && <p className="mt-10 text-center text-[9pt] font-bold text-amber-700">ENTWURF – vor Versand prüfen</p>}
+      <div style={{ breakBefore: "page" }}>
+        <p className="text-[13pt] font-bold">Anlage – Dokumentation</p>
+        {appendixSections(appendix).map((s) => (
+          <div key={s.title} className="mt-4">
+            <p className="font-bold">{s.title}</p>
+            <p className="whitespace-pre-line text-[10pt]">{s.text}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

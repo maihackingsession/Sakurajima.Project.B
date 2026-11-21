@@ -1,0 +1,7 @@
+{
+  "id": "s05",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "Frost, kein Betonieren möglich, Decke UG verschiebt sich",
+  "error": "/api/route: API-Schlüssel ungültig."
+}

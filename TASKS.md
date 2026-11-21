@@ -106,3 +106,19 @@ KI-Vorbewertung: 10 brauchbar · 5 Nacharbeit · 0 falsch. Erfundene Fakten: 0 (
 5. Lange „missing“-Listen mit optionalen Punkten und unnötige Platzhalter („24.11.[Jahr bestätigen]“, Rückfrage-Floskel mit Telefonnummer).
 
 Code check: all AI routes already have `maxDuration = 60`; no timeouts, slowest step 11.5 s.
+
+### Phase 2 — Speed + demo safety: done
+- ANTHROPIC_FAST_MODEL (default claude-haiku-5-5) for router + gaps; letters/deviation/summary stay on ANTHROPIC_MODEL. Fast-model quick check: see below (run on the live URL, the local key in .env.local is invalid → 401).
+- Temperature 0: **not possible** – Sonnet 5.5 and Haiku 5.5 reject non-default sampling values (HTTP 400). Router/gaps use effort "low" instead; the hero flow from the Tagesbericht skips the router (type comes from the deviation card), so it is stable anyway.
+- Loading states with step text + small crane animation (static with reduced motion); buttons/fields disabled while loading.
+- Every failed call: German message + „Erneut versuchen“ (Status.tsx).
+- `?beispiel=1` → header `x-beispiel: 1` → server answers from data/mocks/ (even with key). Label „Beispielmodus (offline)“ in the header.
+
+### Phase 3 — Demo story v2: done (dates relative to today)
+- data/project.json: Ort „Garching“, Tragwerksplaner AG (Ingenieurbüro Kraus), Polier, kosten (58 €/h, 8 h/Tag).
+- data/plan.json: all dates as {T±n}; „Bodenplatte bewehren“ starts today, „Bodenplatte betonieren“ after it, Plananlieferung „Bewehrungspläne Bodenplatte (Tragwerksplanung AG)“ due today.
+- data/samples/tagesbericht-1-bewehrungsplaene.txt (today, hero) + tagesbericht-2-vortag.txt (yesterday, no deviation). Old dated reports moved to data/samples/archiv/ (not loaded). Protokoll/E-Mails/summary mock converted to relative dates and aligned with the story.
+- Deviation card: „Behinderungsanzeige empfohlen“, reason line, urgency computed in code from the event date („Unverzüglich anzeigen – heute“ / „Seit X Tagen – sofort anzeigen“), orange „Anzeige entwerfen“. Facts from the report go into the draft flow (router skipped) → hero has exactly 1 Rückfrage (Frist).
+- Letter date line: „Garching, <Datum des Tagesberichts>“, otherwise today.
+- Numbers everywhere: 6 geplant, 2 umgesetzt, 4 ohne produktive Arbeit, 1 Tag. Mocks follow the story; the typed deadline answer is inserted into the mock letter.
+- data/DEMO_SCRIPT.md.

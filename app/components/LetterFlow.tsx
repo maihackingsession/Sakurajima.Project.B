@@ -2,6 +2,7 @@
 
 import { useImperativeHandle, useRef, useState, type Ref } from "react";
 import situations from "@/tests/situations.json";
+import { formatDate, today } from "@/lib/dates";
 import {
   LETTER_LABELS,
   LETTER_TYPES,
@@ -10,65 +11,106 @@ import {
   type GapsResult,
   type Letter,
   type LetterType,
+  type Outcome,
   type RouterResult,
 } from "@/lib/types";
-import { errorText, postJson } from "../lib/api";
-import { btnPrimary, btnSecondary, card, field, label, linkBtn } from "../lib/ui";
-import DraftEditor, { NEW_APPROVAL, type Approval } from "./DraftEditor";
+import { errorText, isBeispiel, postJson } from "../lib/api";
+import { btnPrimary, btnSecondary, card, field, h1, h2, hint, label, linkBtn } from "../lib/ui";
+import Chip from "./Chip";
+import DraftEditor, { NEW_APPROVAL, type Approval, type FlowInfo } from "./DraftEditor";
 import MicButton from "./MicButton";
+import { ErrorBox, Loading } from "./Status";
+
+/** Where a draft came from: typed situation or a deviation found in a Tagesbericht. */
+export type DraftSource = { facts?: Record<string, unknown>; eventDate?: string; report?: string };
 
 /** Lets the deviation checker jump into the letter flow ("Anzeige entwerfen"). */
-export type LetterFlowHandle = { start: (text: string, letterType: LetterType | null) => void };
+export type LetterFlowHandle = { start: (text: string, letterType: LetterType, source: DraftSource) => void };
 
 type Props = {
   ref?: Ref<LetterFlowHandle>;
   onRedirect: (tab: "bericht" | "zusammenfassen", text: string) => void;
 };
 
-type Step = "input" | "questions" | "draft";
+type Step = "input" | "outcome" | "questions" | "draft";
+type Busy = "" | "analyse" | "gaps" | "letter";
+
+const BUSY_TEXT: Record<Exclude<Busy, "">, string> = {
+  analyse: "Situation wird analysiert …",
+  gaps: "Pflichtangaben werden geprüft …",
+  letter: "Schreiben wird erstellt …",
+};
 
 export default function LetterFlow({ ref, onRedirect }: Props) {
   const [step, setStep] = useState<Step>("input");
   const [input, setInput] = useState("");
+  const [chooseType, setChooseType] = useState(false);
   const [override, setOverride] = useState<LetterType | "">("");
   const [letterType, setLetterType] = useState<LetterType>("behinderung");
   const [facts, setFacts] = useState<Record<string, unknown>>({});
+  const [source, setSource] = useState<DraftSource>({});
   const [reason, setReason] = useState("");
+  const [outcome, setOutcome] = useState<Outcome>("anzeige");
   const [questions, setQuestions] = useState<GapQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState<Letter | null>(null);
-  // Every newly generated draft starts as "Entwurf".
   const [approval, setApproval] = useState<Approval>(NEW_APPROVAL);
   const [redirect, setRedirect] = useState<RouterResult["intent"] | null>(null);
-  const [busy, setBusy] = useState<"" | "analyse" | "letter">("");
+  const [busy, setBusy] = useState<Busy>("");
   const [error, setError] = useState("");
+  const [aiMs, setAiMs] = useState(0);
+  const [createdAt, setCreatedAt] = useState("");
+  const retry = useRef<(() => void) | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
   function scrollTop() {
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  /** Runs one step with loading text; on failure shows the error with "Erneut versuchen". */
+  async function run(kind: Exclude<Busy, "">, action: () => Promise<void>) {
+    retry.current = () => void run(kind, action);
+    setBusy(kind);
+    setError("");
+    try {
+      await action();
+    } catch (e) {
+      setError(errorText(e));
+    } finally {
+      setBusy("");
+    }
+  }
+
+  /** POST with timing, so the draft screen can show "Entwurf in X s erstellt". */
+  async function timed<T>(url: string, body: unknown) {
+    const t = performance.now();
+    const data = await postJson<T>(url, body);
+    setAiMs((ms) => ms + (performance.now() - t));
+    return data;
+  }
+
   async function checkGaps(type: LetterType, text: string, knownFacts: Record<string, unknown>) {
-    const gaps = await postJson<GapsResult>("/api/gaps", { letter_type: type, input: text, facts: knownFacts });
+    const gaps = await timed<GapsResult>("/api/gaps", { letter_type: type, input: text, facts: knownFacts });
     setQuestions(gaps.questions);
     setAnswers({});
     setStep("questions");
     scrollTop();
   }
 
-  async function analyse(text = input, forced: LetterType | "" = override) {
+  function analyse(text: string, forced: LetterType | "", from: DraftSource = {}) {
     if (!text.trim()) return;
-    setBusy("analyse");
-    setError("");
     setRedirect(null);
-    try {
+    setSource(from);
+    setAiMs(0);
+    void run("analyse", async () => {
       let type: LetterType;
-      let knownFacts: Record<string, unknown> = {};
+      let knownFacts: Record<string, unknown> = from.facts ?? {};
       if (forced) {
         type = forced;
-        setReason("Schreibenart manuell gewählt.");
+        setReason(from.facts ? "Aus dem Tagesbericht übernommen." : "Schreibenart selbst gewählt.");
+        setOutcome("anzeige");
       } else {
-        const r = await postJson<RouterResult>("/api/route", { input: text });
+        const r = await timed<RouterResult>("/api/route", { input: text });
         if (r.intent !== "letter") {
           setRedirect(r.intent);
           setReason(r.reason);
@@ -77,35 +119,29 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
         type = isLetterType(r.letter_type) ? r.letter_type : "behinderung";
         knownFacts = r.facts;
         setReason(r.reason);
+        setOutcome(r.outcome);
+        if (r.outcome !== "anzeige") {
+          setLetterType(type);
+          setFacts(knownFacts);
+          setStep("outcome");
+          scrollTop();
+          return;
+        }
       }
       setLetterType(type);
       setFacts(knownFacts);
       await checkGaps(type, text, knownFacts);
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy("");
-    }
+    });
   }
 
-  async function changeType(type: LetterType) {
+  function changeType(type: LetterType) {
     setLetterType(type);
-    setReason("Schreibenart manuell geändert.");
-    setBusy("analyse");
-    setError("");
-    try {
-      await checkGaps(type, input, facts);
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy("");
-    }
+    setReason("Schreibenart selbst geändert.");
+    void run("gaps", () => checkGaps(type, input, facts));
   }
 
-  async function createLetter(useAnswers: boolean) {
-    setBusy("letter");
-    setError("");
-    try {
+  function createLetter(useAnswers: boolean) {
+    void run("letter", async () => {
       const given: Record<string, string> = {};
       if (useAnswers) {
         for (const q of questions) {
@@ -113,21 +149,14 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
           if (a) given[q.field] = a;
         }
       }
-      const letter = await postJson<Letter>("/api/letter", {
-        letter_type: letterType,
-        input,
-        facts,
-        answers: given,
-      });
+      const letter = await timed<Letter>("/api/letter", { letter_type: letterType, input, facts, answers: given });
+      setAnswers(given);
+      setCreatedAt(new Date().toISOString());
       setDraft(letter);
       setApproval(NEW_APPROVAL);
       setStep("draft");
       scrollTop();
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy("");
-    }
+    });
   }
 
   function restart() {
@@ -137,6 +166,7 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
     setQuestions([]);
     setAnswers({});
     setRedirect(null);
+    setSource({});
     setError("");
     scrollTop();
   }
@@ -148,78 +178,176 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
   }
 
   useImperativeHandle(ref, () => ({
-    start(text, type) {
+    start(text, type, from) {
       setStep("input");
       setDraft(null);
       setInput(text);
-      setOverride(type ?? "");
-      void analyse(text, type ?? "");
+      setOverride("");
+      analyse(text, type, from);
     },
   }));
 
+  const busyView = busy && <Loading text={BUSY_TEXT[busy]} />;
+  const errorView = error && <ErrorBox message={error} onRetry={() => retry.current?.()} />;
+  const flow: FlowInfo = {
+    input,
+    answers,
+    report: source.report,
+    createdAt: createdAt || new Date(0).toISOString(),
+    aiSeconds: isBeispiel() ? null : Math.round(aiMs / 1000),
+  };
+
   return (
-    <div ref={topRef} className="flex scroll-mt-4 flex-col gap-4">
+    <div ref={topRef} className="flex scroll-mt-24 flex-col gap-6">
       {step === "input" && (
-        <section className="flex flex-col gap-3">
-          <label htmlFor="situation" className="text-lg font-bold">Was ist auf der Baustelle passiert?</label>
+        <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
+          <label htmlFor="situation" className={h1}>Was ist auf der Baustelle passiert?</label>
           <textarea
             id="situation"
-            className={`${field} min-h-44`}
-            placeholder="z. B. Bagger ausgefallen, Baustelle steht seit Dienstag …"
+            className={`${field} min-h-48 text-lg`}
+            placeholder="z. B. Bewehrungspläne für die Bodenplatte fehlen, Kolonne kann nicht anfangen …"
             value={input}
+            disabled={!!busy}
             onChange={(e) => setInput(e.target.value)}
           />
-          <MicButton onText={(t) => setInput((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t))} />
-          <button className={btnPrimary} onClick={() => analyse()} disabled={!!busy || !input.trim()}>
-            {busy === "analyse" ? "Wird analysiert …" : "Analysieren"}
-          </button>
+          <p className={hint}>Eingabe in jeder Sprache möglich – das Schreiben wird auf Deutsch erstellt.</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button className={btnPrimary} onClick={() => analyse(input, override)} disabled={!!busy || !input.trim()}>
+              Analysieren
+            </button>
+            <MicButton onText={(t) => setInput((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t))} />
+          </div>
+          <div className="flex flex-wrap items-center gap-x-6">
+            <button className={linkBtn} onClick={example} disabled={!!busy}>Beispiel einfügen</button>
+            <button className={linkBtn} onClick={() => setChooseType((v) => !v)} aria-expanded={chooseType}>
+              Schreibenart selbst wählen
+            </button>
+          </div>
+          {chooseType && (
+            <div>
+              <label htmlFor="override" className={label}>Schreibenart</label>
+              <select
+                id="override"
+                className={field}
+                value={override}
+                onChange={(e) => setOverride(e.target.value as LetterType | "")}
+              >
+                <option value="">Automatisch erkennen</option>
+                {LETTER_TYPES.map((t) => <option key={t} value={t}>{LETTER_LABELS[t]}</option>)}
+              </select>
+            </div>
+          )}
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <button className={linkBtn} onClick={example}>Beispiel einfügen</button>
-          </div>
-          <div>
-            <label htmlFor="override" className="mb-1 block text-sm text-neutral-700">
-              Schreibenart (optional, sonst automatisch erkannt)
-            </label>
-            <select
-              id="override"
-              className={`${field} py-2`}
-              value={override}
-              onChange={(e) => setOverride(e.target.value as LetterType | "")}
-            >
-              <option value="">Automatisch erkennen</option>
-              {LETTER_TYPES.map((t) => <option key={t} value={t}>{LETTER_LABELS[t]}</option>)}
-            </select>
-          </div>
+          {busyView}
+          {errorView}
 
           {redirect && (
-            <div className={`${card} border-blue-300 bg-blue-50`}>
-              <p className="font-semibold">
+            <div className={card}>
+              <p className={h2}>
                 {redirect === "deviation"
                   ? "Das sieht aus wie ein Tagesbericht."
                   : "Das sieht aus wie Protokoll, Tagebuch oder E-Mails."}
               </p>
-              {reason && <p className="mt-1 text-sm text-neutral-700">{reason}</p>}
-              <div className="mt-3 flex flex-col gap-2">
+              {reason && <p className="mt-1 text-[var(--muted)]">{reason}</p>}
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                 <button
-                  className={btnPrimary}
+                  className={btnSecondary}
                   onClick={() => onRedirect(redirect === "deviation" ? "bericht" : "zusammenfassen", input)}
                 >
-                  {redirect === "deviation" ? "Mit Bauzeitenplan abgleichen" : "Zusammenfassen"}
+                  {redirect === "deviation" ? "Tagesbericht prüfen" : "Zusammenfassen"}
                 </button>
-                <p className="text-sm text-neutral-700">
-                  Oder oben eine Schreibenart wählen und erneut „Analysieren“ tippen.
-                </p>
               </div>
+              <p className={`${hint} mt-2`}>Oder „Schreibenart selbst wählen“ und erneut „Analysieren“.</p>
             </div>
           )}
         </section>
       )}
 
-      {step === "questions" && (
-        <section className="flex flex-col gap-4">
+      {step === "outcome" && (
+        <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
+          <div className={`${card} bg-[var(--surface)]`}>
+            <div className="flex flex-wrap items-center gap-3">
+              <Chip kind={outcome === "keine_anzeige" ? "keine" : "pruefung"}>
+                {outcome === "keine_anzeige" ? "Keine Anzeige nötig" : "Bitte prüfen"}
+              </Chip>
+            </div>
+            <h2 className={`${h1} mt-3`}>
+              {outcome === "keine_anzeige"
+                ? "Keine Anzeige nötig"
+                : "Ursache möglicherweise im eigenen Bereich – bitte prüfen"}
+            </h2>
+            {reason && <p className="mt-2 text-lg text-[var(--navy)]">{reason}</p>}
+            <p className={`${hint} mt-3`}>Sie entscheiden. Wenn Sie trotzdem ein Schreiben brauchen, erstellen wir einen Entwurf.</p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <button className={btnSecondary} onClick={() => void run("gaps", () => checkGaps(letterType, input, facts))} disabled={!!busy}>
+                Trotzdem Entwurf erstellen
+              </button>
+              <button className={btnSecondary} onClick={() => setStep("input")} disabled={!!busy}>Eingabe ändern</button>
+            </div>
+          </div>
           <div className={card}>
-            <label htmlFor="type" className={label}>Erkannte Schreibenart</label>
+            <p className="text-sm font-semibold text-[var(--muted)]">Ihre Beschreibung</p>
+            <p className="mt-1 whitespace-pre-line">{input}</p>
+          </div>
+          {busyView}
+          {errorView}
+        </section>
+      )}
+
+      {step === "questions" && (
+        <section className="mx-auto flex w-full max-w-[760px] flex-col gap-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className={h1}>{LETTER_LABELS[letterType]}</h2>
+            <Chip kind={questions.length ? "angaben" : "freigegeben"}>
+              {questions.length ? "Angaben fehlen" : "Angaben vollständig"}
+            </Chip>
+          </div>
+          {reason && <p className="-mt-3 text-[var(--muted)]">{reason}</p>}
+
+          {questions.length > 0 ? (
+            <div className={`${card} flex flex-col gap-4`}>
+              <p className={h2}>
+                {questions.length === 1 ? "Eine Angabe fehlt noch:" : `${questions.length} Angaben fehlen noch:`}
+              </p>
+              {questions.map((q, i) => (
+                <div key={`${q.field}-${i}`}>
+                  <label htmlFor={`q${i}`} className="mb-2 block text-lg font-semibold text-[var(--navy)]">{q.question}</label>
+                  <input
+                    id={`q${i}`}
+                    className={`${field} text-lg`}
+                    placeholder={q.example ? `z. B. ${q.example}` : ""}
+                    value={answers[q.field] ?? ""}
+                    disabled={!!busy}
+                    autoFocus={i === 0}
+                    onChange={(e) => setAnswers((a) => ({ ...a, [q.field]: e.target.value }))}
+                    onKeyDown={(e) => e.key === "Enter" && !busy && createLetter(true)}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-xl border border-[var(--success-border)] bg-[var(--success-bg)] p-4 font-semibold text-[var(--success-text)]">
+              Alle Pflichtangaben sind vorhanden.
+            </p>
+          )}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button className={btnPrimary} onClick={() => createLetter(true)} disabled={!!busy}>
+              Schreiben erstellen
+            </button>
+            {questions.length > 0 && (
+              <button className={btnSecondary} onClick={() => createLetter(false)} disabled={!!busy}>
+                Ohne Antworten erstellen
+              </button>
+            )}
+          </div>
+          {busyView}
+          {errorView}
+
+          <details className={card}>
+            <summary className="cursor-pointer font-semibold text-[var(--navy)]">Beschreibung und Schreibenart</summary>
+            <p className="mt-3 whitespace-pre-line">{input}</p>
+            <label htmlFor="type" className={`${label} mt-4`}>Schreibenart</label>
             <select
               id="type"
               className={field}
@@ -229,63 +357,28 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
             >
               {LETTER_TYPES.map((t) => <option key={t} value={t}>{LETTER_LABELS[t]}</option>)}
             </select>
-            {reason && <p className="mt-2 text-sm text-neutral-600">{reason}</p>}
+          </details>
+          <div>
+            <button className={linkBtn} onClick={() => setStep("input")} disabled={!!busy}>Zurück zur Eingabe</button>
           </div>
-
-          <div className={card}>
-            <p className="text-sm font-semibold text-neutral-600">Ihre Beschreibung</p>
-            <p className="mt-1 whitespace-pre-line">{input}</p>
-          </div>
-
-          {questions.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-lg font-bold">Es fehlen noch Angaben:</h2>
-              {questions.map((q, i) => (
-                <div key={`${q.field}-${i}`}>
-                  <label htmlFor={`q${i}`} className={label}>{q.question}</label>
-                  <input
-                    id={`q${i}`}
-                    className={field}
-                    placeholder={q.example ? `z. B. ${q.example}` : ""}
-                    value={answers[q.field] ?? ""}
-                    onChange={(e) => setAnswers((a) => ({ ...a, [q.field]: e.target.value }))}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="rounded-xl border border-green-300 bg-green-50 p-4 font-semibold text-green-900">
-              Alle Pflichtangaben sind vorhanden.
-            </p>
-          )}
-
-          <button className={btnPrimary} onClick={() => createLetter(true)} disabled={!!busy}>
-            {busy === "letter" ? "Wird erstellt …" : "Schreiben erstellen"}
-          </button>
-          {questions.length > 0 && (
-            <button className={btnSecondary} onClick={() => createLetter(false)} disabled={!!busy}>
-              Trotzdem erstellen (ohne Antworten)
-            </button>
-          )}
-          <button className={btnSecondary} onClick={() => setStep("input")} disabled={!!busy}>
-            Zurück
-          </button>
         </section>
       )}
 
       {step === "draft" && draft && (
         <DraftEditor
-          title={LETTER_LABELS[letterType]}
+          letterType={letterType}
           draft={draft}
           onChange={setDraft}
           approval={approval}
           onApprovalChange={setApproval}
           onBack={() => setStep("questions")}
           onRestart={restart}
+          facts={facts}
+          eventDate={source.eventDate ?? ""}
+          letterDate={source.eventDate || formatDate(today())}
+          flow={flow}
         />
       )}
-
-      {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-red-800">{error}</p>}
     </div>
   );
 }

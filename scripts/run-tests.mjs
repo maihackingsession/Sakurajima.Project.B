@@ -8,7 +8,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const base = (process.argv[2] || process.env.BASE_URL || "http://localhost:3000").replace(/\/$/, "");
+// Options: --only=s01,s03 (subset), --out=tests/results/xyz (output folder)
+const args = process.argv.slice(2);
+const opt = (name) => args.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
+const base = (args.find((a) => !a.startsWith("--")) || process.env.BASE_URL || "http://localhost:3000").replace(/\/$/, "");
 const root = path.resolve(import.meta.dirname, "..");
 const outDir = opt("out") ? path.resolve(root, opt("out")) : path.join(root, "tests", "results");
 const only = opt("only")?.split(",");

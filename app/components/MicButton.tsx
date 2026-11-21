@@ -54,7 +54,7 @@ export default function MicButton({ onText }: { onText: (text: string) => void }
 
   if (supported === null) return null;
   if (!supported) {
-    return <p className="text-sm text-neutral-600">Tipp: Diktierfunktion der Tastatur nutzen 🎤</p>;
+    return null;
   }
 
   function start() {
@@ -105,21 +105,23 @@ export default function MicButton({ onText }: { onText: (text: string) => void }
         type="button"
         onClick={recording ? stop : start}
         aria-pressed={recording}
-        className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-lg font-semibold ${
+        className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-base font-semibold sm:w-auto ${
           recording
-            ? "animate-pulse bg-red-600 text-white"
-            : "border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-100"
+            ? "bg-[var(--error-text)] text-white"
+            : "border border-[var(--navy)] bg-white text-[var(--navy)] hover:bg-[var(--surface)]"
         }`}
       >
-        <span aria-hidden>{recording ? "⏹" : "🎤"}</span>
-        {recording ? "Aufnahme läuft – tippen zum Beenden" : "Diktieren"}
+        <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {recording ? <rect x="6" y="6" width="12" height="12" rx="2" /> : <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></>}
+        </svg>
+        {recording ? "Aufnahme beenden" : "Diktieren"}
       </button>
       {recording && (
-        <p className="rounded-lg bg-red-50 p-2 text-sm text-red-900" aria-live="polite">
+        <p className="rounded-lg bg-[var(--error-bg)] p-2 text-sm text-[var(--error-text)]" aria-live="polite">
           {interim || "Ich höre zu … bitte sprechen."}
         </p>
       )}
-      {error && <p role="alert" className="text-sm text-red-800">{error}</p>}
+      {error && <p role="alert" className="text-sm text-[var(--error-text)]">{error}</p>}
     </div>
   );
 }

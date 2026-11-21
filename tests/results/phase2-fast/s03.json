@@ -1,0 +1,7 @@
+{
+  "id": "s03",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "pläne für bewehrung bodenplatte immer noch nicht da, eigentlich sollten wir montag anfangen. schneider steht dann mit seinen leuten rum",
+  "error": "/api/route: API-Schlüssel ungültig."
+}

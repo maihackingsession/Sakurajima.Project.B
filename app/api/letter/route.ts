@@ -17,7 +17,18 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
       facts: body.facts ?? {},
       answers: body.answers ?? {},
     },
-    { mockVariant: body.letter_type, effort: "medium", mock: ctx.mock },
+    {
+      mockVariant: body.letter_type,
+      effort: "medium",
+      mock: ctx.mock,
+      // Beispielmodus: the typed deadline answer goes into the prepared letter.
+      mockTransform: (m) => {
+        const answers = (body.answers && typeof body.answers === "object" ? body.answers : {}) as Record<string, unknown>;
+        const frist = String(answers["Frist zur Abhilfe"] ?? Object.values(answers)[0] ?? "").trim();
+        const letter = m as Letter;
+        return { ...letter, body: letter.body.replace("{FRIST}", frist || "[Frist einsetzen]") };
+      },
+    },
   );
   const str = (v: unknown) => (typeof v === "string" ? v : "");
   return {

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  devIndicators: false,
   partialPrefetching: true,
   // API routes read prompts/*.xml and data/**/* at runtime; make sure they ship to Vercel.
   outputFileTracingIncludes: {

@@ -1,0 +1,7 @@
+{
+  "id": "s01",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "Bagger ausgefallen, Baustelle steht seit Dienstag",
+  "error": "/api/route: API-Schlüssel ungültig."
+}

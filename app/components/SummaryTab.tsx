@@ -4,7 +4,8 @@ import { useState } from "react";
 import type { SummaryResult } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, card, field, linkBtn } from "../lib/ui";
+import { btnPrimary, card, field, h1, h2, linkBtn } from "../lib/ui";
+import { ErrorBox, Loading } from "./Status";
 
 export default function SummaryTab({ initialText = "" }: { initialText?: string }) {
   const [text, setText] = useState(initialText);
@@ -37,33 +38,41 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
   }
 
   return (
-    <section className="flex flex-col gap-3">
-      <label htmlFor="docs" className="text-lg font-bold">Bautagebuch, Protokoll oder E-Mails</label>
+    <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
+      <label htmlFor="docs" className={h1}>Zusammenfassen</label>
+      <p className="-mt-2 text-[var(--muted)]">Bautagebuch, Protokoll oder E-Mails einfügen – Sie erhalten Fristen, Entscheidungen, offene Punkte und Risiken.</p>
+      {!text.trim() && !result && (
+        <div className={`${card} bg-[var(--surface)]`}>
+          <p>Noch kein Text eingefügt. Laden Sie ein Beispiel:</p>
+          <div className="flex flex-wrap gap-x-6">
+            <button className={linkBtn} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
+            <button className={linkBtn} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
+          </div>
+        </div>
+      )}
       <textarea
         id="docs"
-        className={`${field} min-h-56`}
+        className={`${field} ${result ? "min-h-28" : "min-h-56"}`}
         placeholder="Text hier einfügen – mehrere Einträge oder E-Mails sind möglich …"
         value={text}
+        disabled={busy}
         onChange={(e) => setText(e.target.value)}
       />
-      <div className="flex flex-wrap gap-x-4">
-        <button className={linkBtn} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
-        <button className={linkBtn} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
+      <div>
+        <button className={btnPrimary} onClick={summarise} disabled={busy || !text.trim()}>Zusammenfassen</button>
       </div>
-      <button className={btnPrimary} onClick={summarise} disabled={busy || !text.trim()}>
-        {busy ? "Wird zusammengefasst …" : "Zusammenfassen"}
-      </button>
-      {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-red-800">{error}</p>}
+      {busy && <Loading text="Text wird zusammengefasst …" />}
+      {error && <ErrorBox message={error} onRetry={summarise} />}
 
       {result && (
-        <div className="mt-2 flex flex-col gap-3">
+        <div className="mt-2 flex flex-col gap-4">
           {result.deadlines.length > 0 && (
-            <div className="rounded-xl border-2 border-red-400 bg-red-50 p-4">
-              <h3 className="text-lg font-bold text-red-900">Fristen und Termine</h3>
+            <div className={`${card} border-[var(--warning-border)]`}>
+              <h3 className={h2}>Fristen und Termine</h3>
               <ul className="mt-2 flex flex-col gap-2">
                 {result.deadlines.map((d, i) => (
                   <li key={i} className="flex flex-col sm:flex-row sm:gap-3">
-                    <span className="shrink-0 font-bold text-red-900">{d.date}</span>
+                    <span className="shrink-0 rounded-md bg-[var(--warning-bg)] px-2 font-bold text-[var(--warning-text)]">{d.date}</span>
                     <span>{d.what}</span>
                   </li>
                 ))}
@@ -72,13 +81,13 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
           )}
 
           <div className={card}>
-            <h3 className="text-lg font-bold">Zusammenfassung</h3>
+            <h3 className={h2}>Zusammenfassung</h3>
             <p className="mt-1">{result.summary}</p>
           </div>
 
           {result.decisions.length > 0 && (
             <div className={card}>
-              <h3 className="text-lg font-bold">Entscheidungen</h3>
+              <h3 className={h2}>Entscheidungen</h3>
               <ul className="mt-1 list-disc pl-5">
                 {result.decisions.map((d, i) => <li key={i}>{d}</li>)}
               </ul>
@@ -87,21 +96,21 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
 
           {result.open_items.length > 0 && (
             <div className={card}>
-              <h3 className="text-lg font-bold">Offene Punkte</h3>
+              <h3 className={h2}>Offene Punkte</h3>
               <table className="mt-2 w-full table-fixed text-left text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-300">
+                  <tr className="border-b border-[var(--border)] text-[var(--muted)]">
                     <th className="py-2 pr-2">Aufgabe</th>
                     <th className="w-[40%] py-2">Wer / bis wann</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.open_items.map((o, i) => (
-                    <tr key={i} className="border-b border-neutral-100 align-top">
+                    <tr key={i} className="border-b border-[var(--border)] align-top last:border-0">
                       <td className="break-words py-2 pr-2">{o.task}</td>
                       <td className="break-words py-2">
                         <span className="block">{o.owner || "offen"}</span>
-                        <span className={`block font-semibold ${o.due && o.due !== "offen" ? "text-red-800" : "text-neutral-500"}`}>
+                        <span className={`block font-semibold ${o.due && o.due !== "offen" ? "text-[var(--warning-text)]" : "text-[var(--muted)]"}`}>
                           {o.due || "offen"}
                         </span>
                       </td>
@@ -113,8 +122,8 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
           )}
 
           {result.risks.length > 0 && (
-            <div className="rounded-xl border border-amber-400 bg-amber-50 p-4">
-              <h3 className="text-lg font-bold text-amber-950">Risiken</h3>
+            <div className={card}>
+              <h3 className={h2}>Risiken</h3>
               <ul className="mt-1 list-disc pl-5">
                 {result.risks.map((r, i) => <li key={i}>{r}</li>)}
               </ul>

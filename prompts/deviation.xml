@@ -41,6 +41,9 @@ Formal German business letter style. Mark the draft as a draft for review.
 - "actual": was laut Bericht tatsächlich passiert ist.
 - "severity": "hoch" bei Stillstand/Gefahr für Folgetermine, "mittel" bei Verzögerung mit Puffer, "niedrig" bei Kleinigkeiten.
 - "explanation": ein bis zwei Sätze, warum das relevant ist und was zu tun ist.
+- "reason": eine Zeile, warum dieses Schreiben (z. B. "Ursache im Bereich des Auftraggebers: fehlende Ausführungspläne"). Bei null-Abweichungen kurz die Einordnung.
+- "event_date": Datum, an dem die Abweichung begonnen hat (TT.MM.JJJJ), meist das Datum des Berichts. Leer, wenn unklar.
+- "facts": nur bei Abweichungen mit "suggested_letter": alle Fakten aus dem Bericht, die das Schreiben braucht, damit der Bauleiter möglichst wenig nachtragen muss. Schlüssel: "datum_beginn", "ursache", "verantwortungsbereich", "betroffene_leistung", "auswirkung", "nachfrage" (wer hat wann wo nachgefragt), "massnahmen" (Schadensminderung, z. B. Leute umgesetzt), "arbeitskraefte_geplant", "arbeitskraefte_umgesetzt", "arbeitskraefte_ohne_produktive_arbeit", "tage_bisher" (Zahlen als Zahl), "quelle" (z. B. "Bautagesbericht Nr. 16 vom TT.MM.JJJJ"). Nur was im Bericht steht; fehlende Schlüssel weglassen.
 - Wenn keine Abweichung vorliegt: leere Liste und das in "summary" sagen.
 - Antworte ausschließlich mit dem JSON-Objekt, ohne Markdown, ohne Erklärungen.
 </rules>
@@ -50,7 +53,7 @@ Bericht: "Kein Betonieren der Bodenplatte möglich, Bewehrungspläne vom Tragwer
 Ausgabe (gekürzt):
 {
   "deviations": [
-    { "activity": "Bodenplatte", "planned": "Bodenplatte 23.11.–04.12.2026 (Rohbau Schneider)", "actual": "Bewehrung nicht begonnen, Bewehrungspläne fehlen", "severity": "hoch", "suggested_letter": "behinderung", "explanation": "Fehlende Ausführungspläne liegen im Verantwortungsbereich des AG; Behinderung unverzüglich anzeigen." }
+    { "activity": "Bodenplatte bewehren", "planned": "Beginn laut Plan, Bewehrungspläne vom Tragwerksplaner des AG fällig", "actual": "Bewehrung nicht begonnen, Bewehrungspläne fehlen", "severity": "hoch", "suggested_letter": "behinderung", "reason": "Ursache im Bereich des Auftraggebers: fehlende Ausführungspläne", "explanation": "Fehlende Ausführungspläne liegen im Verantwortungsbereich des AG; Behinderung unverzüglich anzeigen.", "event_date": "(Datum des Berichts)", "facts": { "ursache": "Bewehrungspläne vom Tragwerksplaner des AG fehlen", "betroffene_leistung": "Bodenplatte bewehren" } }
   ],
   "summary": "Eine kritische Abweichung: Bodenplatte wegen fehlender Pläne blockiert."
 }
@@ -62,7 +65,7 @@ Ausgabe (gekürzt):
 JSON mit genau diesen Schlüsseln:
 {
   "deviations": [
-    { "activity": string, "planned": string, "actual": string, "severity": "niedrig" | "mittel" | "hoch", "suggested_letter": "behinderung" | "mehrkosten" | "bedenken" | "maengel" | null, "explanation": string }
+    { "activity": string, "planned": string, "actual": string, "severity": "niedrig" | "mittel" | "hoch", "suggested_letter": "behinderung" | "mehrkosten" | "bedenken" | "maengel" | null, "reason": string, "explanation": string, "event_date": string, "facts": object }
   ],
   "summary": string
 }

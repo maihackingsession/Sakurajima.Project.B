@@ -1,23 +1,64 @@
 @import "tailwindcss";
 
 /* Light theme only: the app is used outdoors on phones/iPads, high contrast matters. */
+/* Design tokens (Baufrist). One accent (orange) only for the primary action per screen. */
 :root {
-  --background: #fafafa;
-  --foreground: #171717;
+  --background: #ffffff;
+  --foreground: #1f2a44;
+  --surface: #f6f7f9;
+  --border: #e3e6eb;
+  --navy: #1f2a44;
+  --muted: #5b6475;
+  --accent: #e8710a;
+  --accent-hover: #c95f05;
+  --accent-text: #ffffff;
+  --success-bg: #ecf6ef;
+  --success-border: #a9d5b5;
+  --success-text: #1d5a32;
+  --warning-bg: #fff6e0;
+  --warning-border: #f0c96a;
+  --warning-text: #6b4a00;
+  --error-bg: #fdeeee;
+  --error-border: #efb1b1;
+  --error-text: #8a1f1f;
+  --info-bg: #eef2f8;
   color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+/* Visible keyboard focus everywhere. */
+:focus-visible {
+  outline: 3px solid #2f6fd6;
+  outline-offset: 2px;
+}
+
+/* Loading crane: the hook lowers and lifts the block. Static when motion is reduced. */
+.crane-hook, .crane-block { animation: crane-lift 1.8s ease-in-out infinite; }
+.crane-hook { transform-origin: 38px 8px; }
+@keyframes crane-lift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(12px); }
+}
+.crane-hook { animation-name: crane-rope; }
+@keyframes crane-rope {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.85); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .crane-hook, .crane-block { animation: none; }
 }
 
 /* Print view for PDF export: only the letter sheet is printed. */

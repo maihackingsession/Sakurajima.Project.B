@@ -21,6 +21,9 @@ export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {
       severity: SEVERITIES.includes(d?.severity) ? d.severity : "mittel",
       suggested_letter: isLetterType(d?.suggested_letter) ? d.suggested_letter : null,
       explanation: String(d?.explanation ?? ""),
+      reason: String(d?.reason ?? ""),
+      event_date: String(d?.event_date ?? ""),
+      facts: d?.facts && typeof d.facts === "object" ? d.facts : {},
     })),
   } satisfies DeviationResult;
 });
