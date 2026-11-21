@@ -1,0 +1,43 @@
+{
+  "id": "s20",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "Nie ma planów zbrojenia płyty fundamentowej od projektanta konstrukcji inwestora. Miały być dzisiaj. 4 z 6 ludzi nie ma co robić, 2 przeniesieni do innej pracy.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Bewehrungspläne Bodenplatte vom Tragwerksplaner des Auftraggebers fehlen",
+      "datum_feststellung": "heute",
+      "frist": "Pläne sollten heute kommen",
+      "betroffene_leistung": "Bewehrung Bodenplatte",
+      "verantwortungsbereich": "Auftraggeber (Tragwerksplaner des Auftraggebers)",
+      "arbeitskraefte_geplant": 6,
+      "arbeitskraefte_ohne_produktive_arbeit": 4,
+      "massnahmen": "2 Arbeitskräfte in andere Arbeit umgesetzt"
+    },
+    "reason": "Fehlende Bewehrungspläne des Tragwerksplaners des Auftraggebers verhindern den Beginn der Bewehrungsarbeiten an der Bodenplatte – das ist eine Behinderung."
+  },
+  "ms": {
+    "router": 4888,
+    "gaps": 2534,
+    "letter": 6295
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Fehlende Bewehrungspläne Bodenplatte\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.\n\nUrsache sind die fehlenden Bewehrungspläne für die Bodenplatte. Die Pläne erstellt Ihr Tragwerksplaner, das Ingenieurbüro Kraus; sie waren für den 21.11.2026 zugesagt und liegen uns nicht vor. Die Bereitstellung der Ausführungspläne liegt im Verantwortungsbereich des Auftraggebers.\n\nDie Behinderung besteht seit dem 21.11.2026.\n\nOhne die Pläne können wir mit der Bewehrung der Bodenplatte nicht beginnen. Die nachfolgenden Arbeiten und Termine verschieben sich entsprechend, das Ausmaß der Verschiebung hängt vom Zeitpunkt der Planlieferung ab.\n\nWir bitten Sie, uns die freigegebenen Bewehrungspläne bis spätestens [Frist zur Abhilfe einsetzen] zu übergeben.\n\nDie Verlängerung der Ausführungsfristen gem. § 6 Abs. 2 VOB/B sowie den Ersatz der uns entstehenden Mehrkosten gem. § 6 Abs. 6 VOB/B behalten wir uns vor. Die Kosten werden wir gesondert beziffern.\n\nUm den Schaden gering zu halten, haben wir 2 der 6 eingeplanten Arbeitskräfte auf andere Arbeiten umgesetzt; 4 Arbeitskräfte können derzeit nicht produktiv eingesetzt werden.\n\nDas Ende der Behinderung werden wir Ihnen gesondert anzeigen.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 6 Abs. 1 VOB/B (Behinderungsanzeige), § 6 Abs. 2 VOB/B (Fristverlängerung), § 6 Abs. 6 VOB/B (Mehrkosten) – bitte prüfen",
+    "deadline_hint": "Heute noch (21.11.2026) per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Die Behinderungsanzeige sollte unverzüglich erfolgen. Frist zur Abhilfe vorher festlegen.",
+    "missing": [
+      "Frist zur Abhilfe (bis wann die Bewehrungspläne vorliegen müssen)"
+    ]
+  }
+}

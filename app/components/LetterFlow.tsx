@@ -266,12 +266,8 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
       {step === "outcome" && (
         <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
           <div className={`${card} bg-[var(--surface)]`}>
-            <div className="flex flex-wrap items-center gap-3">
-              <Chip kind={outcome === "keine_anzeige" ? "keine" : "pruefung"}>
-                {outcome === "keine_anzeige" ? "Keine Anzeige nötig" : "Bitte prüfen"}
-              </Chip>
-            </div>
-            <h2 className={`${h1} mt-3`}>
+            {outcome !== "keine_anzeige" && <Chip kind="pruefung" />}
+            <h2 className={`${h1} ${outcome !== "keine_anzeige" ? "mt-3" : ""}`}>
               {outcome === "keine_anzeige"
                 ? "Keine Anzeige nötig"
                 : "Ursache möglicherweise im eigenen Bereich – bitte prüfen"}

@@ -144,6 +144,7 @@ function NoticeCard({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
       </div>
       <h3 className="mt-3 text-2xl font-semibold text-[var(--navy)]">{d.activity}</h3>
       {d.reason && <p className="mt-1 text-lg font-semibold text-[var(--navy)]">{d.reason}</p>}
+      <button className={`${btnPrimary} mt-4 sm:hidden`} onClick={onDraft}>Anzeige entwerfen</button>
       <dl className="mt-3 grid gap-1 text-[15px] sm:grid-cols-[110px_1fr]">
         <dt className="font-semibold text-[var(--muted)]">Geplant</dt>
         <dd>{d.planned}</dd>
@@ -151,7 +152,7 @@ function NoticeCard({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
         <dd>{d.actual}</dd>
       </dl>
       {d.explanation && <p className={`${hint} mt-2`}>{d.explanation}</p>}
-      <button className={`${btnPrimary} mt-4`} onClick={onDraft}>Anzeige entwerfen</button>
+      <button className={`${btnPrimary} mt-4 hidden sm:inline-flex`} onClick={onDraft}>Anzeige entwerfen</button>
     </article>
   );
 }

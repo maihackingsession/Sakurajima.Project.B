@@ -1,0 +1,40 @@
+{
+  "id": "s12",
+  "expected": "bedenken",
+  "messy": false,
+  "input": "Der Tragwerksplaner hat für die Kellerwände Bewehrungsstahl mit zu geringer Betondeckung (2 cm) vorgegeben. Nach unserer Einschätzung ist das für erdberührte Bauteile zu wenig und führt zu Korrosionsschäden. Betroffen sind die Kellerwände UG, Beginn geplant am 07.12.2026.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "bedenken",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Vom Tragwerksplaner vorgegebene Betondeckung der Bewehrung für Kellerwände mit 2 cm zu gering",
+      "verantwortungsbereich": "Tragwerksplanung (Ingenieurbüro Kraus, beauftragt vom Auftraggeber)",
+      "betroffene_leistung": "Kellerwände UG",
+      "datum_beginn": "07.12.2026",
+      "auswirkung": "Erdberührte Bauteile mit zu geringer Betondeckung, Gefahr von Korrosionsschäden"
+    },
+    "reason": "Die vorgegebene Betondeckung von 2 cm ist nach Ihrer Einschätzung für erdberührte Kellerwände zu gering und birgt das Risiko von Korrosionsschäden – das rechtfertigt eine Bedenkenanzeige an den Auftraggeber."
+  },
+  "ms": {
+    "router": 1913,
+    "gaps": 1373,
+    "letter": 5497
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Bedenkenanzeige gem. § 4 Abs. 3 VOB/B – Betondeckung der Bewehrung, Kellerwände UG\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgesehene Betondeckung der Bewehrung der Kellerwände im Untergeschoss mit.\n\nDie Planung Ihres Tragwerksplaners, des Ingenieurbüros Kraus, gibt für die Bewehrung der Kellerwände UG eine Betondeckung von 2 cm vor. Für erdberührte Bauteile halten wir diese Betondeckung nicht für ausreichend.\n\nBei Ausführung nach der vorliegenden Planung droht eine Korrosion der Bewehrung. Dies kann die Dauerhaftigkeit der erdberührten Kellerwände beeinträchtigen.\n\nDie Ausführung der Kellerwände UG ist ab dem 07.12.2026 geplant. Wir bitten Sie, die Planung prüfen zu lassen und uns bis zum [Frist für Ihre Entscheidung einsetzen] schriftlich mitzuteilen, wie ausgeführt werden soll. Vorsorglich weisen wir auf § 13 Abs. 3 VOB/B hin.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 4 Abs. 3 VOB/B (Bedenkenanzeige), Hinweis auf § 13 Abs. 3 VOB/B (Haftungsfreistellung) – bitte prüfen",
+    "deadline_hint": "Möglichst heute noch per E-Mail und Einschreiben an den Auftraggeber senden, Zugang dokumentieren. Die Frist für die Entscheidung muss vor dem geplanten Beginn am 07.12.2026 liegen, damit Zeit für die Planprüfung bleibt. Eine Kopie an das Ingenieurbüro Kraus ist zu erwägen.",
+    "missing": [
+      "Frist für die Entscheidung des Auftraggebers"
+    ]
+  }
+}

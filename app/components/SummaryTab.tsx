@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { SummaryResult } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, card, field, h1, h2, linkBtn } from "../lib/ui";
+import { btnPrimary, btnSecondary, card, field, h1, h2, linkBtn } from "../lib/ui";
 import { ErrorBox, Loading } from "./Status";
 
 export default function SummaryTab({ initialText = "" }: { initialText?: string }) {
@@ -59,7 +59,7 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
         onChange={(e) => setText(e.target.value)}
       />
       <div>
-        <button className={btnPrimary} onClick={summarise} disabled={busy || !text.trim()}>Zusammenfassen</button>
+        <button className={result ? btnSecondary : btnPrimary} onClick={summarise} disabled={busy || !text.trim()}>Zusammenfassen</button>
       </div>
       {busy && <Loading text="Text wird zusammengefasst …" />}
       {error && <ErrorBox message={error} onRetry={summarise} />}

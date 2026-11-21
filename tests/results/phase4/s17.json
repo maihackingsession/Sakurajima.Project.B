@@ -1,0 +1,21 @@
+{
+  "id": "s17",
+  "expected": "keine_anzeige",
+  "messy": false,
+  "input": "Am 20.11.2026 hat es zwei Stunden stark geregnet. Wir haben in der Zeit die Schalung im Keller vorbereitet. Der Terminplan ist nicht betroffen, der Puffer reicht.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "keine_anzeige",
+    "facts": {
+      "ursache": "Starker Regen",
+      "datum_beginn": "20.11.2026",
+      "auswirkung": "Terminplan nicht betroffen, Puffer reicht",
+      "massnahmen": "Schalung im Keller vorbereitet"
+    },
+    "reason": "Der zweistündige Starkregen hatte laut Eingabe keine Auswirkung auf Termine, da die Schalung im Keller vorbereitet wurde und der Puffer ausreicht."
+  },
+  "ms": {
+    "router": 3333
+  }
+}

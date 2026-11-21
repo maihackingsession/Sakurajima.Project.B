@@ -35,8 +35,8 @@ export function checklist(letter: Letter, facts: Record<string, unknown>, eventD
     { label: "Datum des Ereignisses", ok: !!date, note: date || undefined },
     { label: "Ursache", ok: has(facts, "ursache", "mangel", "bedenken", "anordnung") || filled(/ursache|grund|weil|wegen/i) },
     { label: "Betroffene Leistung", ok: has(facts, "betroffene_leistung") || filled(/betroffen/i) },
-    { label: "Auswirkung auf Termine/Kosten", ok: filled(/termin|verzug|verz[öo]ger|verschieb|gef[äa]hrdet|mehrkosten/i) },
-    { label: "Frist zur Abhilfe gesetzt", ok: /bis (?:spätestens |zum )+(?!\[)[^\s,.]/i.test(body) },
+    { label: "Auswirkung Termine/Kosten", ok: filled(/termin|verzug|verz[öo]ger|verschieb|gef[äa]hrdet|mehrkosten/i) },
+    { label: "Frist zur Abhilfe", ok: /bis (?:spätestens |zum )+(?!\[)[^\s,.]/i.test(body) },
     { label: "Vorbehalt Bauzeit/Kosten", ok: /vorbehalt|behalten (?:wir )?uns[^.]*vor/i.test(body) },
     { label: "Nachweise", ok: hasReport || has(facts, "quelle", "nachfrage") || /tagesbericht|protokoll|foto|anlage|telefonisch|schreiben vom/i.test(body), note: hasReport ? "Tagesbericht" : undefined },
     {

@@ -1,0 +1,46 @@
+{
+  "id": "s09",
+  "expected": "mehrkosten",
+  "messy": true,
+  "input": "zusätzlich noch leerrohre für ladesäulen in der bodenplatte, hat der elektroplaner vom bauherrn gestern so gesagt",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Zusätzliche Leerrohre für Ladesäulen in der Bodenplatte",
+      "datum_anordnung": "gestern",
+      "angeordnet_durch": "Elektroplaner des Bauherrn",
+      "betroffene_leistung": "Leerrohre für Ladesäulen in der Bodenplatte"
+    },
+    "reason": "Der Elektroplaner des Bauherrn hat zusätzliche Leerrohre angeordnet, die nicht im Vertrag enthalten sind – das ist eine Mehrkostenanzeige an den Auftraggeber."
+  },
+  "ms": {
+    "router": 2473,
+    "gaps": 2035,
+    "letter": 5601
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Beginn der Ausführung",
+        "question": "Wann sollen die Leerrohre in der Bodenplatte verlegt werden bzw. wann hat die Ausführung begonnen?",
+        "example": "24.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mehrkostenanzeige gem. § 2 Abs. 6 VOB/B – Zusätzliche Leerrohre für Ladesäulen in der Bodenplatte\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "am 20.11.2026 hat der Elektroplaner des Bauherrn [Name des Elektroplaners einsetzen] angeordnet, in der Bodenplatte zusätzlich Leerrohre für Ladesäulen herzustellen.\n\nDiese Leistung ist im Vertrag nicht vorgesehen. Gem. § 2 Abs. 6 VOB/B kündigen wir Ihnen hiermit vor Beginn der Ausführung unseren Anspruch auf besondere Vergütung an.\n\nDie Ausführung ist ab dem [Datum des Ausführungsbeginns einsetzen] geplant. Die Mehrkosten beziffern wir mit einem gesonderten Nachtragsangebot.\n\nWir bitten Sie, die Anordnung schriftlich zu bestätigen.",
+    "closing": "Mit freundlichen Grüßen\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 2 Abs. 5 / Abs. 6 VOB/B (Ankündigung des Vergütungsanspruchs vor Ausführung bei zusätzlicher/geänderten Leistung) – bitte prüfen",
+    "deadline_hint": "Vor Beginn der Ausführung der Leerrohre, am besten heute noch per E-Mail und Einschreiben an den Auftraggeber – Zugang dokumentieren. Mit den Arbeiten an den Leerrohren erst nach Zugang bzw. Bestätigung beginnen. Das Datum der Anordnung (\"gestern\") wurde als 20.11.2026 umgerechnet – bitte prüfen.",
+    "missing": [
+      "Name des Elektroplaners des Bauherrn",
+      "Beginn der Ausführung"
+    ]
+  }
+}

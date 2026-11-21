@@ -1,0 +1,23 @@
+{
+  "id": "s16",
+  "expected": "keine_anzeige",
+  "messy": true,
+  "input": "Betonpumpe heute früh 45 min ausgefallen, Ersatzschlauch kam schnell, Decke trotzdem wie geplant fertig betoniert. Kein Verzug.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "keine_anzeige",
+    "facts": {
+      "ursache": "Betonpumpe ausgefallen",
+      "datum_beginn": "heute früh",
+      "dauer": "45 min",
+      "massnahmen": "Ersatzschlauch kam schnell",
+      "betroffene_leistung": "Decke betoniert",
+      "auswirkung": "keine, Decke wie geplant fertig betoniert, kein Verzug"
+    },
+    "reason": "Die kurze Pumpenstörung von 45 Minuten hatte laut Eingabe keine Auswirkung auf Termine oder Kosten, da die Decke planmäßig fertig betoniert wurde."
+  },
+  "ms": {
+    "router": 2730
+  }
+}

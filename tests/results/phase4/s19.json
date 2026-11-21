@@ -1,0 +1,22 @@
+{
+  "id": "s19",
+  "expected": "eigener_bereich",
+  "messy": false,
+  "input": "Drei unserer eigenen Eisenflechter sind seit dem 19.11.2026 krank. Die Bewehrung der Kellerwände verzögert sich dadurch um voraussichtlich 3 Arbeitstage.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "eigener_bereich",
+    "facts": {
+      "ursache": "Drei eigene Eisenflechter krank",
+      "datum_beginn": "seit dem 19.11.2026",
+      "betroffene_leistung": "Bewehrung der Kellerwände",
+      "auswirkung": "Verzögerung um voraussichtlich 3 Arbeitstage",
+      "verantwortungsbereich": "eigener Bereich des Auftragnehmers"
+    },
+    "reason": "Die Erkrankung eigener Mitarbeiter liegt im eigenen Verantwortungsbereich des Auftragnehmers, daher ist eine Behinderungsanzeige an den Auftraggeber voraussichtlich unbegründet."
+  },
+  "ms": {
+    "router": 2962
+  }
+}

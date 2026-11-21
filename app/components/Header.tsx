@@ -10,9 +10,9 @@ export function Logo({ size = 36 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden className="shrink-0">
       <rect width="40" height="40" rx="9" fill="#1f2a44" />
-      <path d="M11 31V10h19M11 10l6 6M11 15h4M24 10v8" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <rect x="20.5" y="18" width="7" height="5.5" rx="1" fill="#e8710a" />
-      <path d="M7 31h12" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M15 32V12M6 12h27M15 12V6M15 6l17 6M15 6l-8 6M27 12v5M10 32h10" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <rect x="6.5" y="12.5" width="4.5" height="3.5" rx="0.8" fill="#fff" />
+      <rect x="23.5" y="17" width="7" height="5.5" rx="1" fill="#e8710a" />
     </svg>
   );
 }

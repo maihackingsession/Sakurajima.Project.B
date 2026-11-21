@@ -1,0 +1,40 @@
+{
+  "id": "s13",
+  "expected": "maengel",
+  "messy": false,
+  "input": "Bei der Begehung am 18.11.2026 haben wir festgestellt, dass Erdbau Huber am Verbau Nordseite Achse C–D die Holzbohlen auf ca. 6 m nicht hinterfüllt hat. Boden ist ausgewaschen. Bitte Frist zur Beseitigung bis 27.11.2026 setzen.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "maengel",
+    "outcome": "anzeige",
+    "facts": {
+      "datum_feststellung": "18.11.2026 (Begehung)",
+      "nachunternehmer": "Erdbau Huber GmbH & Co. KG",
+      "verantwortungsbereich": "Erdbau Huber GmbH & Co. KG",
+      "betroffene_leistung": "Verbau Nordseite Achse C–D",
+      "ort": "Verbau Nordseite Achse C–D",
+      "mangel": "Holzbohlen auf ca. 6 m nicht hinterfüllt; Boden ist ausgewaschen",
+      "frist": "Beseitigung bis 27.11.2026"
+    },
+    "reason": "Der Nachunternehmer Erdbau Huber hat den Verbau mangelhaft ausgeführt, daher ist eine Mängelanzeige mit Fristsetzung bis 27.11.2026 erforderlich."
+  },
+  "ms": {
+    "router": 3354,
+    "gaps": 956,
+    "letter": 3833
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Mängelanzeige mit Aufforderung zur Mängelbeseitigung – Verbau Nordseite, Achse C–D\nNeubau Bürogebäude Forschungscampus Garching, Vertrag NU-0417-01",
+    "recipient": "Erdbau Huber GmbH & Co. KG\nz. Hd. Herr Josef Huber\nKiesweg 3\n85386 Eching",
+    "salutation": "Sehr geehrter Herr Huber,",
+    "body": "bei der Begehung am 18.11.2026 haben wir an Ihrer Leistung aus dem Nachunternehmervertrag NU-0417-01 folgenden Mangel festgestellt: Am Verbau Nordseite, Achse C–D, sind die Holzbohlen auf ca. 6 m nicht hinterfüllt; der Boden ist ausgewaschen.\n\nWir fordern Sie auf, den Mangel bis zum 27.11.2026 fachgerecht zu beseitigen und uns die Beseitigung schriftlich anzuzeigen.\n\nNach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen. Weitere Rechte behalten wir uns vor.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "",
+    "deadline_hint": "Heute (21.11.2026) noch per E-Mail und Einschreiben an Erdbau Huber senden und den Zugang dokumentieren. Die gesetzte Frist läuft bis 27.11.2026. Danach Nachkontrolle und Fotodokumentation einplanen.",
+    "missing": []
+  }
+}

@@ -166,8 +166,9 @@ export default function DraftEditor(props: Props) {
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_460px]">
         {/* Left: the letter as a sheet of paper, with the status strip as its top edge. */}
         <div className="flex min-w-0 flex-col gap-3">
-          <div className="-mt-2 flex items-center justify-between gap-3">
+          <div className="-mt-2 flex flex-wrap items-center justify-between gap-x-3">
             <h2 className="text-xl font-semibold text-[var(--navy)]">{title}</h2>
+            <a href="#freigabe" className={`${linkBtn} lg:hidden`}>Zur Freigabe ↓</a>
             <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
               {editing ? "Fertig" : "Text bearbeiten"}
             </button>
@@ -249,7 +250,7 @@ export default function DraftEditor(props: Props) {
         </div>
 
         {/* Right: status, Prüfliste, cost, export. */}
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-4">
+        <aside id="freigabe" className="flex scroll-mt-4 flex-col gap-4 lg:sticky lg:top-4">
           <div className={`${card} py-4`}>
             <div className="flex flex-wrap items-center gap-3">
               <p className={h2}>Status</p>

@@ -1,0 +1,48 @@
+{
+  "id": "s11",
+  "expected": "bedenken",
+  "messy": true,
+  "input": "Der vorgeschriebene Beton C25/30 passt nicht zur Expositionsklasse für die Tiefgarage, Planer sagt aber so lassen",
+  "router": {
+    "intent": "letter",
+    "letter_type": "bedenken",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Vorgeschriebener Beton C25/30 passt nicht zur Expositionsklasse der Tiefgarage",
+      "verantwortungsbereich": "Planung (Auftraggeber bzw. Planer)",
+      "betroffene_leistung": "Betonierarbeiten Tiefgarage",
+      "massnahmen": "Planer hat angeordnet, den Beton so zu belassen"
+    },
+    "reason": "Der vorgeschriebene Beton entspricht nicht der Expositionsklasse der Tiefgarage und der Planer hält an der Ausführung fest – das ist ein Bedenken, das schriftlich angezeigt werden sollte."
+  },
+  "ms": {
+    "router": 1631,
+    "gaps": 3600,
+    "letter": 6110
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "mögliche Folgen",
+        "question": "Welche Folgen kann das haben, wenn der Beton so bleibt, z. B. für Haltbarkeit oder Bewehrung?",
+        "example": "Bewehrungskorrosion und frühzeitige Schäden an der Tiefgaragendecke"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Bedenkenanzeige gem. § 4 Abs. 3 VOB/B – Betongüte C25/30 für die Tiefgarage\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgeschriebene Betongüte C25/30 für die Betonierarbeiten der Tiefgarage mit.\n\nDer in der Planung vorgeschriebene Beton C25/30 entspricht nach unserer Einschätzung nicht der Expositionsklasse, die für die Tiefgarage maßgebend ist. Auf unsere Hinweise hat der Planer angeordnet, den Beton unverändert zu belassen. [Plan- bzw. Positionsnummer der Vorgabe einsetzen] [Zugrunde gelegte Expositionsklasse einsetzen]\n\nBei Ausführung mit der vorgeschriebenen Betongüte besteht [mögliche Folgen einsetzen, z. B. Beeinträchtigung der Dauerhaftigkeit des Bauteils].\n\nWir bitten Sie, die Vorgabe prüfen zu lassen und uns bis zum [Frist für Ihre Entscheidung einsetzen] schriftlich mitzuteilen, wie ausgeführt werden soll. Vorsorglich weisen wir auf § 13 Abs. 3 VOB/B hin.",
+    "closing": "Mit freundlichen Grüßen\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 4 Abs. 3 VOB/B (Bedenkenanzeige), § 13 Abs. 3 VOB/B (Haftungsfreistellung) – bitte prüfen",
+    "deadline_hint": "Vor Beginn der Betonierarbeiten Tiefgarage per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Anordnung des Planers, den Beton zu belassen, nach Möglichkeit schriftlich bestätigen lassen und beilegen.",
+    "missing": [
+      "Plan- bzw. Positionsnummer der Vorgabe",
+      "Zugrunde gelegte Expositionsklasse",
+      "Mögliche Folgen",
+      "Frist für die Entscheidung des Auftraggebers"
+    ]
+  }
+}

@@ -47,10 +47,10 @@ body {
 
 /* Loading crane: the hook lowers and lifts the block. Static when motion is reduced. */
 .crane-hook, .crane-block { animation: crane-lift 1.8s ease-in-out infinite; }
-.crane-hook { transform-origin: 38px 8px; }
+.crane-hook { transform-origin: 42px 16px; }
 @keyframes crane-lift {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(12px); }
+  50% { transform: translateY(8px); }
 }
 .crane-hook { animation-name: crane-rope; }
 @keyframes crane-rope {

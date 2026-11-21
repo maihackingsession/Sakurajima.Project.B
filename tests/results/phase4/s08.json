@@ -1,0 +1,39 @@
+{
+  "id": "s08",
+  "expected": "mehrkosten",
+  "messy": false,
+  "input": "Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "outcome": "anzeige",
+    "facts": {
+      "datum_anordnung": "16.11.2026",
+      "angeordnet_durch": "Frau Dr. Andrea Lindner, Bauherrin",
+      "ursache": "Geänderte Tiefgaragenplanung",
+      "betroffene_leistung": "Aushub BA 1 und BA 2 sowie Verbau",
+      "auswirkung": "Baugrube 40 cm tiefer auszuheben",
+      "datum_beginn": "ab 23.11.2026"
+    },
+    "reason": "Der Auftraggeber hat schriftlich eine vertiefte Aushubausführung angeordnet, die nicht im Vertrag enthalten ist, daher ist eine Mehrkostenanzeige sinnvoll."
+  },
+  "ms": {
+    "router": 3116,
+    "gaps": 736,
+    "letter": 4959
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Mehrkostenanzeige gem. § 2 Abs. 5 und 6 VOB/B – Tieferer Aushub der Baugrube (BA 1 und BA 2) und Verbau\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "mit Schreiben vom 16.11.2026 haben Sie uns wegen der geänderten Tiefgaragenplanung angewiesen, die Baugrube um 40 cm tiefer auszuheben. Betroffen sind der Aushub BA 1 und BA 2 sowie der Verbau.\n\nDiese Leistung ist im Vertrag in dieser Form nicht vorgesehen. Gem. § 2 Abs. 5 und 6 VOB/B kündigen wir Ihnen hiermit vor Beginn der Ausführung unseren Anspruch auf besondere Vergütung an.\n\nDie Ausführung ist ab dem 23.11.2026 geplant. Die Mehrkosten beziffern wir mit einem gesonderten Nachtragsangebot.\n\nWir bitten Sie, die Anordnung vom 16.11.2026 schriftlich zu bestätigen.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 2 Abs. 5 VOB/B (Preisanpassung bei geänderter Leistung) und § 2 Abs. 6 VOB/B (Ankündigung des Vergütungsanspruchs vor Ausführung bei zusätzlicher Leistung) – bitte prüfen",
+    "deadline_hint": "Heute (21.11.2026) noch per E-Mail und Einschreiben an den Auftraggeber senden, da die Ausführung am 23.11.2026 beginnt. Die Ankündigung muss vor Ausführungsbeginn zugehen – Zugang dokumentieren. Den Nachunternehmer Erdbau Huber ggf. vorab informieren.",
+    "missing": []
+  }
+}

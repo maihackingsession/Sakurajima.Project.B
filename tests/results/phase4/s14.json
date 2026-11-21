@@ -1,0 +1,51 @@
+{
+  "id": "s14",
+  "expected": "maengel",
+  "messy": true,
+  "input": "elektro wagner leerrohre in der bodenplatte falsch verlegt, liegen auf der bewehrung statt dazwischen",
+  "router": {
+    "intent": "letter",
+    "letter_type": "maengel",
+    "outcome": "anzeige",
+    "facts": {
+      "nachunternehmer": "Elektro Wagner GmbH",
+      "mangel": "Leerrohre in der Bodenplatte falsch verlegt, liegen auf der Bewehrung statt dazwischen",
+      "ort": "Bodenplatte"
+    },
+    "reason": "Die Elektro Wagner GmbH hat die Leerrohre in der Bodenplatte mangelhaft verlegt, weshalb eine Mängelanzeige an den Nachunternehmer angezeigt ist."
+  },
+  "ms": {
+    "router": 2599,
+    "gaps": 2825,
+    "letter": 5164
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Feststellungsdatum",
+        "question": "Wann haben Sie die falsch verlegten Leerrohre festgestellt?",
+        "example": "20.11.2026"
+      },
+      {
+        "field": "Frist",
+        "question": "Bis wann soll Elektro Wagner GmbH die Leerrohre korrigieren?",
+        "example": "27.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mängelanzeige – Leerrohre in der Bodenplatte falsch verlegt\nNeubau Bürogebäude Forschungscampus Garching, Vertrag NU-0417-03",
+    "recipient": "Elektro Wagner GmbH\nz. Hd. Frau Sabine Wagner\nStromstraße 5\n85356 Freising",
+    "salutation": "Sehr geehrte Frau Wagner,",
+    "body": "bei der Begehung am [Datum der Feststellung einsetzen] haben wir an Ihrer Leistung aus dem Nachunternehmervertrag NU-0417-03 folgenden Mangel festgestellt: In der Bodenplatte sind die Leerrohre falsch verlegt. Sie liegen auf der Bewehrung statt zwischen den Bewehrungslagen.\n\nDer genaue Ort des Mangels in der Bodenplatte ist [genauer Ort, z. B. Achse/Feld einsetzen].\n\nWir fordern Sie auf, den Mangel bis zum [Frist zur Beseitigung einsetzen] fachgerecht zu beseitigen und uns die Beseitigung schriftlich anzuzeigen.\n\nNach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen. Weitere Rechte behalten wir uns vor.",
+    "closing": "Mit freundlichen Grüßen\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "",
+    "deadline_hint": "Zeitnah per E-Mail und Einschreiben an Elektro Wagner GmbH senden und den Zugang dokumentieren. Die Frist zur Beseitigung sollte vor dem Betonieren der Bodenplatte enden, da die Leerrohre danach nur noch schwer zugänglich sind.",
+    "missing": [
+      "Datum der Feststellung",
+      "Genauer Ort in der Bodenplatte (z. B. Achse/Feld)",
+      "Frist zur Beseitigung"
+    ]
+  }
+}

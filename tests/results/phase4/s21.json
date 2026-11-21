@@ -1,0 +1,47 @@
+{
+  "id": "s21",
+  "expected": "maengel",
+  "messy": true,
+  "input": "Elektro Wagner bodrum katta boruları yanlış döşemiş, donatının üstünde duruyor, arasında olması lazım. Bugün gördük.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "maengel",
+    "outcome": "anzeige",
+    "facts": {
+      "datum_feststellung": "heute",
+      "nachunternehmer": "Elektro Wagner GmbH",
+      "gewerk": "Elektroinstallation",
+      "ort": "Kellergeschoss",
+      "mangel": "Rohre im Kellergeschoss falsch verlegt: liegen auf der Bewehrung, müssten zwischen der Bewehrung liegen"
+    },
+    "reason": "Der Nachunternehmer Elektro Wagner hat die Rohre im Kellergeschoss mangelhaft verlegt, weshalb eine Mängelanzeige an den Nachunternehmer erforderlich ist."
+  },
+  "ms": {
+    "router": 3884,
+    "gaps": 2761,
+    "letter": 4835
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Frist",
+        "question": "Elektro Wagner'in boruları doğru şekilde yeniden döşemesi için son tarih ne olmalı?",
+        "example": "28.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mängelanzeige – fehlerhaft verlegte Rohre im Kellergeschoss\nNeubau Bürogebäude Forschungscampus Garching, Vertrag NU-0417-03",
+    "recipient": "Elektro Wagner GmbH\nz. Hd. Frau Sabine Wagner\nStromstraße 5\n85356 Freising",
+    "salutation": "Sehr geehrte Frau Wagner,",
+    "body": "bei der Begehung am 21.11.2026 haben wir an Ihrer Leistung aus dem Nachunternehmervertrag NU-0417-03 (Elektroinstallation) folgenden Mangel festgestellt: Im Kellergeschoss [genaue Lage, z. B. Achse/Bauteil einsetzen] sind die Rohre falsch verlegt. Sie liegen auf der Bewehrung, müssten aber zwischen der Bewehrung liegen.\n\nWir fordern Sie auf, den Mangel bis zum [Frist zur Beseitigung einsetzen] fachgerecht zu beseitigen und uns die Beseitigung schriftlich anzuzeigen.\n\nNach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen. Weitere Rechte behalten wir uns vor.",
+    "closing": "Mit freundlichen Grüßen\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "",
+    "deadline_hint": "Heute noch per E-Mail und Einschreiben an den Nachunternehmer senden – Zugang dokumentieren. Mangel vorher fotografisch dokumentieren. Da die Rohre in der Bewehrung liegen, Frist eng setzen, damit die Beseitigung vor dem Betonieren erfolgt, und ggf. den Tragwerksplaner einbinden.",
+    "missing": [
+      "Genaue Lage im Kellergeschoss (Achse/Bauteil)",
+      "Frist zur Beseitigung"
+    ]
+  }
+}

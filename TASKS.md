@@ -146,3 +146,19 @@ Code check: all AI routes already have `maxDuration = 60`; no timeouts, slowest 
 
 ### Phase 7 — Was kostet der Stillstand?: done
 - Card for Behinderungsanzeigen only: result first („1.856 € bisher 1 Tag“, formula line „4 Arbeitskräfte × 8 h × 58 €/h = 1.856 € pro Tag“), four editable inputs (workers/days from facts, hours/rate from project.json, empty if unknown), updates instantly (5 Tage → 9.280 €, checked by scripts/screenshots.mjs). „Schätzung – zur internen Information“ + „Nur Personal. Geräte (z. B. Kran) und Baustellengemeinkosten kommen hinzu.“ Never in the letter.
+
+**Phase 4 full run (live, 21 situations):** METRICS READY: Typ korrekt 20/21 · erfundene Fakten 0 · Ø Zeit bis Entwurf 11.4 s · Phase 1→4 (gleiche 15): Typ 15/15→14/15, brauchbar 10→13, ENTWURF-Zeilen 15→0, Ø Rückfragen 2.5→0.9. Details + empty mentor column: tests/results/report.md (rebuild with `node scripts/write-report.mjs`).
+
+### Phase 8 — Screenshot review loop: done (docs/screenshots/review-1, review-2; `node scripts/screenshots.mjs <url> <dir>`)
+Top 10 visual problems found in review-1 (all fixed unless noted):
+1. Draft screen at 1280×720: cost figure below the fold → ENTWURF strip moved onto the paper sheet, status chip + Freigeben in one row, Prüfliste in 2 columns, cost result shown first. ✓
+2. Tagesbericht result: „Anzeige entwerfen“ below the fold → report collapses after the check („Bericht anzeigen“). ✓
+3. Desktop header: tab labels wrapped to 2 lines → tabs moved into the header bar, nowrap, wider container (max-w-7xl). ✓
+4. Loading crane and logo looked like a gallows → redrawn as a tower crane (lattice mast, jib, counterweight, trolley). ✓
+5. „Keine Anzeige nötig“ card said the same thing twice (chip + heading) → chip only for „Prüfung erforderlich“. ✓
+6. Mobile draft: Freigeben/Prüfliste only after scrolling past the whole letter → „Zur Freigabe ↓“ link under the title. ✓
+7. Mobile Tagesbericht card: orange button below the fold → button directly under the reason on mobile. ✓
+8. Mobile header: logo shrank and „Bauleiter-Assistent“ wrapped → logo fixed size, subtitle hidden on small screens. ✓
+9. Prüfliste labels wrapped in two columns → shorter labels („Auswirkung Termine/Kosten“, „Frist zur Abhilfe“). ✓ (one label still wraps at 1280 – acceptable)
+10. Zusammenfassen: second orange button after the result → secondary after the result. ✓ (open: project name in the header is truncated at 1280 px – acceptable)
+Checked: no English/technical words in the UI (except the label „Beispielmodus (offline)“), no undefined/NaN, no console errors in the click-through, 5 Tage → 9.280 € verified automatically.

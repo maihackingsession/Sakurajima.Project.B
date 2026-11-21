@@ -1,0 +1,23 @@
+{
+  "id": "s18",
+  "expected": "eigener_bereich",
+  "messy": true,
+  "input": "unser kran hat seit heute morgen hydraulikschaden, monteur kommt erst montag, bewehrung bodenplatte steht",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "eigener_bereich",
+    "facts": {
+      "ursache": "Hydraulikschaden am eigenen Kran",
+      "datum_beginn": "seit heute morgen",
+      "verantwortungsbereich": "eigener Bereich (Auftragnehmer)",
+      "betroffene_leistung": "Bewehrung Bodenplatte",
+      "auswirkung": "Bewehrung Bodenplatte steht",
+      "massnahmen": "Monteur kommt erst montag"
+    },
+    "reason": "Der Kran gehört zu Ihrem eigenen Bereich, und ein Geräteausfall dort ist in der Regel keine Behinderung durch den Auftraggeber. Eine Behinderungsanzeige wäre daher wahrscheinlich unbegründet."
+  },
+  "ms": {
+    "router": 3415
+  }
+}

@@ -7,12 +7,18 @@ export function Loading({ text }: { text: string }) {
   return (
     <div role="status" aria-live="polite" className="flex flex-col items-center gap-3 py-6 text-center">
       <svg className="crane" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden>
-        <g stroke="var(--navy)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 52V8M12 8h36M12 8l8 8M12 16h6M6 52h14" />
-          <path d="M12 8 4 14h8" />
-          <path className="crane-hook" d="M38 8v14" />
+        <g stroke="var(--navy)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          {/* lattice mast */}
+          <path d="M18 51V16M23 51V16M18 51l5-6-5-6 5-6-5-6 5-6-5-5" />
+          {/* jib, counter-jib, top and ties */}
+          <path d="M5 16h47M20.5 16V7M20.5 7 50 16M20.5 7 7 16" />
+          {/* base */}
+          <path d="M12 51h17" />
+          <path className="crane-hook" d="M42 16v9" />
         </g>
-        <rect className="crane-block" x="33" y="22" width="10" height="8" rx="1.5" fill="var(--accent)" />
+        <rect x="6" y="16.5" width="7" height="5" rx="1" fill="var(--navy)" />
+        <rect x="39" y="14.5" width="6" height="3" rx="1" fill="var(--navy)" />
+        <rect className="crane-block" x="37" y="25" width="10" height="7" rx="1.2" fill="var(--accent)" />
       </svg>
       <p className="text-base font-semibold text-[var(--navy)]">{text}</p>
     </div>
