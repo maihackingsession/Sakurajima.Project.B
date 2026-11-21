@@ -32,14 +32,13 @@ Site managers lose hours on documentation and formal notices. The brief asks for
 
 ## 3. Scope — what we build, in this order
 
-### MVP (Friday night) — must work end to end
-1. Text input: site manager types a situation in German
+### Built Saturday (checked in the app at `freeze-candidate`)
+Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to today (`{T}` tokens in /data).
+
+1. **Text input:** site manager types or dictates a situation
 2. **Letter writer:** drafts the correct notice in German
 3. **Edit screen:** manager edits the draft before export
 4. **Export:** Word (.docx) and PDF
-
-### Built Saturday (checked in the app at `freeze-candidate`)
-Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to today (`{T}` tokens in /data).
 5. **Tagesbericht prüfen:** report vs. Bauzeitenplan → deviation card („Behinderungsanzeige empfohlen“, reason, urgency computed in code) → „Anzeige entwerfen“ with the report's facts (usually 1 Rückfrage left).
 6. **Router with verdict:** letter type + „Keine Anzeige nötig“ / „Ursache möglicherweise im eigenen Bereich – bitte prüfen“ (calm card, „Trotzdem Entwurf erstellen“).
 7. **Gap checker:** max. 3 questions, only missing required fields, asked in the input's language.
@@ -54,20 +53,19 @@ Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to to
 16. **Test set:** 21 situations, runner `npm run test:letters`, report in tests/results/report.md (20/21 correct, 0 invented facts).
 17. Models: router + gaps on claude-haiku-5-5 (ANTHROPIC_FAST_MODEL), letters/report check/summary on claude-sonnet-5-5.
 
-Not built (decided): separate „Geprüft“ status, manual tick-off legal checklist (replaced by the automatic Prüfliste), server-side OpenAI transcription.
-
-### Pitch only / next steps (do NOT build now)
+### Pitch only / next steps
 - Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
 - „Dokumente prüfen“ (PDF upload)
 - „Ende der Behinderung anzeigen“ (follow-up letter)
 - Morning briefing
 - Photos as evidence
 - Claim file (Nachtragsakte) across all notices
-- Outlook / e-mail / calendar connector
 - Vier-Augen-Freigabe Bauleiter → Oberbauleiter
+- API key / login per company, firm letterhead template
+- E-mail forwarding (send a Tagesbericht to Baufrist), Outlook / calendar connector
+- GAEB import for Mehrkosten, connectors to Bautagebuch tools
 - Vector search for large document sets
-- Real Outlook / email / calendar connection → demo with sample data, say "connector is the next step"
-- Offline mode, user accounts, full GDPR setup
+- Offline mode, full GDPR setup
 
 **Rule:** a smaller thing that works every time beats a bigger thing that sometimes breaks.
 
