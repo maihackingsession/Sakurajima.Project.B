@@ -38,20 +38,36 @@ Site managers lose hours on documentation and formal notices. The brief asks for
 3. **Edit screen:** manager edits the draft before export
 4. **Export:** Word (.docx) and PDF
 
-### Saturday (until 18:00 freeze)
-5. **Gap checker:** asks follow-up questions when required facts are missing (date, cause, affected work, expected delay…). This is our main differentiator.
-6. **Voice input** (browser / phone dictation, German first)
-7. **Router:** one input box — assistant decides: letter, daily report, or summary
-8. **Deviation checker:** compare situation / daily report against a sample plan (fake data in `/data`), flag deviations, offer to draft the matching notice
-9. **Summariser:** paste diary entries / minutes / emails → structured summary with open items and deadlines highlighted
-10. Mobile-friendly layout: big buttons, simple screens
-11. **Draft status:** every letter moves Entwurf → Geprüft → Freigegeben, set by the manager by hand; plus a **Copy** button next to Word / PDF. Still never auto-sent.
-12. **Legal checklist** under each letter, different items per letter type (e.g. Schriftform, unverzüglich, Ursache, Auswirkung, Vorbehalt, Mehrkostenanzeige vor Ausführungsbeginn). The manager ticks the items off.
-13. **Better mic:** server-side transcription with OpenAI (gpt-transcribe) via an API route; key `OPENAI_API_KEY` in `.env.local` only. Falls back to the current browser mic (Web Speech API) when the key is missing or the call fails.
+### Built Saturday (checked in the app at `freeze-candidate`)
+Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to today (`{T}` tokens in /data).
+5. **Tagesbericht prüfen:** report vs. Bauzeitenplan → deviation card („Behinderungsanzeige empfohlen“, reason, urgency computed in code) → „Anzeige entwerfen“ with the report's facts (usually 1 Rückfrage left).
+6. **Router with verdict:** letter type + „Keine Anzeige nötig“ / „Ursache möglicherweise im eigenen Bereich – bitte prüfen“ (calm card, „Trotzdem Entwurf erstellen“).
+7. **Gap checker:** max. 3 questions, only missing required fields, asked in the input's language.
+8. **Input in any language** (tested: Polish, Turkish); the letter is always formal German.
+9. **Draft screen:** letter as a DIN-5008-like paper sheet, editable, [Platzhalter] highlighted; status Entwurf → Freigegeben (approver name + time, only by the user, edit → back to Entwurf); ENTWURF strip + watermark in Word/PDF.
+10. **Prüfliste vor Versand** (code, no AI): Datum, Ursache, Leistung, Auswirkung, Frist, Vorbehalt, Nachweise, Unverzüglich.
+11. **„Was kostet der Stillstand?“** (Behinderung only): workers × hours × rate × days, editable, internal only, never in the letter.
+12. **Export:** Word (.docx), PDF (print view), Kopieren; „Anlage – Dokumentation“ (input, answers, time, Tagesbericht excerpt).
+13. **Summariser:** minutes / diary / e-mails → deadlines, decisions, open items, risks.
+14. **Voice input** via browser dictation (Web Speech API); not tested on real iPad/Android devices.
+15. **Beispielmodus `?beispiel=1`:** prepared answers, no AI call, visible label „Beispielmodus (offline)“ – presenter fallback.
+16. **Test set:** 21 situations, runner `npm run test:letters`, report in tests/results/report.md (20/21 correct, 0 invented facts).
+17. Models: router + gaps on claude-haiku-5-5 (ANTHROPIC_FAST_MODEL), letters/report check/summary on claude-sonnet-5-5.
 
-### Pitch only (do NOT build)
+Not built (decided): separate „Geprüft“ status, manual tick-off legal checklist (replaced by the automatic Prüfliste), server-side OpenAI transcription.
+
+### Pitch only / next steps (do NOT build now)
+- Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
+- „Dokumente prüfen“ (PDF upload)
+- „Ende der Behinderung anzeigen“ (follow-up letter)
+- Morning briefing
+- Photos as evidence
+- Claim file (Nachtragsakte) across all notices
+- Outlook / e-mail / calendar connector
+- Vier-Augen-Freigabe Bauleiter → Oberbauleiter
+- Vector search for large document sets
 - Real Outlook / email / calendar connection → demo with sample data, say "connector is the next step"
-- Photos, offline mode, user accounts, full GDPR setup
+- Offline mode, user accounts, full GDPR setup
 
 **Rule:** a smaller thing that works every time beats a bigger thing that sometimes breaks.
 
@@ -171,13 +187,18 @@ Rotate the builder every 3–4 hours.
 
 ## 13. Current status
 
+Live: **https://sakurajima-project-b.vercel.app** (fallback: same URL with `?beispiel=1`)
+
 - [x] Registered and accepted, Challenge B chosen
 - [x] Claude Code on laptop connected to GitHub
-- [ ] Repo created with Next.js skeleton
-- [ ] `TASKS.md` created
-- [ ] `.env.local` with API key (after credits arrive)
-- [ ] Vercel connected
-- [ ] MVP flow working (text → letter → edit → export)
+- [x] Repo created with Next.js skeleton
+- [x] `TASKS.md` created
+- [x] `.env.local` with API key (note: the key in the laptop's .env.local currently returns 401 – Vercel's key works)
+- [x] Vercel connected, auto-deploy from main
+- [x] MVP flow working (text → letter → edit → export)
+- [x] Saturday scope built (see section 3), tagged `freeze-candidate`
+- [ ] Mentor/Bauleiter rating column in tests/results/report.md
+- [ ] Backup video + pitch deck (from `freeze-candidate`)
 
 ## 14. First steps for Claude Code
 
