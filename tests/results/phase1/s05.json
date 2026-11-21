@@ -1,0 +1,60 @@
+{
+  "id": "s05",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "Frost, kein Betonieren möglich, Decke UG verschiebt sich",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "facts": {
+      "ursache": "Frost",
+      "auswirkung": "Betonieren nicht möglich, Verschiebung der Decke UG",
+      "betroffene_leistung": "Betonieren Decke UG"
+    },
+    "reason": "Witterungsbedingt (Frost) können die Betonarbeiten nicht wie geplant ausgeführt werden, das ist eine Behinderung des Bauablaufs."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Datum Beginn",
+        "question": "Seit welchem Datum ist das Betonieren der Decke UG wegen des Frosts nicht möglich?",
+        "example": "18.11.2026"
+      },
+      {
+        "field": "Verursacher/Verantwortungsbereich",
+        "question": "Liegt die Ursache beim Auftraggeber (z. B. Vorgaben, Freigaben, Bauzeitenplan) oder hat sie keinen Bezug zu einer Partei, also reines Wetterereignis?",
+        "example": "Reines Wetterereignis, keine Partei verantwortlich"
+      },
+      {
+        "field": "voraussichtliche Auswirkung",
+        "question": "Wie lange wird sich die Decke UG voraussichtlich verschieben?",
+        "example": "ca. 5 Arbeitstage"
+      },
+      {
+        "field": "Ursache",
+        "question": "Wie stark war der Frost, und welche Temperaturen wurden gemessen oder gemeldet?",
+        "example": "Nachts bis -6 °C, tagsüber unter 0 °C"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "ENTWURF – Behinderungsanzeige gemäß § 6 Abs. 1 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen gemäß § 6 Abs. 1 VOB/B an, dass wir in der ordnungsgemäßen Ausführung unserer Leistungen auf der Baustelle Lichtenbergstraße 8, 85748 Garching bei München, behindert sind.\n\nUrsache der Behinderung ist Frost. Seit [Datum des Beginns der Behinderung einsetzen] ist das Betonieren der Decke UG aufgrund der Witterungsverhältnisse nicht möglich. Betroffen ist damit die Leistung „Betonieren Decke UG“. Verantwortungsbereich: [Verursacher bzw. Verantwortungsbereich einsetzen].\n\nDie Behinderung führt dazu, dass sich die Herstellung der Decke UG verschiebt. Die voraussichtliche Dauer der Behinderung und die daraus folgenden Auswirkungen auf den Bauablauf und die vertraglichen Termine können wir derzeit noch nicht abschließend beurteilen: [voraussichtliche Dauer bzw. Terminauswirkung einsetzen].\n\nWir behalten uns ausdrücklich vor, eine Verlängerung der Ausführungsfristen gemäß § 6 Abs. 2 VOB/B geltend zu machen sowie den uns entstehenden Schaden bzw. die Mehrkosten gemäß § 6 Abs. 6 VOB/B ersetzt zu verlangen.\n\nDas Ende der Behinderung beziehungsweise die Wiederaufnahme der Arbeiten werden wir Ihnen gesondert anzeigen.\n\nFür Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 gerne zur Verfügung.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 6 Abs. 1, 2 und 6 VOB/B",
+    "deadline_hint": "Unverzüglich schriftlich absenden – Zugang (z. B. per E-Mail mit Lesebestätigung oder Einschreiben) nachweisbar dokumentieren. Zusätzlich Frosttage, Temperaturen und Bautagebucheintrag als Nachweis sichern.",
+    "missing": [
+      "Datum des Beginns der Behinderung",
+      "Verursacher bzw. Verantwortungsbereich (Frost als Witterungseinfluss: ggf. Einordnung, ob die Witterung für die Jahreszeit ungewöhnlich ist und mit dem Vertrag/den Terminen vereinbar war)",
+      "Voraussichtliche Dauer der Behinderung und konkrete Auswirkung auf Bauablauf und Termine (z. B. betroffene Vertragsfristen)"
+    ]
+  },
+  "ms": {
+    "router": 2499,
+    "gaps": 3654,
+    "letter": 8231
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "id": "s06",
+  "expected": "mehrkosten",
+  "messy": false,
+  "input": "In der Baubesprechung am 19.11.2026 hat Architekt Vogel angeordnet, im UG Achse B/3 zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen. Das ist nicht im LV. Wir wollen am 24.11. mit den Arbeiten anfangen.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "facts": {
+      "angeordnet_durch": "Architekt Vogel",
+      "datum_anordnung": "19.11.2026",
+      "anlass": "Baubesprechung",
+      "ort": "UG Achse B/3",
+      "betroffene_leistung": "Zusätzlicher Pumpensumpf mit Hebeanlage",
+      "vertragsstatus": "Nicht im LV enthalten",
+      "datum_beginn": "24.11."
+    },
+    "reason": "Der Planer ordnet eine zusätzliche Leistung an, die nicht im LV enthalten ist – das erfordert eine Mehrkostenanzeige an den Auftraggeber."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Anordnung durch wen + wann",
+        "question": "Hat Architekt Vogel die Anordnung nur mündlich gegeben, oder gibt es dazu ein Protokoll, eine E-Mail oder einen Plan? Und: Handelt Herr Vogel im Auftrag des Auftraggebers?",
+        "example": "Nur mündlich in der Baubesprechung, Protokoll liegt noch nicht vor. Vogel ist vom AG als Objektplaner beauftragt."
+      },
+      {
+        "field": "Art der Zusatz-/Änderungsleistung",
+        "question": "Was genau gehört zur Zusatzleistung (z. B. Aushub, Betonarbeiten, Pumpe, Elektroanschluss) und wer soll sie ausführen?",
+        "example": "Aushub und Stahlbeton für den Schacht durch Rohbau Schneider, Hebeanlage und Elektroanschluss durch Elektro Wagner"
+      },
+      {
+        "field": "betroffene Leistung",
+        "question": "Gibt es Angaben zu Größe oder Typ des Pumpensumpfs und der Hebeanlage (Maße, Fabrikat, Plan)?",
+        "example": "Schacht ca. 1,5 x 1,5 m, 1,8 m tief, Hebeanlage laut Plan Nr. 123 – Typ noch offen"
+      },
+      {
+        "field": "Beginn der Ausführung",
+        "question": "Bitte bestätigen Sie den Beginn: Ist der 24.11.2026 gemeint?",
+        "example": "Ja, 24.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "ENTWURF – Mehrkostenanzeige / Ankündigung eines Vergütungsanspruchs gemäß § 2 Abs. 6 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vor Versand durch den Bauleiter zu prüfen]\n\nhiermit kündigen wir Ihnen gemäß § 2 Abs. 6 VOB/B an, dass wir für die nachstehend beschriebene, im Vertrag nicht vorgesehene Leistung eine besondere Vergütung beanspruchen.\n\nIn der Baubesprechung am 19.11.2026 hat Herr Architekt Vogel angeordnet, im Untergeschoss, Achse B/3, zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen. Diese Leistung ist im Leistungsverzeichnis nicht enthalten und gehört nicht zu der von uns vertraglich geschuldeten Leistung. [Angabe einsetzen, in welcher Funktion bzw. mit welcher Vollmacht Herr Vogel für den Auftraggeber gehandelt hat]\n\nBetroffen ist die Leistung: zusätzlicher Pumpensumpf mit Hebeanlage im UG, Achse B/3. Wir beabsichtigen, mit der Ausführung am 24.11.[Jahr bestätigen] zu beginnen.\n\nDie hierfür entstehenden Mehrkosten werden wir gesondert beziffern und Ihnen ein Nachtragsangebot vorlegen. Wir bitten Sie, uns bis zum [Frist einsetzen] schriftlich zu bestätigen, dass die Leistung vom Auftraggeber beauftragt wird. Soweit sich die Anordnung auch auf Bauablauf und Termine auswirkt, behalten wir uns weitere Ansprüche, insbesondere hinsichtlich der Ausführungsfristen, ausdrücklich vor.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 2 Abs. 6 VOB/B (ggf. ergänzend § 2 Abs. 5 VOB/B)",
+    "deadline_hint": "Die Ankündigung muss dem Auftraggeber VOR Beginn der Ausführung (geplant 24.11.) schriftlich zugehen – unverzüglich absenden und den Zugang nachweisbar dokumentieren (z. B. E-Mail mit Lesebestätigung, Einschreiben oder Bote).",
+    "missing": [
+      "Jahr des geplanten Ausführungsbeginns (Angabe lautet nur „24.11.“; vermutlich 24.11.2026, bitte bestätigen)",
+      "Funktion/Vollmacht von Architekt Vogel (Vertreter des Auftraggebers oder Planer ohne Anordnungsbefugnis?)",
+      "Frist für die Bestätigung der Beauftragung durch den Auftraggeber",
+      "Ggf. Angaben zu Auswirkungen auf Bauablauf und Termine"
+    ]
+  },
+  "ms": {
+    "router": 2267,
+    "gaps": 4428,
+    "letter": 7827
+  }
+}

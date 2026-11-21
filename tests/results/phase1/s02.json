@@ -1,0 +1,44 @@
+{
+  "id": "s02",
+  "expected": "behinderung",
+  "messy": false,
+  "input": "Seit dem 17.11.2026 ist die Zufahrt Nord zur Baustelle durch Leitungsarbeiten der Stadtwerke im Auftrag des Bauherrn gesperrt. Der Aushub im Bauabschnitt 2 steht still, die LKW kommen nicht aufs Baufeld. Wir rechnen mit mindestens 7 Arbeitstagen Verzug, die Bodenplatte verschiebt sich entsprechend.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "facts": {
+      "datum_beginn": "17.11.2026",
+      "ursache": "Sperrung der Zufahrt Nord durch Leitungsarbeiten der Stadtwerke",
+      "veranlasst_durch": "im Auftrag des Bauherrn",
+      "ort": "Zufahrt Nord zur Baustelle",
+      "betroffene_leistung": "Aushub im Bauabschnitt 2",
+      "auswirkung": "Aushub steht still, LKW kommen nicht aufs Baufeld, Bodenplatte verschiebt sich entsprechend",
+      "dauer": "mindestens 7 Arbeitstage Verzug (voraussichtlich)"
+    },
+    "reason": "Der Aushub steht wegen der gesperrten Zufahrt still, das ist eine Behinderung des Bauablaufs durch Umstände aus dem Risikobereich des Auftraggebers."
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gemäß § 6 Abs. 1 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "ENTWURF – zur Prüfung durch den Bauleiter, noch nicht versendet.\n\nhiermit zeigen wir Ihnen gemäß § 6 Abs. 1 VOB/B an, dass wir in der ordnungsgemäßen Ausführung unserer Leistungen auf der Baustelle Lichtenbergstraße 8, 85748 Garching bei München, behindert sind.\n\nSeit dem 17.11.2026 ist die Zufahrt Nord zur Baustelle wegen Leitungsarbeiten der Stadtwerke gesperrt. Nach unserer Kenntnis werden diese Arbeiten im Auftrag des Bauherrn ausgeführt. Die Sperrung liegt damit nicht in unserem Verantwortungsbereich. [Bitte prüfen: Verantwortungsbereich des Auftraggebers ggf. näher begründen bzw. Nachweis für den Auftrag des Bauherrn ergänzen.]\n\nBetroffen ist der Aushub im Bauabschnitt 2. Dieser steht seit dem 17.11.2026 still, da die Lastkraftwagen das Baufeld nicht erreichen können. Wir rechnen nach derzeitigem Stand mit einem Verzug von mindestens 7 Arbeitstagen. Die Herstellung der Bodenplatte verschiebt sich entsprechend. Die genauen Auswirkungen auf den Gesamtbauablauf und die vertraglichen Termine können wir derzeit noch nicht abschließend beurteilen; [Auswirkung auf Vertragstermine/Terminplan einsetzen].\n\nWir behalten uns ausdrücklich vor, die Verlängerung der Ausführungsfristen gemäß § 6 Abs. 2 VOB/B in Anspruch zu nehmen sowie den uns entstehenden Schaden bzw. die Mehrkosten gemäß § 6 Abs. 6 VOB/B geltend zu machen. Die Höhe werden wir gesondert beziffern.\n\nWir fordern Sie auf, die Zufahrt Nord schnellstmöglich wieder freizugeben oder uns eine alternative, für LKW geeignete Zufahrt zum Baufeld zur Verfügung zu stellen. Bitte teilen Sie uns mit, bis wann mit einer Freigabe zu rechnen ist.\n\nDas Ende der Behinderung bzw. die Wiederaufnahme der Arbeiten werden wir Ihnen gesondert anzeigen.\n\nFür Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 gerne zur Verfügung.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 6 Abs. 1, 2 und 6 VOB/B",
+    "deadline_hint": "Unverzüglich schriftlich absenden (Sperrung seit 17.11.2026, heute 21.11.2026) – Zugang nachweisbar dokumentieren, z. B. per Einschreiben oder E-Mail mit Lesebestätigung.",
+    "missing": [
+      "Auswirkung auf Vertragstermine/Terminplan (z. B. betroffene Zwischen- oder Fertigstellungstermine, Verschiebung der Bodenplatte in konkretem Datum)",
+      "Nachweis bzw. Bestätigung, dass die Leitungsarbeiten der Stadtwerke im Auftrag des Bauherrn erfolgen (Verantwortungsbereich des Auftraggebers)",
+      "Voraussichtliches Ende der Sperrung laut Auskunft der Stadtwerke bzw. des Bauherrn (sofern bekannt)",
+      "Ob eine alternative Zufahrt zum Baufeld besteht und ob der Nachunternehmer Erdbau Huber GmbH & Co. KG informiert wurde (optional)"
+    ]
+  },
+  "ms": {
+    "router": 2966,
+    "gaps": 1180,
+    "letter": 9618
+  }
+}

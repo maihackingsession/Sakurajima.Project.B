@@ -1,0 +1,39 @@
+{
+  "id": "s08",
+  "expected": "mehrkosten",
+  "messy": false,
+  "input": "Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "facts": {
+      "angeordnet_durch": "Bauherrin Frau Dr. Lindner",
+      "datum_anordnung": "16.11.2026",
+      "form_anordnung": "schriftlich",
+      "anordnung": "Baugrube um 40 cm tiefer ausheben",
+      "ursache": "geänderte Tiefgaragenplanung",
+      "betroffene_leistung": "Aushub BA 1 und BA 2 sowie Verbau",
+      "datum_beginn": "23.11.2026"
+    },
+    "reason": "Der Auftraggeber ordnet schriftlich eine geänderte, zusätzliche Leistung (tieferer Aushub) an, die nicht im Vertrag enthalten ist, daher Mehrkostenanzeige."
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Mehrkostenanzeige gemäß § 2 Abs. 5 und Abs. 6 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – ENTWURF zur Prüfung",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu bearbeiten]\n\nmit Schreiben vom 16.11.2026 haben Sie uns schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind der Aushub in den Bauabschnitten BA 1 und BA 2 sowie der Verbau. Wir beabsichtigen, diese Leistungen ab dem 23.11.2026 entsprechend Ihrer Anordnung auszuführen.\n\nDie angeordnete Vertiefung der Baugrube stellt eine Änderung der vertraglich vereinbarten Leistung bzw. eine im Vertrag nicht vorgesehene zusätzliche Leistung dar. Wir zeigen Ihnen daher gemäß § 2 Abs. 5 und Abs. 6 VOB/B an, dass wir für die hierdurch entstehenden Mehraufwendungen einen Anspruch auf Vereinbarung eines neuen Preises bzw. auf besondere Vergütung geltend machen. Diese Anzeige erfolgt vor Beginn der Ausführung.\n\nDie Mehrkosten werden wir gesondert beziffern und Ihnen ein Nachtragsangebot unterbreiten. Wir bitten Sie, dieses nach Zugang zeitnah zu prüfen und zu beauftragen, damit eine Einigung über den neuen Preis möglichst vor Ausführung der Leistungen erfolgen kann.\n\nBei Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger (Tel. 0171 2345678), gerne zur Verfügung.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 2 Abs. 5 und Abs. 6 VOB/B",
+    "deadline_hint": "Schreiben vor Ausführungsbeginn (23.11.2026) absenden – Zugang beim Auftraggeber nachweisbar dokumentieren (z. B. E-Mail mit Lesebestätigung oder Einschreiben).",
+    "missing": []
+  },
+  "ms": {
+    "router": 2714,
+    "gaps": 1205,
+    "letter": 6246
+  }
+}

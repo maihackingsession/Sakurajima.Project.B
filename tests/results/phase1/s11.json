@@ -1,0 +1,66 @@
+{
+  "id": "s11",
+  "expected": "bedenken",
+  "messy": true,
+  "input": "Der vorgeschriebene Beton C25/30 passt nicht zur Expositionsklasse für die Tiefgarage, Planer sagt aber so lassen",
+  "router": {
+    "intent": "letter",
+    "letter_type": "bedenken",
+    "facts": {
+      "betroffene_leistung": "Beton für die Tiefgarage",
+      "vorgeschriebener_beton": "C25/30",
+      "problem": "Beton C25/30 passt nicht zur Expositionsklasse",
+      "ort": "Tiefgarage",
+      "angeordnet_durch": "Planer",
+      "anweisung_planer": "Ausführung so belassen"
+    },
+    "reason": "Der Bauleiter hält den vorgeschriebenen Beton für die Expositionsklasse für ungeeignet und der Planer besteht trotzdem auf der Ausführung, daher ist eine Bedenkenanzeige an den Auftraggeber nötig."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Grund",
+        "question": "Welche Expositionsklasse gilt für die Tiefgarage laut Planung oder Norm, und welche Mindestfestigkeitsklasse wäre dafür nötig?",
+        "example": "XD3/XF4, dafür wäre mindestens C35/45 erforderlich"
+      },
+      {
+        "field": "mögliche Folgen",
+        "question": "Welche Schäden oder Risiken befürchten Sie, wenn der Beton wie vorgeschrieben eingebaut wird?",
+        "example": "Chloridschäden und Frostschäden, Bewehrungskorrosion, verkürzte Lebensdauer, Mängelansprüche"
+      },
+      {
+        "field": "Gegenstand der Bedenken",
+        "question": "Welche Bauteile der Tiefgarage sind betroffen, und wurde der Beton dort schon eingebaut oder noch nicht?",
+        "example": "Bodenplatte und Decke über Tiefgarage, Einbau ist für 25.11.2026 geplant"
+      },
+      {
+        "field": "betroffene Leistung",
+        "question": "Wann und in welcher Form hat der Planer angeordnet, es so zu belassen, und wer war das namentlich?",
+        "example": "Herr Meier (Tragwerksplaner), mündlich am Baustellentermin am 19.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Bedenkenanzeige gemäß § 4 Abs. 3 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – Betonfestigkeitsklasse C25/30 Tiefgarage",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vom Bauleiter vor Versand zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen gemäß § 4 Abs. 3 VOB/B Bedenken gegen die vorgesehene Art der Ausführung der Betonarbeiten für die Tiefgarage auf der Baustelle Lichtenbergstraße 8, 85748 Garching bei München, an.\n\nGegenstand der Bedenken: Für die Tiefgarage ist Beton der Festigkeitsklasse C25/30 vorgeschrieben. Nach unserer Einschätzung entspricht dieser Beton nicht der für die Tiefgarage maßgeblichen Expositionsklasse [maßgebliche Expositionsklasse(n) einsetzen, z. B. gemäß Planungsunterlagen/Tragwerksplanung].\n\nBegründung: [Begründung einsetzen: Welche Anforderung der Expositionsklasse (z. B. Mindestfestigkeitsklasse, Wasserzementwert, Mindestzementgehalt) wird mit C25/30 nicht erfüllt? Bezug auf Normen/Planunterlagen, Plan-Nr.]\n\nMögliche Folgen: Bei Ausführung mit dem vorgeschriebenen Beton besteht die Gefahr, dass die erforderliche Dauerhaftigkeit des Bauteils nicht gewährleistet ist. [Konkrete mögliche Folgen einsetzen, z. B. Schäden am Bauwerk, verkürzte Nutzungsdauer, Sanierungsaufwand.]\n\nDer von Ihnen beauftragte Planer hat uns mitgeteilt, dass die Ausführung dennoch so belassen werden soll. [Datum und Form der Anweisung des Planers sowie Name des Planers einsetzen.] Wir halten unsere Bedenken gleichwohl aufrecht.\n\nWir fordern Sie auf, uns bis spätestens [Frist einsetzen] schriftlich mitzuteilen, wie die Ausführung erfolgen soll, ob Sie an der Ausführung mit Beton C25/30 festhalten oder eine Änderung der Planung bzw. der Betonspezifikation anordnen.\n\nWir weisen vorsorglich darauf hin, dass wir bei einer Ausführung nach Ihrer Anweisung trotz der angezeigten Bedenken nach § 13 Abs. 3 VOB/B von der Haftung für daraus entstehende Mängel frei werden. Etwaige Auswirkungen auf Vergütung und Termine behalten wir uns ausdrücklich vor.\n\nBis zu Ihrer Entscheidung [Vorgehen bis zur Klärung einsetzen, z. B. Betonarbeiten in diesem Bereich zurückstellen].",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 4 Abs. 3 VOB/B; Hinweis auf § 13 Abs. 3 VOB/B",
+    "deadline_hint": "Bedenken so früh wie möglich und vor Beginn der Betonarbeiten schriftlich absenden – Zugang nachweisbar dokumentieren (z. B. Einschreiben oder E-Mail mit Lesebestätigung). Angemessene Frist zur Entscheidung setzen.",
+    "missing": [
+      "Maßgebliche Expositionsklasse(n) der Tiefgarage",
+      "Fachliche Begründung, warum C25/30 nicht zur Expositionsklasse passt (Normbezug, Plan-/Positionsnummer)",
+      "Konkrete mögliche Folgen für das Bauwerk",
+      "Name des Planers sowie Datum und Form seiner Anweisung („so lassen“)",
+      "Frist für die Entscheidung des Auftraggebers",
+      "Geplanter Beginn der Betonarbeiten bzw. Vorgehen bis zur Klärung"
+    ]
+  },
+  "ms": {
+    "router": 2473,
+    "gaps": 4273,
+    "letter": 10782
+  }
+}

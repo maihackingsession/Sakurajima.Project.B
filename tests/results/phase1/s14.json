@@ -1,0 +1,64 @@
+{
+  "id": "s14",
+  "expected": "maengel",
+  "messy": true,
+  "input": "elektro wagner leerrohre in der bodenplatte falsch verlegt, liegen auf der bewehrung statt dazwischen",
+  "router": {
+    "intent": "letter",
+    "letter_type": "maengel",
+    "facts": {
+      "nachunternehmer": "Elektro Wagner GmbH",
+      "gewerk": "Elektroinstallation",
+      "mangel": "Leerrohre falsch verlegt, liegen auf der Bewehrung statt dazwischen",
+      "betroffene_leistung": "Leerrohrverlegung in der Bodenplatte",
+      "ort": "Bodenplatte"
+    },
+    "reason": "Der Nachunternehmer Elektro Wagner hat die Leerrohre mangelhaft verlegt, daher ist eine Mängelanzeige an den Nachunternehmer nötig."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Feststellungsdatum",
+        "question": "An welchem Datum haben Sie den Mangel festgestellt?",
+        "example": "20.11.2026"
+      },
+      {
+        "field": "Frist",
+        "question": "Bis zu welchem Datum soll Elektro Wagner den Mangel beseitigen?",
+        "example": "25.11.2026"
+      },
+      {
+        "field": "Ort",
+        "question": "In welchem Bereich der Bodenplatte liegen die Leerrohre falsch (Bauabschnitt, Achsen oder Raum)?",
+        "example": "Bauabschnitt 2, Achsen B–D/3–5"
+      },
+      {
+        "field": "Mangelbeschreibung",
+        "question": "Ist der Beton schon eingebaut, oder kann die Verlegung noch vor dem Betonieren korrigiert werden?",
+        "example": "Noch nicht betoniert, Betonage ist für 26.11.2026 geplant"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mängelanzeige – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417, Nachunternehmervertrag NU-0417-03 – ENTWURF zur Prüfung",
+    "recipient": "Elektro Wagner GmbH\nz. Hd. Frau Sabine Wagner\nStromstraße 5\n85356 Freising",
+    "salutation": "Sehr geehrte Frau Wagner,",
+    "body": "[ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen einen Mangel an Ihrer Leistung im Rahmen des Nachunternehmervertrags NU-0417-03 (Elektroinstallation) für das Bauvorhaben Neubau Bürogebäude Forschungscampus Garching, Lichtenbergstraße 8, 85748 Garching bei München, an.\n\nBei der Kontrolle der Leerrohrverlegung in der Bodenplatte haben wir am [Datum der Feststellung einsetzen] festgestellt, dass die von Ihnen verlegten Leerrohre nicht, wie vorgesehen, zwischen der Bewehrung liegen, sondern auf der Bewehrung verlegt wurden. Die Verlegung ist damit nicht ordnungsgemäß ausgeführt. Der betroffene Bereich befindet sich in der Bodenplatte, [genaue Ortsangabe (Achsen/Bauabschnitt/Bereich) einsetzen].\n\nWir fordern Sie auf, den Mangel bis spätestens [Frist als konkretes Datum einsetzen] vollständig und fachgerecht zu beseitigen und die Leerrohre in die vorgesehene Lage zu bringen. Bitte stimmen Sie die Ausführung rechtzeitig mit uns und dem Rohbauunternehmer ab, damit die Bewehrung und der weitere Bauablauf, insbesondere das Betonieren der Bodenplatte, nicht beeinträchtigt werden. Bitte bestätigen Sie uns die Mängelbeseitigung schriftlich und teilen Sie uns den Termin der Ausführung bis zum [Datum für Rückmeldung einsetzen] mit.\n\nSollte die Frist fruchtlos verstreichen, behalten wir uns vor, den Mangel auf Ihre Kosten durch einen Dritten beseitigen zu lassen (Ersatzvornahme). Weitere Rechte, insbesondere Ansprüche auf Ersatz von Schäden und Mehrkosten, die uns durch den Mangel und eine mögliche Verzögerung des Bauablaufs entstehen, behalten wir uns ausdrücklich vor.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "",
+    "deadline_hint": "Schriftlich absenden und Zugang nachweisbar dokumentieren (z. B. E-Mail mit Lesebestätigung oder Einschreiben). Frist angemessen und mit konkretem Datum setzen; Mangel vor dem Betonieren der Bodenplatte fotografisch dokumentieren.",
+    "missing": [
+      "Datum der Feststellung des Mangels",
+      "Genauer Ort (Achsen, Bauabschnitt, Bereich der Bodenplatte)",
+      "Frist zur Mängelbeseitigung (konkretes Datum)",
+      "Datum für die Rückmeldung zum Ausführungstermin (optional)",
+      "Bestätigung, dass der Mangel Elektro Wagner GmbH eindeutig zuzuordnen ist (Verlegung durch Elektro Wagner)"
+    ]
+  },
+  "ms": {
+    "router": 2027,
+    "gaps": 3110,
+    "letter": 8267
+  }
+}

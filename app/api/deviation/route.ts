@@ -5,12 +5,12 @@ export const maxDuration = 60;
 
 const SEVERITIES = ["niedrig", "mittel", "hoch"] as const;
 
-export const POST = jsonRoute<{ input?: unknown }>(async (body) => {
+export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {
   const report = requireText(body.input, "einen Tagesbericht");
   const result = await runPrompt<DeviationResult>(
     "deviation",
     { user_input: report, plan: await readData("plan.json") },
-    { effort: "medium" },
+    { effort: "medium", mock: ctx.mock },
   );
   return {
     summary: typeof result.summary === "string" ? result.summary : "",

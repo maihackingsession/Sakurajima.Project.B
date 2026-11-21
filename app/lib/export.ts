@@ -13,15 +13,7 @@ export function paragraphs(text: string) {
   return text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 }
 
-/** Removes lines like "ENTWURF – zur Prüfung durch den Bauleiter" that the model may add to the text. */
-export function stripDraftLines(text: string) {
-  return text
-    .split("\n")
-    .filter((line) => !/^[\s*_[(]*entwurf\b/i.test(line))
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
+export { stripDraftLines } from "@/lib/text";
 
 /** Full letter as plain text: Empfänger, Betreff, Anrede, Text, Gruß (+ Unterschrift). */
 export function plainText(letter: Letter) {

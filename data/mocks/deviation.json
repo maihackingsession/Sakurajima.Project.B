@@ -1,29 +1,40 @@
 {
   "deviations": [
     {
-      "activity": "Erdarbeiten / Aushub BA 2",
-      "planned": "16.11.–25.11.2026, Erdbau Huber – Aushub sollte laufen",
-      "actual": "Seit 17.11.2026 Stillstand: Zufahrt Nord wegen Leitungsarbeiten der Stadtwerke gesperrt, Bagger kommt nicht aufs Baufeld",
+      "activity": "Bodenplatte bewehren",
+      "planned": "Beginn {T} (Rohbau Schneider, 6 Arbeitskräfte); Bewehrungspläne vom Tragwerksplaner des AG fällig {T}",
+      "actual": "Nicht begonnen: Bewehrungspläne fehlen, kein Liefertermin. 2 Arbeitskräfte umgesetzt, 4 ohne produktive Arbeit.",
       "severity": "hoch",
       "suggested_letter": "behinderung",
-      "explanation": "Die Sperrung liegt außerhalb unseres Verantwortungsbereichs und gefährdet den Beginn der Bodenplatte am 23.11. Behinderung unverzüglich anzeigen."
+      "reason": "Ursache im Bereich des Auftraggebers: fehlende Ausführungspläne",
+      "explanation": "Die Ausführungsplanung schuldet der Auftraggeber. Ohne Anzeige drohen Ansprüche auf Bauzeit und Mehrkosten verloren zu gehen.",
+      "event_date": "{T}",
+      "facts": {
+        "datum_beginn": "{T}",
+        "ursache": "Bewehrungspläne Bodenplatte vom Tragwerksplaner des AG (Ingenieurbüro Kraus) fehlen, zugesagt für {T}",
+        "verantwortungsbereich": "Auftraggeber (Ausführungsplanung durch den Tragwerksplaner des AG)",
+        "betroffene_leistung": "Bodenplatte bewehren (Folge: Bodenplatte betonieren)",
+        "auswirkung": "Bewehrung kann nicht beginnen; Betonieren ab {T+5} gefährdet",
+        "nachfrage": "Polier hat am {T} um 7:15 Uhr beim Tragwerksplaner angerufen, kein Liefertermin genannt",
+        "arbeitskraefte_geplant": 6,
+        "arbeitskraefte_umgesetzt": 2,
+        "arbeitskraefte_ohne_produktive_arbeit": 4,
+        "tage_bisher": 1,
+        "massnahmen": "2 von 6 Arbeitskräften auf andere Arbeiten umgesetzt (Lagerfläche Schalung, Baustraße)",
+        "quelle": "Bautagesbericht Nr. 16 vom {T}"
+      }
     },
     {
-      "activity": "Verbau (Trägerbohlwand)",
-      "planned": "04.11.–13.11.2026, Erdbau Huber – abgeschlossen",
-      "actual": "Holzbohlen Nordseite Achse C–D nicht hinterfüllt, Boden ausgewaschen, Bereich gesperrt",
-      "severity": "mittel",
-      "suggested_letter": "maengel",
-      "explanation": "Mangelhafte Leistung des Nachunternehmers mit Sicherheitsrelevanz. Mängelanzeige mit Frist an Erdbau Huber senden."
-    },
-    {
-      "activity": "Grundleitungen",
-      "planned": "19.11.–24.11.2026, Rohbau Schneider",
-      "actual": "Laut Bericht noch nicht begonnen (Aushub BA 2 fehlt)",
+      "activity": "Bodenplatte betonieren",
+      "planned": "{T+5} bis {T+6}",
+      "actual": "Noch nicht fällig, durch die fehlenden Bewehrungspläne aber gefährdet.",
       "severity": "niedrig",
       "suggested_letter": null,
-      "explanation": "Folge der Behinderung beim Aushub; in der Behinderungsanzeige als betroffene Leistung mit aufführen."
+      "reason": "Folge der Behinderung beim Bewehren",
+      "explanation": "In der Behinderungsanzeige als Folgewirkung nennen. Kein eigenes Schreiben nötig.",
+      "event_date": "{T}",
+      "facts": {}
     }
   ],
-  "summary": "Demo-Modus: Zwei relevante Abweichungen – Stillstand beim Aushub BA 2 (Behinderungsanzeige) und ein Mangel am Verbau (Mängelanzeige an Erdbau Huber)."
+  "summary": "Eine Abweichung mit Handlungsbedarf: Das Bewehren der Bodenplatte kann wegen fehlender Pläne des Auftraggebers nicht beginnen."
 }

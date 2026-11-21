@@ -1,10 +1,15 @@
+/** Presenter safety net: ?beispiel=1 makes the server answer with prepared examples (no AI call). */
+export function isBeispiel() {
+  return typeof window !== "undefined" && new URLSearchParams(window.location.search).get("beispiel") === "1";
+}
+
 // POST JSON helper: always resolves to data or throws an Error with a German message.
 export async function postJson<T>(url: string, body: unknown): Promise<T> {
   let res: Response;
   try {
     res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(isBeispiel() ? { "x-beispiel": "1" } : {}) },
       body: JSON.stringify(body),
     });
   } catch {

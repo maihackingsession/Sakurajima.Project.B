@@ -1,0 +1,58 @@
+{
+  "id": "s03",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "pläne für bewehrung bodenplatte immer noch nicht da, eigentlich sollten wir montag anfangen. schneider steht dann mit seinen leuten rum",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "facts": {
+      "ursache": "Bewehrungspläne für die Bodenplatte liegen immer noch nicht vor",
+      "betroffene_leistung": "Bewehrung Bodenplatte",
+      "geplanter_beginn": "Montag",
+      "nachunternehmer": "Rohbau Schneider GmbH",
+      "auswirkung": "Nachunternehmer Schneider und seine Leute können nicht arbeiten und stehen still"
+    },
+    "reason": "Fehlende Ausführungspläne verhindern den geplanten Arbeitsbeginn, das ist eine Behinderung des Bauablaufs."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Datum Beginn",
+        "question": "Welches Datum hat der geplante Beginn am Montag genau (Tag.Monat.Jahr)?",
+        "example": "23.11.2026"
+      },
+      {
+        "field": "Verursacher/Verantwortungsbereich",
+        "question": "Wer ist für die Lieferung der Bewehrungspläne zuständig, und wann wurden sie zuletzt angemahnt oder zugesagt?",
+        "example": "Tragwerksplaner des AG; zuletzt am 14.11.2026 per E-Mail angemahnt, Lieferung für 18.11. zugesagt"
+      },
+      {
+        "field": "voraussichtliche Auswirkung",
+        "question": "Wie lange wird sich der Bauablauf voraussichtlich verzögern, wenn die Pläne weiter fehlen?",
+        "example": "ca. 5 Arbeitstage, Betonage Bodenplatte verschiebt sich entsprechend"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gemäß § 6 Abs. 1 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – ENTWURF zur Prüfung",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen gemäß § 6 Abs. 1 VOB/B an, dass wir uns in der ordnungsgemäßen Ausführung unserer Leistungen für das Bauvorhaben Neubau Bürogebäude Forschungscampus Garching (Baustelle: Lichtenbergstraße 8, 85748 Garching bei München) behindert sehen.\n\nUrsache der Behinderung: Die Bewehrungspläne für die Bodenplatte liegen uns bis heute (21.11.2026) nicht vor. [Ggf. ergänzen: Datum der Plananforderung bzw. vereinbarter Planliefertermin]\n\nBetroffene Leistung: Bewehrungsarbeiten an der Bodenplatte. Diese sollten am Montag, [Datum des geplanten Beginns einsetzen], beginnen. Ohne die Bewehrungspläne können wir die Arbeiten nicht aufnehmen.\n\nAuswirkungen: Unser Nachunternehmer, die Rohbau Schneider GmbH, kann mit seinen Mitarbeitern die Arbeiten nicht aufnehmen und steht bis zum Vorliegen der Pläne still. Die voraussichtliche Dauer der Behinderung und die Auswirkungen auf den Bauablauf und die vertraglichen Termine können wir derzeit noch nicht abschließend beurteilen: [Voraussichtliche Dauer und Terminauswirkung einsetzen]\n\nDie Behinderung liegt nach unserer Einschätzung in Ihrem Verantwortungsbereich bzw. im Verantwortungsbereich der von Ihnen beauftragten Planer: [Verantwortungsbereich/Verursacher bestätigen].\n\nWir fordern Sie auf, uns die vollständigen und freigegebenen Bewehrungspläne für die Bodenplatte umgehend zur Verfügung zu stellen.\n\nVorsorglich weisen wir darauf hin, dass sich die Ausführungsfristen gemäß § 6 Abs. 2 VOB/B verlängern. Ferner behalten wir uns ausdrücklich den Ersatz des uns entstehenden Schadens bzw. der Mehrkosten gemäß § 6 Abs. 6 VOB/B vor, insbesondere für Stillstands- und Vorhaltekosten unseres Nachunternehmers. Die Höhe werden wir gesondert beziffern.\n\nDas Ende der Behinderung bzw. die Wiederaufnahme der Arbeiten werden wir Ihnen gesondert anzeigen.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 6 Abs. 1, 2 und 6 VOB/B",
+    "deadline_hint": "Behinderungsanzeige unverzüglich schriftlich absenden – Zugang (z. B. per E-Mail mit Lesebestätigung oder Einschreiben) nachweisbar dokumentieren.",
+    "missing": [
+      "Genaues Datum des geplanten Beginns (welcher Montag?)",
+      "Datum der Plananforderung bzw. vereinbarter Planliefertermin",
+      "Voraussichtliche Dauer der Behinderung und Auswirkung auf Bauablauf und Termine",
+      "Verursacher/Verantwortungsbereich (Auftraggeber bzw. dessen Planer) bestätigen"
+    ]
+  },
+  "ms": {
+    "router": 2223,
+    "gaps": 3393,
+    "letter": 9368
+  }
+}

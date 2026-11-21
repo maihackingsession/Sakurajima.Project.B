@@ -1,0 +1,62 @@
+{
+  "id": "s15",
+  "expected": "maengel",
+  "messy": true,
+  "input": "Planum BA1 vom Huber nicht ordentlich verdichtet, Lastplattendruckversuch nicht bestanden",
+  "router": {
+    "intent": "letter",
+    "letter_type": "maengel",
+    "facts": {
+      "nachunternehmer": "Erdbau Huber GmbH & Co. KG",
+      "betroffene_leistung": "Planum Bauabschnitt 1",
+      "mangel": "Planum nicht ordentlich verdichtet",
+      "pruefergebnis": "Lastplattendruckversuch nicht bestanden"
+    },
+    "reason": "Der Nachunternehmer Erdbau Huber hat das Planum mangelhaft verdichtet, daher ist eine Mängelanzeige an den Nachunternehmer nötig."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Feststellungsdatum",
+        "question": "An welchem Datum wurde der Lastplattendruckversuch durchgeführt und der Mangel festgestellt?",
+        "example": "19.11.2026"
+      },
+      {
+        "field": "Frist",
+        "question": "Bis wann soll Erdbau Huber den Mangel beseitigen (Nachverdichtung und erneuter Versuch)?",
+        "example": "30.11.2026"
+      },
+      {
+        "field": "Mangelbeschreibung",
+        "question": "Was genau hat der Versuch ergeben? Bitte nennen Sie den Messwert und den geforderten Wert, falls bekannt.",
+        "example": "Ev2 = 38 MN/m² gemessen, gefordert sind mindestens 45 MN/m²"
+      },
+      {
+        "field": "Ort",
+        "question": "An welcher Stelle im Bauabschnitt 1 wurde der Mangel festgestellt, oder betrifft er die gesamte Fläche?",
+        "example": "Messpunkt 3 im Nordteil von BA1, nach Sichtprüfung vermutlich die ganze Fläche"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mängelanzeige gemäß § 4 Abs. 7 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 (NU-Vertrag NU-0417-01) – ENTWURF zur Prüfung",
+    "recipient": "Erdbau Huber GmbH & Co. KG\nz. Hd. Herrn Josef Huber\nKiesweg 3\n85386 Eching",
+    "salutation": "Sehr geehrter Herr Huber,",
+    "body": "[ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]\n\nim Rahmen des oben genannten Bauvorhabens haben Sie als unser Nachunternehmer gemäß Nachunternehmervertrag Nr. NU-0417-01 die Erdbauleistungen übernommen. Hiermit zeigen wir Ihnen einen Mangel an Ihrer Leistung an.\n\nBei dem von Ihnen hergestellten Planum im Bauabschnitt 1 ([genauen Ort angeben: Bauteil, Achse, Bereich]) ist die Verdichtung nicht ordnungsgemäß ausgeführt worden. Der am [Datum der Feststellung einsetzen] durchgeführte Lastplattendruckversuch wurde nicht bestanden. [Gemessene Werte (Ev2, Ev2/Ev1) und geforderte Werte laut Vertrag/Leistungsverzeichnis einsetzen, sofern vorhanden.] Die Leistung entspricht damit nicht den vertraglichen Anforderungen.\n\nWir fordern Sie auf, den Mangel bis spätestens [Frist als konkretes Datum einsetzen] vollständig und fachgerecht zu beseitigen, das Planum ordnungsgemäß nachzuverdichten und durch einen erneuten Lastplattendruckversuch nachzuweisen, dass die geforderten Werte erreicht werden. Bitte stimmen Sie den Termin des Nachweisversuchs rechtzeitig mit uns ab.\n\nSollte die Frist fruchtlos verstreichen, behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen (Ersatzvornahme) sowie weitere Rechte, insbesondere Schadensersatzansprüche, geltend zu machen. Auch für Folgen und Verzögerungen im Bauablauf, die aus dem Mangel entstehen, behalten wir uns Ansprüche ausdrücklich vor.\n\nBei Rückfragen erreichen Sie unseren Bauleiter, Herrn Thomas Berger, unter 0171 2345678.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 4 Abs. 7 VOB/B (ggf. i. V. m. § 13 VOB/B, je nach Abnahmestand); Ersatzvornahme nach fruchtlosem Fristablauf: § 4 Abs. 7 Satz 3 i. V. m. § 8 Abs. 3 VOB/B",
+    "deadline_hint": "Mängelanzeige schriftlich absenden und Zugang nachweisbar dokumentieren (z. B. Einschreiben oder E-Mail mit Lesebestätigung). Eine angemessene, konkret datierte Frist setzen, damit Ersatzvornahme und weitere Rechte danach geltend gemacht werden können.",
+    "missing": [
+      "Datum der Feststellung des Mangels bzw. des Lastplattendruckversuchs",
+      "Genauer Ort des Mangels (Bauteil, Achse, Bereich im Bauabschnitt 1)",
+      "Frist zur Mängelbeseitigung (konkretes Datum)",
+      "Gemessene und geforderte Verdichtungswerte des Lastplattendruckversuchs (optional, empfohlen)"
+    ]
+  },
+  "ms": {
+    "router": 1589,
+    "gaps": 3525,
+    "letter": 11470
+  }
+}

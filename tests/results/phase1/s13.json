@@ -1,0 +1,41 @@
+{
+  "id": "s13",
+  "expected": "maengel",
+  "messy": false,
+  "input": "Bei der Begehung am 18.11.2026 haben wir festgestellt, dass Erdbau Huber am Verbau Nordseite Achse C–D die Holzbohlen auf ca. 6 m nicht hinterfüllt hat. Boden ist ausgewaschen. Bitte Frist zur Beseitigung bis 27.11.2026 setzen.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "maengel",
+    "facts": {
+      "datum_feststellung": "18.11.2026",
+      "anlass": "Begehung",
+      "nachunternehmer": "Erdbau Huber GmbH & Co. KG",
+      "gewerk": "Erdbau / Aushub / Verbau",
+      "ort": "Verbau Nordseite, Achse C–D",
+      "mangel": "Holzbohlen nicht hinterfüllt",
+      "umfang": "ca. 6 m",
+      "folge": "Boden ist ausgewaschen",
+      "frist_beseitigung": "27.11.2026"
+    },
+    "reason": "Der Nachunternehmer Erdbau Huber hat am Verbau mangelhaft gearbeitet und soll zur Beseitigung bis 27.11.2026 aufgefordert werden, daher Mängelanzeige an den Nachunternehmer."
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Mängelanzeige mit Aufforderung zur Mängelbeseitigung – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417, Nachunternehmervertrag NU-0417-01",
+    "recipient": "Erdbau Huber GmbH & Co. KG\nz. Hd. Herrn Josef Huber\nKiesweg 3\n85386 Eching",
+    "salutation": "Sehr geehrter Herr Huber,",
+    "body": "[ENTWURF – zur Prüfung durch den Bauleiter, noch nicht versendet]\n\nbei der Begehung am 18.11.2026 auf der Baustelle Lichtenbergstraße 8, 85748 Garching bei München, haben wir im Rahmen des oben genannten Bauvorhabens folgenden Mangel an der von Ihnen ausgeführten Leistung (Erdbau / Aushub / Verbau) festgestellt:\n\nAm Verbau der Nordseite, Achse C–D, sind die Holzbohlen auf einer Länge von ca. 6 m nicht hinterfüllt. Infolgedessen ist der Boden ausgewaschen.\n\nWir zeigen Ihnen diesen Mangel hiermit unter Bezugnahme auf den Nachunternehmervertrag NU-0417-01 an und fordern Sie auf, den Mangel bis zum 27.11.2026 vollständig und fachgerecht zu beseitigen. Dazu gehört auch die Beseitigung der Folgen der Auswaschung, soweit diese die ordnungsgemäße Ausführung des Verbaus beeinträchtigen.\n\nBitte bestätigen Sie uns kurzfristig schriftlich, dass Sie die Mängelbeseitigung fristgerecht durchführen, und teilen Sie uns den geplanten Ausführungstermin mit. Nach Abschluss der Arbeiten bitten wir um Mitteilung zur gemeinsamen Abnahme der Nachbesserung.\n\nSollte die Frist fruchtlos verstreichen, behalten wir uns vor, den Mangel nach den vertraglichen und gesetzlichen Regelungen auf Ihre Kosten durch Dritte beseitigen zu lassen (Ersatzvornahme). Weitere Rechte, insbesondere Schadensersatzansprüche für Schäden und Folgekosten, die aus dem Mangel entstehen, behalten wir uns ausdrücklich vor.\n\nFür Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 zur Verfügung.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "",
+    "deadline_hint": "Frist bis 27.11.2026 (6 Tage ab heute, 21.11.2026) – Schreiben schriftlich absenden und Zugang nachweisbar dokumentieren (z. B. Einschreiben oder E-Mail mit Lesebestätigung). Angemessenheit der Frist angesichts des Mangelumfangs prüfen.",
+    "missing": []
+  },
+  "ms": {
+    "router": 3112,
+    "gaps": 1261,
+    "letter": 6770
+  }
+}

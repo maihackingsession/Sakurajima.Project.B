@@ -1,0 +1,65 @@
+{
+  "id": "s07",
+  "expected": "mehrkosten",
+  "messy": true,
+  "input": "AG will jetzt doch andere Fenster, größere Öffnungen in der Fassade Nord, Schalung muss geändert werden",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "facts": {
+      "angeordnet_durch": "Auftraggeber (AG)",
+      "anordnung": "andere Fenster, größere Öffnungen in der Fassade Nord",
+      "ort": "Fassade Nord",
+      "betroffene_leistung": "Schalung muss geändert werden"
+    },
+    "reason": "Der Auftraggeber ordnet eine Planänderung an (andere Fenster, größere Fassadenöffnungen), die nicht im Vertrag enthalten ist und eine Schalungsänderung erfordert – das ist eine Mehrkostenanzeige."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Anordnung durch wen + wann",
+        "question": "Wann und wie hat der Auftraggeber die Änderung angeordnet, und wer genau hat sie mitgeteilt?",
+        "example": "Mündlich am 19.11.2026 durch Frau Dr. Lindner bei der Baubesprechung"
+      },
+      {
+        "field": "Art der Zusatz-/Änderungsleistung",
+        "question": "Welche Änderung ist genau gewünscht, also welche Fenster und wie groß sollen die Öffnungen werden?",
+        "example": "Öffnungen in Achse 3–6 von 1,25 m x 1,50 m auf 2,00 m x 2,25 m vergrößert"
+      },
+      {
+        "field": "betroffene Leistung",
+        "question": "Welche Schalungsarbeiten müssen geändert werden, und ist schon geschalt oder betoniert?",
+        "example": "Wandschalung Fassade Nord, 2. OG, bereits geschalt, noch nicht betoniert"
+      },
+      {
+        "field": "Beginn der Ausführung",
+        "question": "Ab wann sollen die geänderten Arbeiten ausgeführt werden oder haben sie schon begonnen?",
+        "example": "Beginn am 25.11.2026, sobald die geänderten Pläne vorliegen"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mehrkostenanzeige gemäß § 2 Abs. 5 und Abs. 6 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – ENTWURF zur Prüfung",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen zum oben genannten Bauvorhaben an, dass sich aus einer Änderung bzw. Anordnung des Auftraggebers Mehrkosten ergeben werden. Wir melden unseren Anspruch auf geänderte bzw. besondere Vergütung gemäß § 2 Abs. 5 und Abs. 6 VOB/B hiermit ausdrücklich an.\n\nNach unserer Kenntnis hat der Auftraggeber [Name der anordnenden Person einsetzen] am [Datum der Anordnung einsetzen] angeordnet, dass andere Fenster vorgesehen werden und die Öffnungen in der Fassade Nord vergrößert werden sollen. Diese Änderung ist im bisherigen Vertragsumfang nicht enthalten.\n\nVon dieser Änderung ist insbesondere die Schalung im Bereich der Fassade Nord betroffen, die entsprechend geändert werden muss. [Genaue Bezeichnung der betroffenen Bauteile, Achsen und Geschosse einsetzen]\n\nDie Ausführung der geänderten Leistung ist ab [Beginn der Ausführung einsetzen] vorgesehen. Wir weisen darauf hin, dass wir die geänderte Leistung erst ausführen werden, wenn Sie die Änderung bestätigt haben und über die Vergütung Einvernehmen besteht, soweit dies mit dem Bauablauf vereinbar ist. [Vom Bauleiter zu prüfen]\n\nDie hierdurch entstehenden Mehrkosten werden wir gesondert beziffern; ein entsprechendes Nachtragsangebot werden wir Ihnen unverzüglich vorlegen. Etwaige Auswirkungen auf die Ausführungsfristen sowie auf den Bauablauf behalten wir uns ausdrücklich vor, gesondert geltend zu machen.\n\nWir bitten Sie, die Anordnung schriftlich zu bestätigen und uns mitzuteilen, ob die Änderung wie beschrieben ausgeführt werden soll.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 2 Abs. 5 und Abs. 6 VOB/B",
+    "deadline_hint": "Anspruch auf besondere Vergütung nach § 2 Abs. 6 VOB/B muss VOR Beginn der Ausführung angekündigt werden – Schreiben daher vor Start der Schalungsänderung absenden und Zugang nachweisbar dokumentieren (z. B. Einschreiben oder E-Mail mit Empfangsbestätigung).",
+    "missing": [
+      "Wer beim Auftraggeber die Änderung angeordnet hat (Name/Funktion)",
+      "Datum der Anordnung (und ob mündlich oder schriftlich, z. B. Protokoll, Planänderung)",
+      "Genaue Bezeichnung der betroffenen Bauteile (Achsen, Geschosse, Anzahl/Maße der Öffnungen) und Art der neuen Fenster",
+      "Geplanter Beginn der Ausführung der geänderten Leistung",
+      "Klärung, ob es sich um eine geänderte Leistung (§ 2 Abs. 5) oder zusätzliche Leistung (§ 2 Abs. 6) handelt, bzw. ob beides zutrifft",
+      "Ob Rohbau Schneider GmbH (Nachunternehmer Rohbau/Stahlbeton) bereits betroffen bzw. beteiligt ist und ob Schalungsarbeiten schon begonnen oder ausgeführt wurden",
+      "Mögliche Auswirkungen auf Termine/Bauablauf"
+    ]
+  },
+  "ms": {
+    "router": 2578,
+    "gaps": 3975,
+    "letter": 10416
+  }
+}

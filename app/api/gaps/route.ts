@@ -5,7 +5,7 @@ export const maxDuration = 60;
 
 type Body = { letter_type?: unknown; input?: unknown; facts?: unknown };
 
-export const POST = jsonRoute<Body>(async (body) => {
+export const POST = jsonRoute<Body>(async (body, ctx) => {
   if (!isLetterType(body.letter_type)) throw new PromptError("Bitte eine Schreibenart wählen.", 400);
   const required = await readData<Record<string, string[]>>("required_fields.json");
   const result = await runPrompt<GapsResult>(
@@ -16,7 +16,7 @@ export const POST = jsonRoute<Body>(async (body) => {
       facts: body.facts ?? {},
       required_fields: required[body.letter_type] ?? [],
     },
-    { mockVariant: body.letter_type, effort: "low" },
+    { mockVariant: body.letter_type, effort: "low", fast: true, mock: ctx.mock },
   );
   const questions = Array.isArray(result.questions) ? result.questions.slice(0, 4) : [];
   return {

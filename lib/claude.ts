@@ -1,12 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { fillDates, formatDate, today } from "./dates";
 
 // One helper for every specialist prompt (HANDOVER §4: plain functions, no frameworks).
 // Without ANTHROPIC_API_KEY it returns mocks from data/mocks/ (Demo-Modus).
 
 const ROOT = process.cwd();
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
+// Router and gaps run on the fast model (short JSON answers); letters stay on MODEL.
+const FAST_MODEL = process.env.ANTHROPIC_FAST_MODEL || "claude-haiku-5-5";
 
 export class PromptError extends Error {
   constructor(message: string, public status = 502) {
@@ -18,8 +21,9 @@ export function isMockMode() {
   return !process.env.ANTHROPIC_API_KEY;
 }
 
+/** Reads data/<rel> and fills relative demo dates ({T}, {T+1} …, see lib/dates.ts). */
 export async function readData<T = unknown>(rel: string): Promise<T> {
-  return JSON.parse(await readFile(path.join(ROOT, "data", rel), "utf8")) as T;
+  return JSON.parse(fillDates(await readFile(path.join(ROOT, "data", rel), "utf8"))) as T;
 }
 
 async function exists(file: string) {
@@ -55,6 +59,10 @@ type Options = {
   mockTransform?: (mock: unknown) => unknown;
   effort?: "low" | "medium" | "high";
   maxTokens?: number;
+  /** Use ANTHROPIC_FAST_MODEL (router, gaps). */
+  fast?: boolean;
+  /** Beispielmodus (?beispiel=1): prepared answers instead of Claude, even with an API key. */
+  mock?: boolean;
 };
 
 /**
@@ -67,18 +75,18 @@ export async function runPrompt<T>(
   input: Record<string, unknown>,
   opts: Options = {},
 ): Promise<T> {
-  if (isMockMode()) {
-    await new Promise((r) => setTimeout(r, 800));
+  if (opts.mock || isMockMode()) {
+    await new Promise((r) => setTimeout(r, 900));
     const variant = opts.mockVariant && path.join(ROOT, "data", "mocks", `${name}-${opts.mockVariant}.json`);
     const file = variant && (await exists(variant)) ? variant : path.join(ROOT, "data", "mocks", `${name}.json`);
-    const mock = JSON.parse(await readFile(file, "utf8"));
+    const mock = JSON.parse(fillDates(await readFile(file, "utf8")));
     return (opts.mockTransform ? opts.mockTransform(mock) : mock) as T;
   }
 
   const template = await readFile(path.join(ROOT, "prompts", `${name}.xml`), "utf8");
   const values: Record<string, unknown> = {
     project_context: await readData("project.json"),
-    today: new Date().toLocaleDateString("de-DE"),
+    today: formatDate(today()),
     ...input,
   };
   const prompt = template.replace(/\{([a-z_]+)\}/g, (match, key: string) =>
@@ -88,14 +96,20 @@ export async function runPrompt<T>(
   const client = new Anthropic({ timeout: 55_000, maxRetries: 1 });
   const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: prompt }];
 
+  const model = opts.fast ? FAST_MODEL : MODEL;
+  // Server-side refusal fallback exists for Sonnet/Opus/Fable, not for Haiku.
+  // No temperature: current models reject non-default sampling values (400).
+  const fallback = /haiku/i.test(model)
+    ? {}
+    : { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const };
+
   for (let attempt = 0; attempt < 2; attempt++) {
     let text: string;
     try {
       const response = await client.beta.messages.create({
-        model: MODEL,
+        model,
         max_tokens: opts.maxTokens ?? 8000,
-        betas: ["server-side-fallback-2026-07-01"],
-        fallbacks: "default",
+        ...fallback,
         output_config: { effort: opts.effort ?? "medium" },
         messages,
       });
@@ -131,8 +145,11 @@ export async function runPrompt<T>(
 }
 
 /** Wraps a POST handler: JSON in, JSON out, always `{error}` in German on failure. */
-export function jsonRoute<B>(handler: (body: B) => Promise<unknown>) {
+export type RouteContext = { mock: boolean };
+
+export function jsonRoute<B>(handler: (body: B, ctx: RouteContext) => Promise<unknown>) {
   return async (request: Request) => {
+    const ctx = { mock: request.headers.get("x-beispiel") === "1" };
     let body: B;
     try {
       body = (await request.json()) as B;
@@ -140,7 +157,7 @@ export function jsonRoute<B>(handler: (body: B) => Promise<unknown>) {
       return Response.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
     try {
-      return Response.json(await handler(body));
+      return Response.json(await handler(body, ctx));
     } catch (error) {
       if (error instanceof PromptError) return Response.json({ error: error.message }, { status: error.status });
       console.error(error);

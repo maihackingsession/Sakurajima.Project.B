@@ -1,6 +1,7 @@
 {
   "bauvorhaben": "Neubau Bürogebäude Forschungscampus Garching",
   "baustelle": "Lichtenbergstraße 8, 85748 Garching bei München",
+  "ort": "Garching",
   "vertragsnummer": "BV-2026-0417",
   "vertragsgrundlage": "VOB/B",
   "auftraggeber": {
@@ -8,6 +9,11 @@
     "ansprechpartner": "Frau Dr. Andrea Lindner, Projektleitung Bauherr",
     "strasse": "Boltzmannstraße 15",
     "plz_ort": "85748 Garching bei München"
+  },
+  "tragwerksplaner_ag": {
+    "name": "Ingenieurbüro Kraus",
+    "ansprechpartner": "Herr Dipl.-Ing. Peter Kraus",
+    "rolle": "Tragwerksplanung, beauftragt vom Auftraggeber"
   },
   "auftragnehmer": {
     "name": "Musterbau GmbH",
@@ -20,6 +26,15 @@
     "name": "Thomas Berger",
     "funktion": "Bauleiter",
     "telefon": "0171 2345678"
+  },
+  "polier": {
+    "name": "Stefan Maier",
+    "funktion": "Polier"
+  },
+  "kosten": {
+    "_hinweis": "Standardwerte für die Stillstand-Schätzung (nur intern, nie im Schreiben).",
+    "verrechnungssatz_eur_h": 58,
+    "arbeitsstunden_pro_tag": 8
   },
   "nachunternehmer": [
     {

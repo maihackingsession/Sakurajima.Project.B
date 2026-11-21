@@ -1,0 +1,64 @@
+{
+  "id": "s09",
+  "expected": "mehrkosten",
+  "messy": true,
+  "input": "zusätzlich noch leerrohre für ladesäulen in der bodenplatte, hat der elektroplaner vom bauherrn gestern so gesagt",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "facts": {
+      "betroffene_leistung": "zusätzliche Leerrohre für Ladesäulen in der Bodenplatte",
+      "angeordnet_durch": "Elektroplaner des Bauherrn",
+      "datum_anordnung": "gestern",
+      "art_der_anordnung": "mündlich"
+    },
+    "reason": "Der Elektroplaner des Bauherrn ordnet zusätzliche, nicht vertraglich vereinbarte Leistungen an, daher Mehrkostenanzeige an den Auftraggeber."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Anordnung durch wen + wann",
+        "question": "Wie heißt der Elektroplaner des Bauherrn, und wer war bei der mündlichen Anordnung gestern (20.11.2026) dabei?",
+        "example": "Herr Meier vom Planungsbüro XY; anwesend waren Herr Berger und Herr Schneider"
+      },
+      {
+        "field": "Beginn der Ausführung",
+        "question": "Wann sollen die zusätzlichen Leerrohre eingebaut werden, oder sind sie schon eingebaut?",
+        "example": "Einbau ab 25.11.2026, vor dem Betonieren der Bodenplatte"
+      },
+      {
+        "field": "Art der Zusatz-/Änderungsleistung",
+        "question": "Wie viele Leerrohre und Ladesäulen sind es, und wo in der Bodenplatte sollen sie liegen?",
+        "example": "6 Leerrohre DN 100 für 3 Ladesäulen, Bereich Tiefgarage Ost"
+      },
+      {
+        "field": "betroffene Leistung",
+        "question": "Welche vertragliche Leistung wird dadurch geändert, und wer baut die Rohre ein (Rohbau Schneider oder Elektro Wagner)?",
+        "example": "Bodenplatte laut LV-Pos. 2.3; Einbau durch Elektro Wagner, Rohbau Schneider muss die Bewehrung anpassen"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Ankündigung von Mehrkosten gemäß § 2 Abs. 5 und Abs. 6 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "ENTWURF ZUR PRÜFUNG – nicht versendet.\n\nhiermit zeigen wir Ihnen gemäß § 2 Abs. 5 und Abs. 6 VOB/B an, dass für die nachfolgend beschriebene Leistung im Rahmen des oben genannten Bauvorhabens (Baustelle: Lichtenbergstraße 8, 85748 Garching bei München) Mehrkosten entstehen und wir hierfür einen Anspruch auf besondere bzw. geänderte Vergütung geltend machen.\n\nDer Elektroplaner des Bauherrn hat am 20.11.2026 mündlich angeordnet, dass zusätzlich Leerrohre für Ladesäulen in der Bodenplatte einzubauen sind. Nach unserer Kenntnis sind diese Leerrohre im bestehenden Vertrag nicht vorgesehen. Die Anordnung betrifft die Leistung „zusätzliche Leerrohre für Ladesäulen in der Bodenplatte“. Eine schriftliche Anordnung liegt uns bislang nicht vor; [Name des Elektroplaners einsetzen].\n\nDer geplante Beginn der Ausführung dieser Leistung ist [Beginn der Ausführung einsetzen]. Wir kündigen den Vergütungsanspruch hiermit vor Beginn der Ausführung an. Weitere Einzelheiten zu Art, Umfang und Lage der Leerrohre ([Anzahl, Lage und Spezifikation der Leerrohre einsetzen]) werden wir mit Ihnen bzw. Ihren Planern abstimmen.\n\nDie Mehrkosten werden wir gesondert beziffern; ein Nachtragsangebot wird folgen. Wir bitten Sie, uns die Anordnung schriftlich zu bestätigen und uns mitzuteilen, ob die Leistung wie angeordnet ausgeführt werden soll. Etwaige Auswirkungen auf Ausführungsfristen und den Bauablauf behalten wir uns ausdrücklich vor.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 2 Abs. 5 und Abs. 6 VOB/B",
+    "deadline_hint": "Mehrkostenanzeige vor Beginn der Ausführung der Leerrohre schriftlich absenden und Zugang nachweisbar dokumentieren. Bodenplatte nicht betonieren, bevor Anordnung bzw. Vergütung geklärt sind. Nachunternehmer (Rohbau/Elektro) entsprechend informieren.",
+    "missing": [
+      "Beginn der Ausführung der Leerrohre",
+      "Name des Elektroplaners des Bauherrn",
+      "Bestätigung des Anordnungsdatums (aus „gestern“ abgeleitet: 20.11.2026)",
+      "Art, Anzahl, Lage und Spezifikation der Leerrohre",
+      "Bestätigung, dass die Leistung nicht im Vertrag/Leistungsverzeichnis enthalten ist (zusätzliche Leistung nach § 2 Abs. 6 oder geänderte Leistung nach § 2 Abs. 5)",
+      "Ob eine schriftliche Bestätigung der mündlichen Anordnung vorliegt oder angefordert wurde"
+    ]
+  },
+  "ms": {
+    "router": 2218,
+    "gaps": 4313,
+    "letter": 8889
+  }
+}

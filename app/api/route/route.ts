@@ -14,13 +14,15 @@ function guess(text: string): Pick<RouterResult, "intent" | "letter_type"> {
   return { intent: "letter", letter_type: "behinderung" };
 }
 
-export const POST = jsonRoute<{ input?: unknown }>(async (body) => {
+export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {
   const input = requireText(body.input, "eine Beschreibung");
   const result = await runPrompt<RouterResult>(
     "router",
     { user_input: input },
     {
       effort: "low",
+      fast: true,
+      mock: ctx.mock,
       mockTransform: (m) => ({ ...(m as RouterResult), ...guess(input) }),
     },
   );

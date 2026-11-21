@@ -1,10 +1,20 @@
 {
   "intent": "letter",
   "letter_type": "behinderung",
+  "outcome": "anzeige",
   "facts": {
-    "ursache": "Bagger ausgefallen",
-    "datum_beginn": "seit Dienstag",
-    "betroffene_leistung": "Erdarbeiten / Aushub"
+    "datum_beginn": "{T}",
+    "ursache": "Bewehrungspläne Bodenplatte vom Tragwerksplaner des AG (Ingenieurbüro Kraus) fehlen, zugesagt für {T}",
+    "verantwortungsbereich": "Auftraggeber (Ausführungsplanung durch den Tragwerksplaner des AG)",
+    "betroffene_leistung": "Bodenplatte bewehren (Folge: Bodenplatte betonieren)",
+    "auswirkung": "Bewehrung kann nicht beginnen; Betonieren ab {T+5} gefährdet",
+    "nachfrage": "Polier hat am {T} um 7:15 Uhr beim Tragwerksplaner angerufen, kein Liefertermin genannt",
+    "arbeitskraefte_geplant": 6,
+    "arbeitskraefte_umgesetzt": 2,
+    "arbeitskraefte_ohne_produktive_arbeit": 4,
+    "tage_bisher": 1,
+    "massnahmen": "2 von 6 Arbeitskräften auf andere Arbeiten umgesetzt (Lagerfläche Schalung, Baustraße)",
+    "quelle": "Bautagesbericht Nr. 16 vom {T}"
   },
-  "reason": "Demo-Modus: Die Schreibenart wurde anhand von Stichwörtern geschätzt."
+  "reason": "Fehlende Pläne des Auftraggebers verhindern den Beginn der Bewehrung – das ist eine Behinderung."
 }

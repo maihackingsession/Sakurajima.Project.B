@@ -1,0 +1,58 @@
+{
+  "id": "s04",
+  "expected": "behinderung",
+  "messy": false,
+  "input": "Am 18.11.2026 wurde beim Aushub BA 2 in ca. 2,5 m Tiefe ein Verdachtsobjekt (mögliche Kampfmittel) gefunden. Die Arbeiten wurden sofort eingestellt, der Kampfmittelräumdienst ist informiert. Aushub und Grundleitungen sind betroffen, Dauer unklar.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "facts": {
+      "datum_fund": "18.11.2026",
+      "ursache": "Verdachtsobjekt (mögliche Kampfmittel) beim Aushub gefunden",
+      "ort": "Bauabschnitt 2, ca. 2,5 m Tiefe",
+      "betroffene_leistung": "Aushub und Grundleitungen",
+      "massnahme": "Arbeiten sofort eingestellt",
+      "beteiligte": "Kampfmittelräumdienst informiert",
+      "dauer": "unklar"
+    },
+    "reason": "Die Arbeiten wurden wegen des Kampfmittelverdachts eingestellt, das ist eine Behinderung des Bauablaufs und erfordert eine Behinderungsanzeige an den Auftraggeber."
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "voraussichtliche Auswirkung",
+        "question": "Wie lange wird sich der Bauablauf voraussichtlich verzögern, bzw. wann rechnen Sie mit der Freigabe durch den Kampfmittelräumdienst?",
+        "example": "Voraussichtlich ca. 2 bis 3 Wochen, Termin des Räumdienstes steht noch aus"
+      },
+      {
+        "field": "Verursacher/Verantwortungsbereich",
+        "question": "Liegen Ihnen Hinweise vor, dass der Auftraggeber das Kampfmittelrisiko kannte oder dass es in den Vergabeunterlagen oder im Baugrundgutachten erwähnt war?",
+        "example": "Nein, im Baugrundgutachten und in der Leistungsbeschreibung steht dazu nichts"
+      },
+      {
+        "field": "Datum Beginn",
+        "question": "Ab welchem Datum stehen die Arbeiten im betroffenen Bereich tatsächlich still, ebenfalls ab dem 18.11.2026?",
+        "example": "18.11.2026, ab sofort nach dem Fund"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gemäß § 6 Abs. 1 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – ENTWURF zur Prüfung",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen gemäß § 6 Abs. 1 VOB/B an, dass wir uns in der ordnungsgemäßen Ausführung unserer Leistungen auf der Baustelle Lichtenbergstraße 8, 85748 Garching bei München, im Bauabschnitt 2 behindert sehen.\n\nUrsache der Behinderung: Am 18.11.2026 wurde beim Aushub im Bauabschnitt 2 in einer Tiefe von ca. 2,5 m ein Verdachtsobjekt (mögliche Kampfmittel) aufgefunden. Wir haben die Arbeiten unverzüglich eingestellt. Der Kampfmittelräumdienst ist informiert.\n\nBeginn der Behinderung: Die Behinderung besteht seit dem 18.11.2026.\n\nBetroffene Leistungen: Von der Behinderung sind die Aushubarbeiten und die Grundleitungen betroffen.\n\nVoraussichtliche Auswirkungen: Die Dauer der Behinderung ist derzeit unklar. Eine belastbare Aussage zu den Auswirkungen auf den Bauablauf und die vereinbarten Termine ist uns daher noch nicht möglich. Eine Verschiebung der Ausführungsfristen ist jedoch zu erwarten. [Voraussichtliche Auswirkungen auf Bauablauf und Termine einsetzen, sobald bekannt]\n\nVerantwortungsbereich: Die Ursache der Behinderung liegt nicht im Verantwortungsbereich des Auftragnehmers. [Einschätzung zum Verursacher/Verantwortungsbereich durch den Bauleiter prüfen und bestätigen]\n\nWir behalten uns ausdrücklich vor, eine Verlängerung der Ausführungsfristen gemäß § 6 Abs. 2 VOB/B in Anspruch zu nehmen sowie Ersatz des uns entstehenden Schadens bzw. der Mehrkosten gemäß § 6 Abs. 6 VOB/B geltend zu machen.\n\nWir bitten Sie, uns über das weitere Vorgehen und den Stand der Abstimmung mit dem Kampfmittelräumdienst zu informieren. Das Ende der Behinderung bzw. die Wiederaufnahme der Arbeiten werden wir Ihnen gesondert anzeigen.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 6 Abs. 1, 2 und 6 VOB/B",
+    "deadline_hint": "Behinderungsanzeige unverzüglich schriftlich absenden – Zugang (z. B. per E-Mail mit Lesebestätigung oder Einschreiben) nachweisbar dokumentieren. Der Fund liegt bereits am 18.11.2026 zurück, daher nicht weiter verzögern.",
+    "missing": [
+      "Voraussichtliche Dauer der Behinderung und Auswirkungen auf Bauablauf und Termine (derzeit unklar)",
+      "Verursacher/Verantwortungsbereich der Behinderung (vom Bauleiter zu bestätigen)"
+    ]
+  },
+  "ms": {
+    "router": 2826,
+    "gaps": 3665,
+    "letter": 8203
+  }
+}

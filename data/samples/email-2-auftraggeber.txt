@@ -1,6 +1,6 @@
 Von: Dr. Andrea Lindner <a.lindner@campus-garching.example>
 An: Thomas Berger <bauleitung@musterbau.example>
-Datum: 19.11.2026, 18:05
+Datum: {T-1}, 18:05
 Betreff: AW: Hebeanlage UG
 
 Sehr geehrter Herr Berger,

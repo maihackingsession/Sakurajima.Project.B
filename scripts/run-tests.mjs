@@ -10,7 +10,8 @@ import path from "node:path";
 
 const base = (process.argv[2] || process.env.BASE_URL || "http://localhost:3000").replace(/\/$/, "");
 const root = path.resolve(import.meta.dirname, "..");
-const outDir = path.join(root, "tests", "results");
+const outDir = opt("out") ? path.resolve(root, opt("out")) : path.join(root, "tests", "results");
+const only = opt("only")?.split(",");
 
 const LABELS = {
   behinderung: "Behinderungsanzeige",
@@ -49,7 +50,9 @@ async function main() {
     process.exit(1);
   }
 
-  const situations = JSON.parse(await readFile(path.join(root, "tests", "situations.json"), "utf8"));
+  const situations = JSON.parse(await readFile(path.join(root, "tests", "situations.json"), "utf8")).filter(
+    (s) => !only || only.includes(s.id),
+  );
   await mkdir(outDir, { recursive: true });
   const rows = [];
 

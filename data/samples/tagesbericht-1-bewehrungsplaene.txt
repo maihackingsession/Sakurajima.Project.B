@@ -1,0 +1,30 @@
+BAUTAGESBERICHT Nr. 16
+Bauvorhaben: Neubau Bürogebäude Forschungscampus Garching (Vertrag BV-2026-0417)
+Auftragnehmer: Musterbau GmbH
+Datum: {T}
+Arbeitszeit: 7:00–16:00 Uhr
+
+Wetter: bedeckt, trocken, morgens 2 °C, mittags 6 °C, kein Wind
+
+Personal:
+- Musterbau GmbH: 1 Polier (S. Maier)
+- Rohbau Schneider GmbH (Nachunternehmer Rohbau): 6 Arbeitskräfte (Eisenflechter), eingeplant für Bodenplatte bewehren
+
+Geräte:
+- 1 Turmdrehkran
+- 1 Rüttelplatte
+
+Ausgeführte Leistungen:
+- Sauberkeitsschicht Bodenplatte kontrolliert, in Ordnung.
+- 2 Arbeitskräfte Rohbau Schneider auf andere Arbeiten umgesetzt: Lagerfläche für Schalung hergerichtet, Baustraße gereinigt.
+- Bodenplatte bewehren: nicht begonnen (siehe Behinderungen).
+
+Behinderungen / besondere Vorkommnisse:
+- Die Bewehrungspläne für die Bodenplatte vom Tragwerksplaner des Auftraggebers (Ingenieurbüro Kraus) waren für heute zugesagt und liegen bis Arbeitsende nicht vor.
+- 7:15 Uhr: Polier hat im Büro des Tragwerksplaners angerufen. Auskunft: Pläne sind in Bearbeitung, ein Liefertermin wurde nicht genannt.
+- Ohne Bewehrungspläne kann mit dem Bewehren der Bodenplatte nicht begonnen werden (Beginn laut Bauzeitenplan heute).
+- Von 6 eingeplanten Arbeitskräften wurden 2 auf andere Arbeiten umgesetzt. 4 Arbeitskräfte konnten heute nicht produktiv eingesetzt werden.
+- Betonieren der Bodenplatte (geplant ab {T+5}) ist dadurch gefährdet.
+
+Aufgestellt: S. Maier, Polier
+Gesehen: T. Berger, Bauleiter

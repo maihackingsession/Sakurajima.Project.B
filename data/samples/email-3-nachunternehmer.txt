@@ -1,6 +1,6 @@
 Von: Josef Huber <j.huber@erdbau-huber.example>
 An: Thomas Berger <bauleitung@musterbau.example>
-Datum: 19.11.2026, 07:12
+Datum: {T-1}, 07:12
 Betreff: Verbau Nordseite
 
 Servus Herr Berger,

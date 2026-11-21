@@ -1,8 +1,8 @@
 {
   "complete": false,
   "questions": [
-    { "field": "Anordnung durch wen + wann", "question": "Wer hat die zusätzliche Leistung angeordnet und wann?", "example": "Architekt Herr Vogel (Planer des AG), Baubesprechung am 19.11.2026" },
-    { "field": "Beginn der Ausführung", "question": "Wann soll mit der Ausführung begonnen werden?", "example": "24.11.2026" },
+    { "field": "Anordnung durch wen + wann", "question": "Wer hat die zusätzliche Leistung angeordnet und wann?", "example": "Architekt Herr Vogel (Planer des AG), Baubesprechung am {T-1}" },
+    { "field": "Beginn der Ausführung", "question": "Wann soll mit der Ausführung begonnen werden?", "example": "{T+4}" },
     { "field": "betroffene Leistung", "question": "Welche Leistung / welches LV-Position ist betroffen?", "example": "Grundleitungen, LV-Pos. 02.03" }
   ]
 }

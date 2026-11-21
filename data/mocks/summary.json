@@ -1,24 +1,24 @@
 {
-  "summary": "Demo-Modus: In der Baubesprechung Nr. 4 wurden der Stand der Erdarbeiten, fehlende Bewehrungspläne für die Bodenplatte und eine zusätzliche Hebeanlage besprochen. Der Auftraggeber hat die Bemusterung der Fassadenplatten bestätigt. Der Tragwerksplaner muss die Bewehrungspläne liefern, sonst verschiebt sich die Bodenplatte. Für die Hebeanlage wird ein Nachtragsangebot erwartet.",
+  "summary": "In der Baubesprechung Nr. 4 wurden der Stand der Gründungsarbeiten, fehlende Bewehrungspläne für die Bodenplatte und eine zusätzliche Hebeanlage besprochen. Der Auftraggeber hat die Bemusterung der Fassadenplatten bestätigt. Der Tragwerksplaner muss die Bewehrungspläne liefern, sonst verschiebt sich die Bodenplatte. Für die Hebeanlage wird ein Nachtragsangebot erwartet.",
   "decisions": [
     "Bemusterung Fassadenplatten (Variante B, anthrazit) durch AG freigegeben",
     "Zusätzlicher Pumpensumpf mit Hebeanlage im UG wird ausgeführt (Anordnung Architekt Vogel)",
-    "Nächste Baubesprechung am 26.11.2026, 10:00 Uhr, Baucontainer"
+    "Nächste Baubesprechung am {T+6}, 10:00 Uhr, Baucontainer"
   ],
   "open_items": [
-    { "task": "Bewehrungspläne Bodenplatte liefern", "owner": "Tragwerksplaner (Ing.-Büro Kraus)", "due": "20.11.2026" },
-    { "task": "Nachtragsangebot Hebeanlage einreichen", "owner": "Musterbau GmbH (Herr Berger)", "due": "27.11.2026" },
+    { "task": "Bewehrungspläne Bodenplatte liefern", "owner": "Tragwerksplaner (Ing.-Büro Kraus)", "due": "{T}" },
+    { "task": "Nachtragsangebot Hebeanlage einreichen", "owner": "Musterbau GmbH (Herr Berger)", "due": "{T+7}" },
     { "task": "Freigabe Zufahrt Nord mit Stadtwerken klären", "owner": "AG (Frau Dr. Lindner)", "due": "offen" },
     { "task": "Verbau Nordseite nacharbeiten", "owner": "Erdbau Huber", "due": "offen" }
   ],
   "deadlines": [
-    { "date": "20.11.2026", "what": "Lieferung Bewehrungspläne Bodenplatte" },
-    { "date": "26.11.2026", "what": "Baubesprechung Nr. 5" },
-    { "date": "27.11.2026", "what": "Nachtragsangebot Hebeanlage" }
+    { "date": "{T}", "what": "Lieferung Bewehrungspläne Bodenplatte" },
+    { "date": "{T+6}", "what": "Baubesprechung Nr. 5" },
+    { "date": "{T+7}", "what": "Nachtragsangebot Hebeanlage" }
   ],
   "risks": [
-    "Bodenplatte (Beginn 23.11.) gefährdet, wenn Bewehrungspläne nicht rechtzeitig kommen – Behinderungsanzeige prüfen",
-    "Zufahrt Nord weiterhin ungeklärt – Stillstand Aushub BA 2",
+    "Bewehren der Bodenplatte (Beginn {T:kurz}) gefährdet, wenn Bewehrungspläne nicht rechtzeitig kommen – Behinderungsanzeige prüfen",
+    "Zufahrt Nord weiterhin gesperrt – Anlieferung nur über Behelfszufahrt Süd",
     "Hebeanlage ist Zusatzleistung – Mehrkostenanzeige vor Ausführungsbeginn nötig"
   ]
 }

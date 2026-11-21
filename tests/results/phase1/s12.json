@@ -1,0 +1,45 @@
+{
+  "id": "s12",
+  "expected": "bedenken",
+  "messy": false,
+  "input": "Der Tragwerksplaner hat für die Kellerwände Bewehrungsstahl mit zu geringer Betondeckung (2 cm) vorgegeben. Nach unserer Einschätzung ist das für erdberührte Bauteile zu wenig und führt zu Korrosionsschäden. Betroffen sind die Kellerwände UG, Beginn geplant am 07.12.2026.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "bedenken",
+    "facts": {
+      "vorgabe_durch": "Tragwerksplaner",
+      "beanstandete_vorgabe": "Bewehrungsstahl mit zu geringer Betondeckung (2 cm)",
+      "betondeckung_vorgegeben": "2 cm",
+      "befuerchtete_folge": "Korrosionsschäden",
+      "begruendung": "2 cm Betondeckung nach Einschätzung des Bauleiters für erdberührte Bauteile zu wenig",
+      "betroffene_leistung": "Kellerwände UG",
+      "datum_beginn": "07.12.2026"
+    },
+    "reason": "Der Bauleiter hält die Planungsvorgabe des Tragwerksplaners (Betondeckung 2 cm) für fehlerhaft und riskant, daher Bedenkenanzeige an den Auftraggeber."
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Bedenkenanzeige gemäß § 4 Abs. 3 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – Kellerwände UG (ENTWURF zur Prüfung)",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "[ENTWURF – vor Versand durch den Bauleiter zu prüfen und ggf. anzupassen]\n\nhiermit zeigen wir Ihnen gemäß § 4 Abs. 3 VOB/B Bedenken gegen die vorgesehene Art der Ausführung der Kellerwände im Untergeschoss (UG) an. Die Ausführung ist nach aktuellem Stand für den 07.12.2026 geplant.\n\nGegenstand der Bedenken: Der Tragwerksplaner hat für die Kellerwände UG Bewehrungsstahl mit einer Betondeckung von 2 cm vorgegeben. [Fundstelle der Vorgabe einsetzen, z. B. Plan-/Positionsnummer und Planstand der Tragwerksplanung]\n\nBegründung: Nach unserer Einschätzung ist eine Betondeckung von 2 cm für erdberührte Bauteile nicht ausreichend. [Technische Begründung ergänzen, z. B. Bezug auf die einschlägige Norm bzw. Expositionsklasse]\n\nMögliche Folgen: Wir befürchten, dass bei Ausführung mit der vorgegebenen Betondeckung Korrosionsschäden an der Bewehrung der erdberührten Kellerwände auftreten können. [Ggf. weitere Folgen, z. B. Einschränkung der Dauerhaftigkeit/Nutzbarkeit, ergänzen]\n\nWir bitten Sie, die Planung zu überprüfen und uns bis zum [Frist einsetzen, rechtzeitig vor dem 07.12.2026] schriftlich mitzuteilen, wie die Kellerwände UG ausgeführt werden sollen. Bis zu Ihrer Entscheidung werden wir die betroffenen Arbeiten nicht beginnen.\n\nVorsorglich weisen wir darauf hin, dass wir bei einer Ausführung nach Ihrer Anweisung trotz der angezeigten Bedenken für daraus entstehende Mängel nach Maßgabe von § 13 Abs. 3 VOB/B nicht haften. Sollte sich durch die Klärung oder eine geänderte Planung der Beginn der Arbeiten verschieben oder es zu Mehrkosten kommen, behalten wir uns ausdrücklich vor, hierzu gesondert Stellung zu nehmen.\n\nFür Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger (Tel. 0171 2345678), gerne zur Verfügung.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 4 Abs. 3 VOB/B; Hinweis zu § 13 Abs. 3 VOB/B",
+    "deadline_hint": "Bedenken so früh wie möglich und vor Beginn der Arbeiten (geplant 07.12.2026) schriftlich absenden. Zugang beim Auftraggeber nachweisbar dokumentieren (z. B. Einschreiben oder E-Mail mit Lesebestätigung). Die Frist zur Entscheidung so setzen, dass der Beginn der Arbeiten nicht gefährdet wird.",
+    "missing": [
+      "Frist für die Entscheidung/Anweisung des Auftraggebers (Datum)",
+      "Fundstelle der beanstandeten Vorgabe (Plan-/Positionsnummer, Planstand)",
+      "Technische Begründung (z. B. einschlägige Norm bzw. Expositionsklasse) für die Unzulänglichkeit von 2 cm Betondeckung",
+      "Ggf. weitere mögliche Folgen über Korrosionsschäden hinaus",
+      "Bestätigung, ob der Beginn der Arbeiten bis zur Klärung tatsächlich zurückgestellt werden soll"
+    ]
+  },
+  "ms": {
+    "router": 2916,
+    "gaps": 1458,
+    "letter": 10117
+  }
+}
