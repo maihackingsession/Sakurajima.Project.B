@@ -19,7 +19,7 @@ const ICONS: Record<Tab, React.ReactNode> = {
 
 const TABS: { id: Tab; label: string; short?: string }[] = [
   { id: "situation", label: "Neuer Eintrag" },
-  { id: "bericht", label: "Tagesbericht" },
+  { id: "bericht", label: "Tagesbericht", short: "Tages­bericht" },
   { id: "verlauf", label: "Fristen & Verlauf" },
   { id: "zusammenfassen", label: "Zusammenfassen", short: "Zusammen­fassen" },
 ];

@@ -141,6 +141,9 @@ async function run() {
 
     await step("hauptseite", async () => {
       await open();
+      // Start every viewport with an empty Verlauf (same browser profile for both viewports).
+      await js("localStorage.clear(); true");
+      await open();
       await shot("01-hauptseite");
     });
     await step("tagesbericht", async () => {
@@ -188,6 +191,23 @@ async function run() {
       await waitFor("Freigegeben von");
       await js(`window.scrollTo(0, 0)`);
       await shot("07-freigegeben");
+    });
+    await step("verlauf", async () => {
+      await js(`__click("Fristen & Verlauf")`);
+      await waitFor("Anstehende Fristen");
+      await js(`window.scrollTo(0, 0)`);
+      await shot("11-verlauf");
+      await js(`__click("Frist zur Abhilfe")`);
+      await waitFor("Zurück zu Fristen");
+      await shot("12-verlauf-schreiben");
+      await js(`__click("Zurück zu Fristen")`);
+      await sleep(150);
+      await js(`__click("Verlauf löschen")`);
+      await sleep(150);
+      await shot("13-verlauf-loeschen");
+      await js(`__click("Ja, löschen")`);
+      await waitFor(live ? "Noch keine freigegebenen" : "Zwei Beispiele");
+      await shot("14-verlauf-leer");
     });
     if (live) continue;
     await step("keine-anzeige", async () => {

@@ -16,6 +16,7 @@ import {
   stripDraftLines,
   type Appendix,
 } from "../lib/export";
+import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
 import { btnPrimary, btnSecondary, card, field, h2, hint, label, linkBtn } from "../lib/ui";
 import Chip from "./Chip";
 
@@ -137,7 +138,18 @@ export default function DraftEditor(props: Props) {
     onChange({ ...draft, subject: stripDraftLines(draft.subject), body: stripDraftLines(draft.body) });
     onApprovalChange({ status: "freigegeben", by: name, at });
     remember("baufrist:freigeber", name);
-    remember("baufrist:letzte-freigabe", { betreff: draft.subject, von: name, am: at });
+    // Fristen & Verlauf: only type, recipient, subject, approval, deadline and the letter text (this browser only).
+    const body = stripDraftLines(draft.body);
+    saveToVerlauf({
+      id: flow.createdAt,
+      type: letterType,
+      recipient: draft.recipient,
+      subject: stripDraftLines(draft.subject),
+      approvedAt: at,
+      approvedBy: name,
+      deadline: deadlineOf(body),
+      text: { salutation: draft.salutation, body, closing: draft.closing },
+    });
     setAsking(false);
     setEditing(false);
   }
@@ -174,7 +186,7 @@ export default function DraftEditor(props: Props) {
         <div className="flex min-w-0 flex-col gap-3">
           <div className="-mt-2 flex flex-wrap items-center justify-between gap-x-3">
             <h2 className="text-xl font-semibold text-[var(--ink)]">{title}</h2>
-            <a href="#freigabe" className={`${linkBtn} lg:hidden`}>Zur Freigabe ↓</a>
+            <a href="#freigabe" className={`${linkBtn} lg:hidden`}>{isDraft ? "Zur Freigabe ↓" : "Status & Export ↓"}</a>
             <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
               {editing ? "Fertig" : "Text bearbeiten"}
             </button>
@@ -285,7 +297,7 @@ export default function DraftEditor(props: Props) {
               </form>
             )}
             {!isDraft && (
-              <p className={`${hint} mt-3`}>Wenn Sie den Text ändern, wird das Schreiben wieder zum Entwurf.</p>
+              <p className={`${hint} mt-3`}>Gespeichert unter „Fristen & Verlauf“ (nur in diesem Browser). Wenn Sie den Text ändern, wird das Schreiben wieder zum Entwurf.</p>
             )}
             {flow.aiSeconds !== null && flow.aiSeconds > 0 && (
               <p className={`${hint} mt-2`}>Entwurf in {flow.aiSeconds} s erstellt</p>

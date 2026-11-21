@@ -1,12 +1,18 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { btnSecondary } from "../lib/ui";
 import { Crane } from "./Crane";
 
 /** Loading state: the Baufrist crane lifting a block + step text. Static for prefers-reduced-motion (globals.css). */
 export function Loading({ text }: { text: string }) {
+  // On phones the loader can start below the fold: bring it into view.
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, []);
   return (
-    <div role="status" aria-live="polite" className="flex flex-col items-center gap-2 py-6 text-center">
+    <div ref={ref} role="status" aria-live="polite" className="flex flex-col items-center gap-2 py-6 text-center">
       <Crane size={84} loading />
       <p className="text-base font-semibold text-[var(--ink)]">{text}</p>
     </div>

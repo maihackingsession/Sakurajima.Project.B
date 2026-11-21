@@ -1,7 +1,7 @@
 # Demo-Ablauf (Hero-Story, alle Daten = heute)
 
 1. Vorbereitet: Tab A https://sakurajima-project-b.vercel.app · Tab B dieselbe URL mit `?beispiel=1` (Fallback, ohne KI). Browser-Zoom 100 %, Fenster 1280×720.
-2. Tab A → „Tagesbericht prüfen“ → „Beispiel laden“ (Bautagesbericht Nr. 16 von heute: Bewehrungspläne fehlen, 4 von 6 Leuten ohne Arbeit).
+2. Tab A → Kachel „Tagesbericht“ → „Beispiel laden“ (Bautagesbericht Nr. 16 von heute: Bewehrungspläne fehlen, 4 von 6 Leuten ohne Arbeit).
 3. „Bericht prüfen“ → Karte „Behinderungsanzeige empfohlen“ · „Ursache im Bereich des Auftraggebers: fehlende Ausführungspläne“ · „Unverzüglich anzeigen – heute“.
 4. „Anzeige entwerfen“ → Rückfrage „Bis wann müssen die Pläne spätestens da sein?“ → tippen: **„<Datum übermorgen>, 12:00 Uhr“** (steht als Beispiel im Feld) → Enter.
 5. Falls andere Rückfragen kommen: „Seit wann?“ → **„seit heute, <Datum>“** · „Wie viele Arbeitskräfte betroffen?“ → **„6 eingeplant, 2 umgesetzt, 4 ohne produktive Arbeit“** · „Ursache beim AG?“ → **„Ja, Tragwerksplaner des AG (Ingenieurbüro Kraus)“**.

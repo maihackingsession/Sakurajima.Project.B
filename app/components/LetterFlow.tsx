@@ -223,6 +223,8 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
               Analysieren
             </button>
           </div>
+          {busyView}
+          {errorView}
           <div className="flex flex-wrap items-center gap-x-6">
             <button className={linkBtn} onClick={example} disabled={!!busy}>Beispiel einfügen</button>
             <button className={linkBtn} onClick={() => setChooseType((v) => !v)} aria-expanded={chooseType}>
@@ -244,8 +246,6 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
             </div>
           )}
 
-          {busyView}
-          {errorView}
 
           {redirect && (
             <div className={card}>

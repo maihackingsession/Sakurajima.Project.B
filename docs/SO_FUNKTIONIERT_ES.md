@@ -42,6 +42,8 @@ Alles andere ist feste Programmlogik, keine KI: die Dringlichkeit („heute“ /
 
 - Der eingegebene Text wird zur Verarbeitung an die Claude-KI (Anthropic) geschickt und das Ergebnis zurückgegeben.
 - Auf unserem Server wird nichts gespeichert. Freigaben (Name, Zeitpunkt) liegen nur im Browser des Bauleiters.
+
+**Fristen & Verlauf:** Gibt der Bauleiter ein Schreiben frei, speichert Baufrist es im Browser auf diesem Gerät (localStorage). Gespeichert werden nur: Art des Schreibens, Empfänger, Betreff, Zeitpunkt der Freigabe, Name des Freigebenden, die Frist aus dem Schreiben (falls vorhanden) und der Brieftext. Die ursprüngliche Eingabe und die Antworten auf Rückfragen werden nicht gespeichert. Nichts davon wird an uns übertragen. Ein anderes Gerät oder ein anderer Browser sieht den Verlauf nicht. „Verlauf löschen“ entfernt alle Einträge.
 - Projektdaten (Bauvorhaben, Auftraggeber, Nachunternehmer) sind im Prototyp Beispieldaten.
 
 ## Grenzen des Prototyps
