@@ -266,12 +266,29 @@ async function run() {
       await js(`__write()`);
       await sleep(100);
       await js(`__type("#situation", "Bewehrung Bodenplatte kann nicht anfangen, Pläne vom Tragwerksplaner des AG fehlen seit heute früh. 4 von 6 Leuten ohne Arbeit.")`);
+      // Photo: a generated JPEG through the hidden file input.
+      await js(`(async () => {
+        const c = document.createElement("canvas"); c.width = 1600; c.height = 1200;
+        const g = c.getContext("2d"); g.fillStyle = "#8a8a8a"; g.fillRect(0, 0, 1600, 1200); g.fillStyle = "#2B5B84"; g.fillRect(200, 300, 1200, 500);
+        const blob = await new Promise((r) => c.toBlob(r, "image/jpeg"));
+        const dt = new DataTransfer(); dt.items.add(new File([blob], "baustelle.jpg", { type: "image/jpeg" }));
+        const input = document.querySelector("input[type=file]"); input.files = dt.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        return true;
+      })()`);
+      await waitFor("Foto entfernen");
       await js(`__click("Speichern")`);
       await waitFor("empfohlen");
       await shot("08-heute");
       await js(`__click("Schreiben entwerfen")`);
       await waitFor("Eine Angabe fehlt");
       await shot("08-heute-rueckfrage");
+      if (await js(`!!document.querySelector("input[id=q0]")`)) await js(`__type("input[id=q0]", "24.11.2026, 12:00 Uhr")`);
+      await js(`__click("Schreiben erstellen")`);
+      await waitFor("Anlage: Foto vom");
+      await js(`__click("Zurück zu Heute") || true`).catch(() => {});
+      await js(`__click("Neue Situation")`);
+      await sleep(300);
     });
     await step("tagesbericht-tag", async () => {
       await js(`__click("Tagesberichte")`);

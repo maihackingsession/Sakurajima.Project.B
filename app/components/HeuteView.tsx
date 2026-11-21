@@ -6,15 +6,19 @@ import { formatDate } from "@/lib/dates";
 import { isLetterType, LETTER_LABELS, LETTER_TYPES, type LetterType, type RouterResult } from "@/lib/types";
 import { postJson } from "../lib/api";
 import { loadDemo } from "../lib/demo";
-import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, updateEntry, useEntries, type Entry } from "../lib/store";
+import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, savePhoto, updateEntry, useEntries, type Entry } from "../lib/store";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, recBtn, sectionLabel, shortType } from "../lib/ui";
 import { useDueItems } from "../lib/useVerlauf";
 import type { Tab } from "./Header";
 import { RecDot } from "./Status";
+import { PhotoButton, Thumb } from "./Photo";
 import VoiceField, { useDictation } from "./VoiceField";
 import WeatherLine from "./WeatherLine";
 
-export type EntryDraft = { text: string; letterType: LetterType; facts: Record<string, unknown>; reason: string; eventDate: string };
+export type EntryDraft = { text: string; letterType: LetterType; facts: Record<string, unknown>; reason: string; eventDate: string; attachment?: string };
+
+/** „Foto vom 21.11.2026, 07:20 Uhr“ for the letter's Anlage line. */
+const photoLabel = (date: string, time: string) => `Foto vom ${formatDate(dayDate(date))}, ${time} Uhr`;
 
 type Props = {
   /** Starts the existing flow: Rückfragen → Schreiben. */
@@ -45,7 +49,7 @@ export async function checkEntry(entry: Entry) {
 /** Draft data for an entry with a recommendation. */
 export function draftOf(e: Entry): EntryDraft | null {
   if (e.check?.status !== "done" || !e.check.letterType) return null;
-  return { text: e.text, letterType: e.check.letterType, facts: e.check.facts, reason: e.check.reason, eventDate: formatDate(dayDate(e.date)) };
+  return { text: e.text, letterType: e.check.letterType, facts: e.check.facts, reason: e.check.reason, eventDate: formatDate(dayDate(e.date)), attachment: e.photoId ? photoLabel(e.date, e.time) : undefined };
 }
 
 /** Status line under an entry: „wird geprüft …“, the red recommendation, or „Im Tagesbericht gespeichert“. */
@@ -92,6 +96,7 @@ export default function HeuteView({ onDraft, onTab }: Props) {
   const [writing, setWriting] = useState(false);
   const [chooseType, setChooseType] = useState(false);
   const [type, setType] = useState<LetterType | "">("");
+  const [photo, setPhoto] = useState<Blob | null>(null);
   const fieldRef = useRef<HTMLTextAreaElement & HTMLInputElement>(null);
   const dictation = useDictation((t) => setText((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t)));
   const isOpen = writing || !!text.trim() || dictation.recording;
@@ -112,6 +117,7 @@ export default function HeuteView({ onDraft, onTab }: Props) {
   function discard() {
     dictation.stop();
     setText("");
+    setPhoto(null);
     setWriting(false);
   }
 
@@ -122,17 +128,20 @@ export default function HeuteView({ onDraft, onTab }: Props) {
   }
 
   /** Saves at once (no AI), then checks in the background. With a chosen type it goes straight to the letter. */
-  function save() {
+  async function save() {
     const t = text.trim();
     if (!t) return;
     dictation.stop();
     const now = new Date();
-    const entry = addEntry({ kind: "eintrag", date: isoDay(now), time: clock(now), text: t });
+    // The photo stays in this browser (IndexedDB); a failed save keeps the entry without it.
+    const photoId = photo ? await savePhoto(photo).catch(() => undefined) : undefined;
+    const entry = addEntry({ kind: "eintrag", date: isoDay(now), time: clock(now), text: t, photoId });
     setText("");
+    setPhoto(null);
     setWriting(false);
     if (type) {
       updateEntry(entry.id, { check: { status: "done", letterType: type, reason: "Schreibenart selbst gewählt.", facts: {} } });
-      onDraft({ text: t, letterType: type, facts: {}, reason: "Schreibenart selbst gewählt.", eventDate: formatDate(now) });
+      onDraft({ text: t, letterType: type, facts: {}, reason: "Schreibenart selbst gewählt.", eventDate: formatDate(now), attachment: photoId ? photoLabel(entry.date, entry.time) : undefined });
       setType("");
       setChooseType(false);
       return;
@@ -173,10 +182,17 @@ export default function HeuteView({ onDraft, onTab }: Props) {
               value={text}
               onChange={setText}
             >
-              <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={save} disabled={!text.trim()}>
+              <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={() => void save()} disabled={!text.trim()}>
                 {type ? "Speichern und Schreiben entwerfen" : "Speichern"}
               </button>
+              <PhotoButton onPhoto={setPhoto} />
             </VoiceField>
+            {photo && (
+              <div className="mt-3 flex items-center gap-4">
+                <Thumb blob={photo} />
+                <button className={`${greyLink} text-[13px]`} onClick={() => setPhoto(null)}>Foto entfernen</button>
+              </div>
+            )}
           </div>
         )}
         <div className="mt-1 flex flex-wrap gap-x-6">
@@ -202,7 +218,10 @@ export default function HeuteView({ onDraft, onTab }: Props) {
             {todays.map((e) => (
               <li key={e.id} className="border-b border-[var(--rule)] py-4">
                 <p className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)]">{e.time} Uhr{e.kind !== "eintrag" ? ` · ${e.kind === "zusammenfassung" ? "Zusammenfassung" : e.title || ""}` : ""}</p>
-                <EntryText text={e.text} />
+                <div className="flex items-start gap-4">
+                  <div className="min-w-0 flex-1"><EntryText text={e.text} /></div>
+                  {e.photoId && <Thumb id={e.photoId} />}
+                </div>
                 <EntryStatus entry={e} onDraft={onDraft} />
               </li>
             ))}

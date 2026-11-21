@@ -253,3 +253,39 @@ export function saveDemo(entries: Entry[], reports: DailyReport[]) {
   const days = new Set(reportStore.get().map((r) => r.date));
   reportStore.set([...reportStore.get(), ...reports.filter((r) => !days.has(r.date))]);
 }
+
+// ---------- Photos (IndexedDB; never sent to the AI) ----------
+
+function photoDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("baufrist", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("fotos");
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function savePhoto(blob: Blob): Promise<string> {
+  const id = `foto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  const db = await photoDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction("fotos", "readwrite");
+    tx.objectStore("fotos").put(blob, id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  return id;
+}
+
+export async function getPhoto(id: string): Promise<Blob | null> {
+  try {
+    const db = await photoDb();
+    return await new Promise((resolve) => {
+      const req = db.transaction("fotos").objectStore("fotos").get(id);
+      req.onsuccess = () => resolve((req.result as Blob | undefined) ?? null);
+      req.onerror = () => resolve(null);
+    });
+  } catch {
+    return null;
+  }
+}

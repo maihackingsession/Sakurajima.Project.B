@@ -31,6 +31,7 @@ import DeviationTab, { draftText, Notice } from "./DeviationTab";
 import { approvalTime } from "./DraftEditor";
 import type { DraftSource } from "./LetterFlow";
 import { EntryText } from "./HeuteView";
+import { Thumb } from "./Photo";
 import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 import WeatherLine, { loadWeather } from "./WeatherLine";
@@ -314,7 +315,10 @@ function EntryRow({ entry }: { entry: Entry }) {
           </VoiceField>
         </div>
       ) : (
-        entry.text && <EntryText text={entry.text} />
+        <div className="flex items-start gap-4">
+          <div className="min-w-0 flex-1">{entry.text && <EntryText text={entry.text} />}</div>
+          {entry.photoId && <Thumb id={entry.photoId} />}
+        </div>
       )}
       {mode === "date" && (
         <form

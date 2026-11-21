@@ -13,7 +13,19 @@ import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 
 /** Where a draft came from: an entry on „Heute“ or a deviation found in a Tagesbericht. */
-export type DraftSource = { facts?: Record<string, unknown>; eventDate?: string; report?: string; reason?: string };
+export type DraftSource = { facts?: Record<string, unknown>; eventDate?: string; report?: string; reason?: string; attachment?: string };
+
+/** Adds „Anlage: Foto vom …“ (the photo itself never goes to the AI). */
+function withAttachment(body: string, attachment?: string) {
+  if (!attachment) return body;
+  const parts = body.trimEnd().split(/\n\s*\n/);
+  const last = parts[parts.length - 1];
+  if (/^Anlagen?:/.test(last)) {
+    parts[parts.length - 1] = `Anlagen: ${last.replace(/^Anlagen?:\s*/, "")}, ${attachment}`;
+    return parts.join("\n\n");
+  }
+  return `${body.trimEnd()}\n\nAnlage: ${attachment}`;
+}
 
 /** Lets other screens jump into the letter flow („Schreiben entwerfen“, „Anzeige entwerfen“). */
 export type LetterFlowHandle = { start: (text: string, letterType: LetterType, source: DraftSource) => void };
@@ -126,7 +138,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
       const letter = await timed<Letter>("/api/letter", { letter_type: letterType, input, facts, answers: given });
       setAnswers(given);
       setCreatedAt(new Date().toISOString());
-      setDraft(letter);
+      setDraft({ ...letter, body: withAttachment(letter.body, source.attachment) });
       setApproval(NEW_APPROVAL);
       setStep("draft");
       scrollTop();
@@ -163,7 +175,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     <div ref={topRef} className="scroll-mt-24">
       {step === "input" && (
         <>
-          <HeuteView onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason })} onTab={onTab} />
+          <HeuteView onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment })} onTab={onTab} />
           {errorView}
         </>
       )}
