@@ -45,6 +45,9 @@ Site managers lose hours on documentation and formal notices. The brief asks for
 8. **Deviation checker:** compare situation / daily report against a sample plan (fake data in `/data`), flag deviations, offer to draft the matching notice
 9. **Summariser:** paste diary entries / minutes / emails → structured summary with open items and deadlines highlighted
 10. Mobile-friendly layout: big buttons, simple screens
+11. **Draft status:** every letter moves Entwurf → Geprüft → Freigegeben, set by the manager by hand; plus a **Copy** button next to Word / PDF. Still never auto-sent.
+12. **Legal checklist** under each letter, different items per letter type (e.g. Schriftform, unverzüglich, Ursache, Auswirkung, Vorbehalt, Mehrkostenanzeige vor Ausführungsbeginn). The manager ticks the items off.
+13. **Better mic:** server-side transcription with OpenAI (gpt-transcribe) via an API route; key `OPENAI_API_KEY` in `.env.local` only. Falls back to the current browser mic (Web Speech API) when the key is missing or the call fails.
 
 ### Pitch only (do NOT build)
 - Real Outlook / email / calendar connection → demo with sample data, say "connector is the next step"

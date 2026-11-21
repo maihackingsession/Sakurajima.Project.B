@@ -48,6 +48,14 @@ Status: todo / doing / done / blocked
 | Sample plan + sample emails/reports in /data | Prompt + test | done (v1 by Builder, please review) |
 | 10–20 test situations in /tests (incl. messy/incomplete) | Prompt + test | done (15, v1 by Builder, please review) |
 
+## Today (Sat 21 Nov) — plan, before 18:00 freeze
+| Task | Owner | Status |
+|---|---|---|
+| 1 Voice dictation into situation box: already built (MicButton in LetterFlow). Only open: test real mic on iPad Safari / Android Chrome (Known issue 3); optional mic on the „Tagesbericht“ box too | Builder + Prompt + test | todo (device test) |
+| 2 Daily report check → deviation cards → „Schreiben entwerfen“: built (button says „Anzeige entwerfen: …“, runs analyse → Rückfragen → Entwurf). Open: rename button to „Schreiben entwerfen“, check it lands on the matching letter type, verify live with API key | Builder | todo |
+| 3 Draft status Entwurf → Geprüft → Freigegeben + Copy button (Word + PDF already exist). Export marking follows status (Entwurf banner until Freigegeben). Nothing is sent automatically | Builder | todo |
+| 4 Legal checklist under each letter: Schriftform, unverzüglich, Ursache, Auswirkung, Vorbehalt, Mehrkostenanzeige vor Ausführungsbeginn (items per letter type, manager ticks them) | Builder + Domain + pitch | todo |
+
 ## After freeze (bug fixes + pitch only)
 | Task | Owner | Status |
 |---|---|---|
