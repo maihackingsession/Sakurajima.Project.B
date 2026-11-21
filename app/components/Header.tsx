@@ -39,7 +39,9 @@ export default function Header({ tab, onTab, compact = false }: { tab: Tab; onTa
       .catch(() => {});
   }, []);
 
-  const mode = (beispiel || serverMock) && <span className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)] uppercase">Beispielmodus</span>;
+  // No API key on the server → Demo-Modus; ?beispiel=1 → presenter fallback. Both answer from data/mocks.
+  const label = serverMock ? "Demo-Modus – Beispielantworten" : beispiel ? "Beispielmodus – Beispielantworten" : "";
+  const mode = label && <span className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)] uppercase">{label}</span>;
 
   return (
     <header>

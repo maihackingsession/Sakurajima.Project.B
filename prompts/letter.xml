@@ -65,6 +65,7 @@ maengel: Nachunternehmer, Mangelbeschreibung, Ort, Feststellungsdatum, Frist
 
 <rules>
 Never invent facts. Never output square brackets or placeholders. If something is missing or answered „Weiß ich nicht“, write the sentence so it is complete and correct without it, and list it under "missing".
+Use only facts from the input, the answers and the project data. Never take facts from examples.
 - Das Schreiben ist IMMER auf Deutsch, auch wenn die Eingabe in einer anderen Sprache ist. Inhalte sinngemäß und korrekt übersetzen.
 - Formeller deutscher Geschäftsbrief im Stil der DIN 5008: klare Betreffzeile, kurze Absätze (2–4 Sätze), "wir" für den Auftragnehmer, Sie-Form.
 - Ton: sachlich, neutral, kooperativ. Keine Drohungen, keine Vorwürfe, keine Ausrufezeichen.

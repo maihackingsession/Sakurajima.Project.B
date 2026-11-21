@@ -38,7 +38,8 @@ const headDate = () => {
 export async function checkEntry(entry: Entry) {
   updateEntry(entry.id, { check: { status: "pending" } });
   try {
-    const r = await postJson<RouterResult>("/api/route", { input: entry.text });
+    // Only the entry's own text and date go to the router – never other entries or sample data.
+    const r = await postJson<RouterResult>("/api/route", { input: entry.text, date: formatDate(dayDate(entry.date)) });
     const notice = r.intent === "letter" && r.outcome === "anzeige" && isLetterType(r.letter_type);
     updateEntry(entry.id, { check: { status: "done", letterType: notice ? (r.letter_type as LetterType) : null, reason: r.reason, facts: r.facts ?? {} } });
   } catch {
@@ -59,8 +60,8 @@ export function EntryStatus({ entry, onDraft }: { entry: Entry; onDraft: (d: Ent
   if (c.status === "pending") return <p className="mt-1 font-sans text-[13px] text-[var(--grey)] italic" role="status">wird geprüft …</p>;
   if (c.status === "error")
     return (
-      <p className="mt-1 flex flex-wrap items-center gap-x-4 font-sans text-[13px] text-[var(--grey)]">
-        Prüfung nicht möglich. <button className={`${linkBtn} text-[13px]`} onClick={() => void checkEntry(entry)}>Erneut prüfen</button>
+      <p className="mt-1 flex flex-wrap items-center gap-x-4 font-sans text-[13px] text-[var(--urgent)]" role="alert">
+        KI nicht erreichbar – bitte erneut versuchen. <button className={`${linkBtn} text-[13px]`} onClick={() => void checkEntry(entry)}>Erneut versuchen</button>
       </p>
     );
   const d = draftOf(entry);
@@ -121,8 +122,11 @@ export default function HeuteView({ onDraft, onTab }: Props) {
     setWriting(false);
   }
 
+  // „Beispiel einfügen“: an unchanged sample text is saved as an example entry (flag), not as a real one.
+  const exampleText = useRef("");
   function example() {
     const s = situations[Math.floor(Math.random() * situations.length)];
+    exampleText.current = s.text;
     setText(s.text);
     setWriting(true);
   }
@@ -135,7 +139,9 @@ export default function HeuteView({ onDraft, onTab }: Props) {
     const now = new Date();
     // The photo stays in this browser (IndexedDB); a failed save keeps the entry without it.
     const photoId = photo ? await savePhoto(photo).catch(() => undefined) : undefined;
-    const entry = addEntry({ kind: "eintrag", date: isoDay(now), time: clock(now), text: t, photoId });
+    const isExample = !!exampleText.current && t === exampleText.current.trim();
+    exampleText.current = "";
+    const entry = addEntry({ kind: "eintrag", date: isoDay(now), time: clock(now), text: t, photoId, ...(isExample ? { example: true } : {}) });
     setText("");
     setPhoto(null);
     setWriting(false);

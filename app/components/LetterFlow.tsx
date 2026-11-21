@@ -113,7 +113,13 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     setLetterType(type);
     setFacts(from.facts ?? {});
     setReason(from.reason ?? (from.report ? "Aus dem Tagesbericht übernommen." : ""));
+    // A new entry starts clean: nothing from the previous entry's Rückfragen or draft is reused.
     setDraft(null);
+    setQuestions([]);
+    setAnswers({});
+    setUnknown({});
+    setApproval(NEW_APPROVAL);
+    setCreatedAt("");
     setStep("input");
     void run("prepare", () => checkGaps(type, text, from.facts ?? {}));
   }

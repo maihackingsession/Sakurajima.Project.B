@@ -26,6 +26,7 @@ Heutiges Datum: {today}
 
 <rules>
 Never invent facts. Ask only for what is truly missing.
+Use only facts from the input, the answers and the project data. Never take facts from examples.
 - Höchstens 6 Fragen, die wichtigste zuerst. Zuerst die Pflichtangaben aus required_fields, dann alles andere, was der Brief konkret nennen muss:
   - Namen von Personen und Firmen (z. B. wer angeordnet hat, welcher Nachunternehmer)
   - Daten und Uhrzeiten

@@ -1,49 +1,76 @@
-import { jsonRoute, requireText, runPrompt } from "@/lib/claude";
-import { isLetterType, OUTCOMES, type Outcome, type RouterResult } from "@/lib/types";
+import { jsonRoute, PromptError, requireText, runPrompt } from "@/lib/claude";
+import project from "@/data/project.json";
+import { LETTER_TYPES, type LetterType, type RouterResult } from "@/lib/types";
 
 export const maxDuration = 60;
 
-// Demo-Modus only: crude keyword guess so the mock answer fits the typed situation.
-function guess(text: string): Pick<RouterResult, "intent" | "letter_type"> & { outcome?: Outcome; reason?: string } {
-  const t = text.toLowerCase();
-  if (/unser(?:e|en|em)? (?:eigene[rn]? )?(?:kran|bagger|kolonne|leute|polier)|eigene[rn]? (?:kran|bagger|kolonne|leute)|krank/.test(t))
-    return { intent: "letter", letter_type: "behinderung", outcome: "eigener_bereich", reason: "Eigenes Gerät oder eigenes Personal – die Ursache liegt möglicherweise in Ihrem eigenen Bereich." };
-  if (/keine auswirkung|ohne auswirkung|im plan|puffer|kein verzug/.test(t))
-    return { intent: "letter", letter_type: "behinderung", outcome: "keine_anzeige", reason: "Laut Beschreibung keine Auswirkung auf Termine oder Kosten." };
-  if (/tagesbericht|bautagebuch|wetter:|anwesend/.test(t)) return { intent: "deviation", letter_type: null };
-  if (/protokoll|top \d|^von:|^betreff:|zusammenfass/m.test(t)) return { intent: "summary", letter_type: null };
-  if (/mangel|mängel|riss|undicht|nacharbeit|beseitigung|falsch verlegt|nicht ordentlich|nicht bestanden|hinterfüllt|fehlerhaft/.test(t)) return { intent: "letter", letter_type: "maengel" };
-  if (/bedenken|ungeeignet|nicht ausreichend|zu gering|zu wenig|passt nicht|nicht geeignet|zweifel/.test(t)) return { intent: "letter", letter_type: "bedenken" };
-  if (/zusätzlich|mehrkosten|nachtrag|angeordnet|angewiesen|änderung|will jetzt|andere|nicht im lv/.test(t)) return { intent: "letter", letter_type: "mehrkosten" };
-  if (/fehl|wart|steh(?:t|en) still|stillstand|gesperrt|verzög|nicht geliefert|kann nicht|können nicht|behindert|nicht beginnen|nicht anfangen/.test(t)) return { intent: "letter", letter_type: "behinderung" };
-  // Everyday entries (deliveries done, work done, visitors): nothing to notify.
-  return { intent: "letter", letter_type: null, outcome: "keine_anzeige", reason: "Normaler Baufortschritt – keine Anzeige nötig." };
+/** Router output (prompts/router.xml v3): one strict enum, "keine" = no notice. */
+const ROUTER_TYPES = [...LETTER_TYPES, "keine"] as const;
+type RouterType = (typeof ROUTER_TYPES)[number];
+type RouterReply = { type: RouterType; confidence?: unknown; reason?: unknown; language?: unknown; facts?: unknown };
+
+/** Sample/project facts that must never appear in a reason unless the input says them (FIX_PROMPT_ROUTER 2.3). */
+const LEAK_WORDS = [/bodenplatte/i, /bewehrungspl[aä]n/i, /kraus/i, /lindner/i, /berger/i, /jagtap/i, /schneider/i];
+
+function leakedWords(reason: string, input: string) {
+  return LEAK_WORDS.filter((re) => re.test(reason) && !re.test(input)).map((re) => re.source);
 }
 
-export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {
-  const input = requireText(body.input, "eine Beschreibung");
-  const result = await runPrompt<RouterResult>(
+function validate(reply: unknown) {
+  const r = reply as Partial<RouterReply> | null;
+  if (!r || typeof r !== "object") return "Deine Antwort war kein JSON-Objekt.";
+  if (!ROUTER_TYPES.includes(r.type as RouterType)) return `"type" muss genau einer dieser Werte sein: ${ROUTER_TYPES.join(", ")}.`;
+  return null;
+}
+
+// Minimal project meta only: no participant names, no schedule, no samples.
+const PROJECT_META = `Projekt: ${project.bauvorhaben}. "Wir" = Auftragnehmer (Bauunternehmen des Bauleiters). "Auftraggeber"/"Bauherr" = unser Vertragspartner; Architekt/Planer gehören zum Auftraggeber. "Nachunternehmer"/"Subunternehmer" = von uns beauftragte Firmen.`;
+
+// Demo-Modus only (no API key): crude keyword guess, no prepared facts.
+function guess(text: string): RouterReply {
+  const t = text.toLowerCase();
+  const r = (type: RouterType, reason: string): RouterReply => ({ type, reason, confidence: 0.5, language: "de", facts: {} });
+  if (/unser(?:e|en|em)? (?:eigene[rn]? )?(?:kran|bagger|kolonne|leute|polier)|selbst falsch|krank/.test(t)) return r("keine", "Ursache im eigenen Bereich – keine Anzeige an den Auftraggeber.");
+  if (/nachunternehmer|subunternehmer/.test(t) && /mangel|mängel|schief|hohl|offen|riss|fehlerhaft|nicht ordentlich/.test(t)) return r("maengel", "Unser Nachunternehmer hat mangelhaft gearbeitet.");
+  if (/angeordnet|zusätzlich|statt|nicht im lv|nachtrag|not in our contract|will .* jetzt/.test(t)) return r("mehrkosten", "Der Auftraggeber verlangt eine zusätzliche oder geänderte Leistung.");
+  if (/bedenken|ungeeignet|zu flach|zu feucht|feuchte|widersprechen|halten wir/.test(t)) return r("bedenken", "Bedenken gegen die vorgesehene Ausführung.");
+  if (/nicht fertig|gesperrt|nicht geliefert|fehlen|können nicht|kann nicht|nie przekazał|warten/.test(t)) return r("behinderung", "Die Arbeit kann aus Gründen außerhalb unseres Bereichs nicht wie geplant laufen.");
+  return r("keine", "Normaler Baufortschritt – keine Anzeige nötig.");
+}
+
+async function ask(input: string, date: string, mock: boolean, retryNote: string) {
+  return runPrompt<RouterReply>(
     "router",
-    { user_input: input },
-    {
-      effort: "low",
-      fast: true,
-      mock: ctx.mock,
-      mockTransform: (m) => {
-        const g = guess(input);
-        const mock = m as RouterResult;
-        // The prepared facts belong to the demo story (Behinderung); other types start without facts.
-        const facts = g.letter_type === "behinderung" && !g.outcome ? mock.facts : {};
-        return { ...mock, outcome: "anzeige", ...g, facts };
-      },
-    },
+    { user_input: input, entry_date: date || "unbekannt", project_meta: PROJECT_META, retry_note: retryNote },
+    { effort: "low", fast: true, maxTokens: 1000, mock, validate, mockTransform: () => guess(input) },
   );
-  const intent = ["letter", "deviation", "summary"].includes(result.intent) ? result.intent : "letter";
+}
+
+export const POST = jsonRoute<{ input?: unknown; date?: unknown }>(async (body, ctx) => {
+  const input = requireText(body.input, "eine Beschreibung");
+  const date = typeof body.date === "string" ? body.date.slice(0, 20) : "";
+  let reply = await ask(input, date, ctx.mock, "");
+  if (validate(reply)) throw new PromptError("Die Antwort der KI war ungültig. Bitte erneut versuchen.");
+
+  // Leakage check: a reason naming sample facts that are not in the input → one retry, then a warning.
+  if (leakedWords(String(reply.reason ?? ""), input).length) {
+    console.warn("[ki] route=router wiederholung=fremde_fakten");
+    const again = await ask(input, date, ctx.mock, "- Nenne nur Fakten aus der Eingabe.");
+    if (!validate(again)) reply = again;
+    const still = leakedWords(String(reply.reason ?? ""), input);
+    if (still.length) console.warn(`[ki] route=router warnung=fremde_fakten woerter=${still.join(",")}`);
+  }
+
+  const isNotice = reply.type !== "keine";
+  const facts = reply.facts && typeof reply.facts === "object" && !Array.isArray(reply.facts) ? (reply.facts as Record<string, unknown>) : {};
+  const confidence = Number(reply.confidence);
   return {
-    intent,
-    letter_type: isLetterType(result.letter_type) ? result.letter_type : null,
-    outcome: OUTCOMES.includes(result.outcome) ? result.outcome : "anzeige",
-    facts: result.facts && typeof result.facts === "object" ? result.facts : {},
-    reason: typeof result.reason === "string" ? result.reason : "",
+    intent: "letter",
+    letter_type: isNotice ? (reply.type as LetterType) : null,
+    outcome: isNotice ? "anzeige" : "keine_anzeige",
+    facts: isNotice ? facts : {},
+    reason: typeof reply.reason === "string" ? reply.reason : "",
+    confidence: Number.isFinite(confidence) ? Math.min(1, Math.max(0, confidence)) : null,
+    language: typeof reply.language === "string" ? reply.language : "",
   } satisfies RouterResult;
 });

@@ -35,6 +35,10 @@ export type RouterResult = {
   outcome: Outcome;
   facts: Record<string, unknown>;
   reason: string;
+  /** Router v3: how sure the type is (0–1), null if the model gave none. */
+  confidence?: number | null;
+  /** Router v3: ISO code of the input language. */
+  language?: string;
 };
 
 export type GapQuestion = { field: string; question: string; example: string };
