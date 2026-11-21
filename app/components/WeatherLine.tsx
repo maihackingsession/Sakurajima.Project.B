@@ -1,23 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import project from "@/data/project.json";
+import { weatherText, weatherUrl } from "@/lib/weather";
 import { getWeather, setWeather, useWeatherSnapshot } from "../lib/store";
 import { greyLink, linkBtn } from "../lib/ui";
 
-// One request per day and page load, shared by every WeatherLine of that day.
+// One running request per day, shared by every WeatherLine of that day. A failure is not
+// remembered, so the next WeatherLine (or a reload) tries again.
 const inflight = new Map<string, Promise<boolean>>();
+
+async function viaServer(day: string) {
+  const r = await fetch(`/api/weather?date=${day}`, { cache: "no-store" });
+  const d = (await r.json().catch(() => ({}))) as { text?: string };
+  return r.ok && d.text ? d.text : null;
+}
+
+/** Fallback when the server can't reach Open-Meteo (e.g. blocked/slow from the host): ask Open-Meteo from the browser. */
+async function viaBrowser(day: string) {
+  const url = weatherUrl(day, project.koordinaten.lat, project.koordinaten.lon);
+  if (!url) return null;
+  const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  return r.ok ? weatherText(await r.json(), day) : null;
+}
 
 export function loadWeather(day: string) {
   let p = inflight.get(day);
   if (!p) {
-    p = fetch(`/api/weather?date=${day}`)
-      .then(async (r) => {
-        const d = (await r.json()) as { text?: string };
-        if (!r.ok || !d.text) return false;
-        setWeather(day, { text: d.text, source: "open-meteo" });
-        return true;
-      })
-      .catch(() => false);
+    p = (async () => {
+      const text = (await viaServer(day).catch(() => null)) ?? (await viaBrowser(day).catch(() => null));
+      if (!text) return false;
+      setWeather(day, { text, source: "open-meteo" });
+      return true;
+    })().finally(() => inflight.delete(day));
     inflight.set(day, p);
   }
   return p;
