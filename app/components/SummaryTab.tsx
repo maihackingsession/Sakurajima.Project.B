@@ -7,6 +7,7 @@ import { loadSamples } from "../lib/samples";
 import { btnPrimary, greyLink, h1, kicker, sectionLabel } from "../lib/ui";
 import CraneLoader, { atLeast } from "./CraneLoader";
 import { ErrorBox } from "./Status";
+import VoiceField from "./VoiceField";
 
 const STEPS = ["Lese die Einträge", "Finde offene Punkte", "Schreibe die Zusammenfassung"];
 
@@ -59,13 +60,14 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
         <p className={kicker}>Protokoll · Bautagebuch · E-Mails</p>
         <h1 className={h1}>Zusammenfassen</h1>
         <div>
-          <textarea
+          <VoiceField
             id="docs"
-            aria-label="Text zum Zusammenfassen"
+            label="Text zum Zusammenfassen"
+            multiline
             className={`line-field overflow-y-auto ${result ? "min-h-28 max-h-40" : "min-h-40 max-h-[45vh]"}`}
             placeholder="Text hier einfügen …"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={setText}
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
             {text.trim() && <button className={`${btnPrimary} open-in`} onClick={summarise}>Zusammenfassen</button>}

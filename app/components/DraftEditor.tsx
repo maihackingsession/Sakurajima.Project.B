@@ -18,6 +18,7 @@ import {
 } from "../lib/export";
 import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
 import { btnPrimary, h1, issueTitle, kicker, linkBtn, meta } from "../lib/ui";
+import VoiceField from "./VoiceField";
 
 /** Review status of a draft. Only the user changes it. Approvals are remembered in this browser only. */
 export type Approval = { status: "entwurf" } | { status: "freigegeben"; by: string; at: string };
@@ -127,11 +128,12 @@ export default function DraftEditor(props: Props) {
   const open = checks.filter((c) => !c.ok).length;
   const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };
 
-  const set = (key: EditKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    onChange({ ...draft, [key]: e.target.value });
+  const set = (key: EditKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(key, e.target.value);
+  function setValue(key: EditKey, value: string) {
+    onChange({ ...draft, [key]: value });
     // Editing an approved letter voids the approval.
     if (approval.status === "freigegeben") onApprovalChange(NEW_APPROVAL);
-  };
+  }
 
   function approve(e: React.FormEvent) {
     e.preventDefault();
@@ -284,7 +286,7 @@ export default function DraftEditor(props: Props) {
             )}
           </div>
           {editing ? (
-            <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
+            <VoiceField id="edit-body" label="Text" multiline rows={16} className={editField} value={draft.body} onChange={(v) => setValue("body", v)} />
           ) : (
             paragraphs(draft.body).map((p, i) => (
               <p key={i} className="mb-[14px] whitespace-pre-line"><Highlighted text={p} /></p>
@@ -357,7 +359,7 @@ function MissingField({ hole, onFill }: { hole: string; onFill: (value: string) 
     >
       <label htmlFor={id} className="block font-sans text-[12px] font-bold tracking-[.06em] text-[var(--urgent)] uppercase">Angabe fehlt: {label}</label>
       <div className="flex flex-wrap items-end gap-x-5">
-        <input id={id} className="line-field min-w-0 flex-1 !text-[19px]" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Hier eintragen …" />
+        <div className="min-w-0 flex-1"><VoiceField id={id} className="line-field !text-[19px]" value={value} onChange={setValue} placeholder="Hier eintragen …" onEnter={() => onFill(value)} /></div>
         <button type="submit" className={linkBtn} disabled={!value.trim()}>Einsetzen</button>
       </div>
     </form>

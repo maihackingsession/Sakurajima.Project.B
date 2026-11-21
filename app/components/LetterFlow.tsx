@@ -22,7 +22,7 @@ import { btnPrimary, greyLink, h1, issueTitle, kicker, kickerUrgent, linkBtn, li
 import CraneLoader, { atLeast } from "./CraneLoader";
 import type { Tab } from "./Header";
 import DraftEditor, { NEW_APPROVAL, type Approval, type FlowInfo } from "./DraftEditor";
-import { useDictation } from "./MicButton";
+import VoiceField, { useDictation } from "./VoiceField";
 import { ErrorBox, RecDot } from "./Status";
 
 /** Where a draft came from: typed situation or a deviation found in a Tagesbericht. */
@@ -73,7 +73,7 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
   const [createdAt, setCreatedAt] = useState("");
   const retry = useRef<(() => void) | null>(null);
   const [writing, setWriting] = useState(false);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement & HTMLInputElement>(null);
   const dictation = useDictation((t) => setInput((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t)));
   const [showDetails, setShowDetails] = useState(false);
   useEffect(() => {
@@ -267,36 +267,27 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
               </>
             ) : (
               <div className="open-in">
-                {dictation.recording && (
-                  <p className={`${kickerUrgent} mb-[6px] flex items-center gap-2`} aria-live="polite">
-                    <RecDot blink size={8} /> Hört zu
-                    {dictation.interim && <span className="font-serif text-[16px] font-normal tracking-normal text-[var(--grey)] normal-case italic">{dictation.interim}</span>}
-                  </p>
-                )}
-                <textarea
-                  ref={inputRef}
+                <VoiceField
                   id="situation"
-                  aria-label="Was ist auf der Baustelle passiert?"
+                  label="Was ist auf der Baustelle passiert?"
+                  multiline
+                  fieldRef={inputRef}
+                  dictation={dictation}
                   className="line-field max-h-[50vh] min-h-[96px] overflow-y-auto"
                   placeholder="Hier schreiben … in jeder Sprache"
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                />
-                <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+                  onChange={setInput}
+                >
                   {input.trim() && (
                     <button className={`${btnPrimary} open-in`} onClick={() => analyse(input, override)}>Analysieren</button>
                   )}
-                  {dictation.supported && (
-                    <button className={recBtn} onClick={dictation.toggle} aria-pressed={dictation.recording}>
-                      <RecDot /> {dictation.recording ? "Stopp" : "Sprechen"}
-                    </button>
-                  )}
+                </VoiceField>
+                <div className="mt-1 flex flex-wrap gap-x-6">
                   <button className={greyLink} onClick={discard}>Verwerfen</button>
                   <button className={greyLink} onClick={() => setChooseType((v) => !v)} aria-expanded={chooseType}>Schreibenart selbst wählen</button>
                 </div>
               </div>
             )}
-            {dictation.error && <p role="alert" className="mt-3 font-sans text-[14px] font-semibold text-[var(--urgent)]">{dictation.error}</p>}
             {chooseType && (
               <div className="open-in mt-4">
                 <select id="override" aria-label="Schreibenart" className={select} value={override} onChange={(e) => setOverride(e.target.value as LetterType | "")}>
@@ -380,15 +371,15 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
                 return (
                   <div key={`${q.field}-${i}`} className="mt-5">
                     <label htmlFor={`q${i}`} className="block font-serif text-[20px] leading-snug font-semibold">{q.question}</label>
-                    <input
+                    <VoiceField
                       id={`q${i}`}
                       className={`line-field ${off ? "text-[var(--muted)]" : ""}`}
                       placeholder={off ? "Weiß ich nicht" : q.example ? `z. B. ${q.example}` : ""}
                       value={off ? "" : answers[q.field] ?? ""}
                       disabled={off}
                       autoFocus={i === 0}
-                      onChange={(e) => setAnswers((a) => ({ ...a, [q.field]: e.target.value }))}
-                      onKeyDown={(e) => e.key === "Enter" && createLetter()}
+                      onChange={(v) => setAnswers((a) => ({ ...a, [q.field]: v }))}
+                      onEnter={createLetter}
                     />
                     <button
                       type="button"

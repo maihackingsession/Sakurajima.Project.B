@@ -11,6 +11,7 @@ import { loadSamples } from "../lib/samples";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, listHead, meta, shortType } from "../lib/ui";
 import CraneLoader, { atLeast } from "./CraneLoader";
 import { ErrorBox } from "./Status";
+import VoiceField from "./VoiceField";
 
 type Props = {
   initialText?: string;
@@ -79,13 +80,14 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
         <section>
           <p className={kicker}>Abgleich mit dem Bauzeitenplan</p>
           <h1 className={h1}>Tagesbericht prüfen</h1>
-          <textarea
+          <VoiceField
             id="report"
-            aria-label="Bautagesbericht"
+            label="Bautagesbericht"
+            multiline
             className="line-field max-h-[45vh] min-h-[120px] overflow-y-auto"
             placeholder="Bautagesbericht hier einfügen …"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={setText}
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
             {text.trim() && <button className={`${btnPrimary} open-in`} onClick={check}>Bericht prüfen</button>}
