@@ -162,3 +162,22 @@ Top 10 visual problems found in review-1 (all fixed unless noted):
 9. Prüfliste labels wrapped in two columns → shorter labels („Auswirkung Termine/Kosten“, „Frist zur Abhilfe“). ✓ (one label still wraps at 1280 – acceptable)
 10. Zusammenfassen: second orange button after the result → secondary after the result. ✓ (open: project name in the header is truncated at 1280 px – acceptable)
 Checked: no English/technical words in the UI (except the label „Beispielmodus (offline)“), no undefined/NaN, no console errors in the click-through, 5 Tage → 9.280 € verified automatically.
+
+### Phase 9 — Docs + final check + freeze-candidate: done
+- docs/SO_FUNKTIONIERT_ES.md; HANDOVER.md §3 (Built Saturday / Pitch only) + §13 (status, live URL).
+- Click-through of all flows with `?beispiel=1` at 1280×720 and 375×812: no console errors (`node scripts/screenshots.mjs`).
+- lint + build clean. Final pitch screenshots (2× scale) in docs/screenshots/final/ – they show the „Beispielmodus (offline)“ label.
+- **One real hero run on the live URL** (deployed a422568, real AI, driven through the UI: `node scripts/screenshots.mjs <url> <dir> --live`):
+  | Step | Wait on stage |
+  |---|---|
+  | „Bericht prüfen“ → Abweichungskarte | 9.2 s |
+  | „Anzeige entwerfen“ → 1 Rückfrage | 1.9 s |
+  | „Schreiben erstellen“ → Entwurf | 6.9 s |
+  Total ≈ 18 s of waiting. Rückfrage this time: „Bis wann sollen die Bewehrungspläne spätestens beim Auftraggeber vorliegen?“ (wording varies slightly; answer with the date as in DEMO_SCRIPT). Draft: Prüfliste all ✓, 1.856 €.
+
+## Bugs / risks (after freeze-candidate)
+| Bug | Found by | Status |
+|---|---|---|
+| Local .env.local API key returns 401 (Vercel key works). Local real-AI tests impossible until replaced. | Builder | todo (team) |
+| Rückfrage wording from Haiku varies run to run (e.g. „beim Auftraggeber vorliegen“). Content is right, wording sometimes clumsy. | Builder | known |
+| „Tagesbericht prüfen“ is the slowest step (~9 s, Sonnet). | Builder | known – crane + step text cover it |

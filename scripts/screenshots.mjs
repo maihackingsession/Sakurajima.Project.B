@@ -15,6 +15,9 @@ const opt = (n) => args.find((a) => a.startsWith(`--${n}=`))?.split("=")[1];
 const [base = "http://localhost:3000", outDir = "docs/screenshots/review"] = args.filter((a) => !a.startsWith("--"));
 const scale = Number(opt("scale") || 1);
 const only = opt("only")?.split(",");
+// --live: real AI (no ?beispiel=1), hero story only, desktop only, prints the waiting time per step.
+const live = args.includes("--live");
+const timings = [];
 const EDGE = [
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
   "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
@@ -22,7 +25,7 @@ const EDGE = [
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 720, mobile: false },
   { name: "mobile", width: 375, height: 812, mobile: true },
-];
+].slice(0, args.includes("--live") ? 1 : 2);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function launch() {
@@ -96,7 +99,7 @@ async function run() {
     if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
     return r.result.value;
   };
-  const waitFor = async (text, ms = 8000) => {
+  const waitFor = async (text, ms = live ? 90000 : 8000) => {
     for (let t = 0; t < ms; t += 150) {
       if (await js(`document.body.innerText.includes(${JSON.stringify(text)}) || [...document.querySelectorAll("textarea")].some((t) => t.value.includes(${JSON.stringify(text)}))`)) return;
       await sleep(150);
@@ -104,7 +107,7 @@ async function run() {
     throw new Error(`timeout waiting for "${text}"`);
   };
   const open = async () => {
-    await cdp.send("Page.navigate", { url: `${base}/?beispiel=1` });
+    await cdp.send("Page.navigate", { url: live ? `${base}/` : `${base}/?beispiel=1` });
     await sleep(400);
     await waitFor("Was ist auf der Baustelle passiert?", 30000);
     await js(HELPERS);
@@ -147,20 +150,27 @@ async function run() {
       await js(`__click("Beispiel laden")`);
       await waitFor("BAUTAGESBERICHT");
       await js(`__click("Bericht prüfen")`);
+      let t = Date.now();
       await sleep(150);
       await shot("03-laden");
       await waitFor("Anzeige entwerfen");
+      timings.push(["Tagesbericht prüfen → Abweichungskarte", Date.now() - t]);
       await js(`window.scrollTo(0, 0)`);
       await shot("04-abweichung");
       await shot("04-abweichung", true);
     });
     await step("rueckfrage", async () => {
       await js(`__click("Anzeige entwerfen")`);
-      await waitFor("Eine Angabe fehlt");
+      let t = Date.now();
+      await waitFor(live ? "Schreiben erstellen" : "Eine Angabe fehlt");
+      timings.push(["Anzeige entwerfen → Rückfrage", Date.now() - t]);
+      if (live) console.log("   Rückfragen:", await js(`[...document.querySelectorAll("main label[for^=q]")].map((l) => l.textContent).join(" | ") || "keine"`));
       await shot("05-rueckfrage");
-      await js(`__type("input[id=q0]", "Montag, 12:00 Uhr")`);
+      if (await js(`!!document.querySelector("input[id=q0]")`)) await js(`__type("input[id=q0]", document.querySelector("input[id=q0]").placeholder.replace(/^z. B. /, ""))`);
       await js(`__click("Schreiben erstellen")`);
+      t = Date.now();
       await waitFor("Prüfliste vor Versand");
+      timings.push(["Schreiben erstellen → Entwurf", Date.now() - t]);
       await js(`window.scrollTo(0, 0)`);
       await shot("06-entwurf");
       await shot("06-entwurf", true);
@@ -179,6 +189,7 @@ async function run() {
       await js(`window.scrollTo(0, 0)`);
       await shot("07-freigegeben");
     });
+    if (live) continue;
     await step("keine-anzeige", async () => {
       await open();
       await js(`__type("#situation", "Kran heute 2 Stunden ausgefallen, keine Auswirkung auf den Bauablauf, Puffer reicht.")`);
@@ -207,6 +218,7 @@ async function run() {
     });
   }
 
+  if (timings.length) console.log("\nWartezeiten:\n" + timings.map(([k, ms]) => `- ${k}: ${(ms / 1000).toFixed(1)} s`).join("\n"));
   cdp.close();
   proc.kill();
   await sleep(500);
