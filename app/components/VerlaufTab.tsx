@@ -152,7 +152,7 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
       <section className="wrap pt-8 pb-9">
         <button className={linkBtn} onClick={onBack}>← Zurück zu Fristen & Verlauf</button>
         <p className="mt-6"><TypeKicker e={entry} /></p>
-        <h1 className={`${h1} mt-3 !text-[clamp(40px,6vw,76px)]`}>{issueTitle(entry.subject, shortType(title))}</h1>
+        <h1 className={`${h1} mt-3 !text-[clamp(34px,4.4vw,56px)] !leading-[1.05]`}>{issueTitle(entry.subject, shortType(title))}</h1>
         <p className={`${meta} mt-4 flex flex-wrap gap-x-4`}>
           <span>An {firstLine(entry.recipient)}</span>
           {entry.deadline && <span>{DEADLINE_LABEL[entry.type]}: {entry.deadline}</span>}

@@ -48,7 +48,7 @@ export default function Header({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => vo
               <p className="mt-1 truncate font-sans text-[13px] text-[var(--navy-muted)]">{project.bauvorhaben}</p>
             </div>
           </div>
-          <nav aria-label="Bereiche" className="-mx-6 overflow-x-auto px-6 min-[600px]:mx-0 min-[600px]:px-0">
+          <nav aria-label="Bereiche" className="-mx-6 overflow-x-auto px-6 [scrollbar-width:none] min-[600px]:mx-0 min-[600px]:px-0 [&::-webkit-scrollbar]:hidden">
             <ul className="flex gap-x-6 whitespace-nowrap">
               {TABS.map((t) => {
                 const active = tab === t.id;
@@ -76,13 +76,13 @@ export default function Header({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => vo
 
       {next && c && (
         <div className="border-b border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)]">
-          <div className="wrap flex min-h-10 flex-wrap items-center justify-between gap-x-6 py-1.5">
-            <p className="min-w-0 font-sans text-[14px] font-bold">
+          <div className="wrap flex min-h-10 items-center justify-between gap-x-4 py-1">
+            <p className="min-w-0 truncate font-sans text-[14px] font-bold">
               <span className="uppercase">{c.text}</span>
               <span aria-hidden className="mx-2 inline-block h-2.5 w-2.5 bg-[var(--ink)] align-middle" />
-              {shortType(LETTER_LABELS[next.type])} · {issueTitle(next.subject, next.deadline)}
+              <span className="hidden min-[600px]:inline">{shortType(LETTER_LABELS[next.type])} · </span>{issueTitle(next.subject, next.deadline)}
             </p>
-            <button className="inline-flex min-h-11 items-center font-sans text-[14px] font-semibold underline underline-offset-[3px]" onClick={() => onTab("verlauf")}>
+            <button className="inline-flex min-h-11 shrink-0 items-center font-sans text-[14px] font-semibold underline underline-offset-[3px]" onClick={() => onTab("verlauf")}>
               Alle Fristen
             </button>
           </div>

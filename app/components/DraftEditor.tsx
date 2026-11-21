@@ -119,6 +119,11 @@ export default function DraftEditor(props: Props) {
   const [approver, setApprover] = useState(() => recall("baufrist:freigeber", project.bauleiter.name));
 
   const isDraft = approval.status !== "freigegeben";
+  const stampRef = useRef<HTMLDivElement>(null);
+  // When approved, bring the stamp into view (it lands on the letter).
+  useEffect(() => {
+    if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [isDraft]);
   const checks = checklist(letterType, draft, facts, eventDate, !!flow.report);
   const open = checks.filter((c) => !c.ok).length;
   const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };
@@ -189,12 +194,12 @@ export default function DraftEditor(props: Props) {
   return (
     <section className="fade-in">
       {/* Intro */}
-      <div className="wrap pt-14 pb-9">
+      <div className="wrap pt-10 pb-7">
         <p className={`${kicker} flex items-center gap-2`}>
           <TypeSquare color={color} />
-          {title.split(" (")[0]}{basis ? ` · ${basis}` : ""}
+          <span>{title.split(" (")[0]}{basis && <span className="whitespace-nowrap"> · {basis}</span>}</span>
         </p>
-        <h1 className={`${h1} mt-3 !text-[clamp(40px,6vw,76px)]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
+        <h1 className={`${h1} mt-3 !text-[clamp(34px,4.4vw,56px)] !leading-[1.05]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
         <p className={`${meta} mt-4`}>
           {recipientName ? `An ${recipientName}` : ""}
           {flow.aiSeconds !== null && flow.aiSeconds > 0 ? ` · in ${flow.aiSeconds} s entworfen` : ""}
@@ -235,7 +240,7 @@ export default function DraftEditor(props: Props) {
       {error && <div className="wrap pt-4"><p role="alert" className="font-sans text-[15px] font-bold text-[var(--red)]">{error}</p></div>}
 
       {/* Letter + margin notes */}
-      <div className="wrap flex flex-wrap items-start gap-x-16 gap-y-10 pt-12 pb-8">
+      <div className="wrap flex flex-wrap items-start gap-x-16 gap-y-10 pt-9 pb-8">
         <article
           className="relative min-w-0 max-w-[680px] pt-7 text-[18px] leading-[1.65]"
           style={{ flex: "999 1 560px", borderTop: `6px solid ${color}` }}
@@ -283,7 +288,7 @@ export default function DraftEditor(props: Props) {
             <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
           </div>
           {!isDraft && (
-            <div className="stamp absolute top-[55%] right-[4%] border-[3px] border-[var(--green)] bg-white/75 px-[18px] pt-[10px] pb-2 text-center text-[var(--green)]" aria-hidden>
+            <div ref={stampRef} className="stamp absolute top-[55%] right-[4%] border-[3px] border-[var(--green)] bg-white/75 px-[18px] pt-[10px] pb-2 text-center text-[var(--green)]" aria-hidden>
               <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
               <p className="mt-1 font-sans text-[13px] font-bold">{approvalTime(approval.at)} · {approval.by}</p>
             </div>

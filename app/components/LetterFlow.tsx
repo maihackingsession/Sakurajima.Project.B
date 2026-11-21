@@ -270,7 +270,7 @@ export default function LetterFlow({ ref, onRedirect, onTab }: Props) {
                     ref={inputRef}
                     id="situation"
                     aria-label="Was ist auf der Baustelle passiert?"
-                    className="line-field min-h-[120px] font-serif text-[23px] leading-[1.5]"
+                    className="line-field max-h-[50vh] min-h-[120px] overflow-y-auto font-serif text-[23px] leading-[1.5]"
                     placeholder="Hier schreiben … in jeder Sprache"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}

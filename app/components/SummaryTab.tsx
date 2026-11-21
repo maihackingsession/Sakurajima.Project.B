@@ -62,7 +62,7 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
           <textarea
             id="docs"
             aria-label="Text zum Zusammenfassen"
-            className={`line-field font-serif text-[18px] leading-[1.6] ${result ? "min-h-28" : "min-h-56"}`}
+            className={`line-field overflow-y-auto font-serif text-[18px] leading-[1.6] ${result ? "min-h-28 max-h-40" : "min-h-56 max-h-[45vh]"}`}
             placeholder="Text hier einfügen – mehrere Einträge oder E-Mails sind möglich …"
             value={text}
             onChange={(e) => setText(e.target.value)}

@@ -1,10 +1,10 @@
 # Demo-Ablauf (Hero-Story, alle Daten = heute)
 
 1. Vorbereitet: Tab A https://sakurajima-project-b.vercel.app · Tab B dieselbe URL mit `?beispiel=1` (Fallback, ohne KI). Browser-Zoom 100 %, Fenster 1280×720.
-2. Tab A → Kachel „Tagesbericht“ → „Beispiel laden“ (Bautagesbericht Nr. 16 von heute: Bewehrungspläne fehlen, 4 von 6 Leuten ohne Arbeit).
-3. „Bericht prüfen“ → Karte „Behinderungsanzeige empfohlen“ · „Ursache im Bereich des Auftraggebers: fehlende Ausführungspläne“ · „Unverzüglich anzeigen – heute“.
-4. „Anzeige entwerfen“ → Rückfrage „Bis wann müssen die Pläne spätestens da sein?“ → tippen: **Regel: heute + 3 Tage, 12:00 Uhr** – z. B. am Samstag 21.11.2026 → **„24.11.2026, 12:00 Uhr“**, am Sonntag 22.11.2026 → **„25.11.2026, 12:00 Uhr“** → Enter.
+2. Tab A → Reiter **„Tagesbericht“** (oben im blauen Kopf) → **„Beispiel laden“** (Bautagesbericht Nr. 16 von heute: Bewehrungspläne fehlen, 4 von 6 Leuten ohne Arbeit).
+3. **„Bericht prüfen“** → blaues Kran-Band „Tagesbericht wird geprüft …“ → rotes Band „Abweichung · Bautagesbericht <heute>“ · Überschrift z. B. **„Bodenplatte bewehren: Nicht begonnen“** · „Behinderungsanzeige empfohlen · Unverzüglich anzeigen – heute“. Darunter 6 Blöcke (4 rot = ohne Arbeit, 2 umgesetzt) und Ursache · Gefährdet · Pro Tag 1.856 €.
+4. **„Anzeige entwerfen“** → Kran-Band → Seite „Rückfragen · Behinderungsanzeige“, Rückfrage „Bis wann müssen die Pläne spätestens da sein?“ → tippen: **Regel: heute + 3 Tage, 12:00 Uhr** – z. B. am Samstag 21.11.2026 → **„24.11.2026, 12:00 Uhr“**, am Sonntag 22.11.2026 → **„25.11.2026, 12:00 Uhr“** → Enter.
 5. Falls andere Rückfragen kommen: „Seit wann?“ → **„seit heute, <Datum>“** · „Wie viele Arbeitskräfte betroffen?“ → **„6 eingeplant, 2 umgesetzt, 4 ohne produktive Arbeit“** · „Ursache beim AG?“ → **„Ja, Tragwerksplaner des AG (Ingenieurbüro Kraus)“**.
-6. Entwurf zeigen: Brief (Garching, heutiges Datum), Prüfliste alle ✓, Kostenkarte 1.856 € pro Tag → Feld „Tage“ von 1 auf 5 → **9.280 €**.
-7. „Freigeben“ → Name steht schon drin → „Freigabe bestätigen“ → Banner verschwindet, „Freigegeben von … am …“ → „Word“ zeigen.
-8. Fallback: hängt ein Schritt > 20 s oder kommt eine Fehlermeldung → Tab B (`?beispiel=1`, Label „Beispielmodus (offline)“) und ab Schritt 2 wiederholen.
+6. Danach **„Schreiben erstellen“** → Kran-Band „Anzeige wird entworfen …“ → Seite mit Überschrift aus dem Betreff (z. B. „Fehlende Bewehrungspläne Bodenplatte“), blaues Band „Entwurf · vor Versand prüfen“, Brief (Garching, heutiges Datum, Unterschrift einmal), rechts „Randnotizen · 8 von 8 erfüllt“. Nach unten scrollen: gelbes Band „Stillstand bisher 1.856 €“ → Feld „Tage“ von 1 auf 5 → **9.280 €**.
+7. Im blauen Band gelber Knopf **„Freigeben“** → Name steht schon drin → **„Freigabe bestätigen“** → Band wird grün („Freigegeben · Thomas Berger, …“), Stempel „FREIGEGEBEN“ landet auf dem Brief → im Band **„Word“** zeigen. Danach Reiter **„Fristen & Verlauf“**: Frist steht oben im gelben Fristen-Band.
+8. Fallback: hängt ein Schritt > 20 s oder kommt eine Fehlermeldung → Tab B (`?beispiel=1`, Hinweis „BEISPIELMODUS“ neben dem Namen) und ab Schritt 2 wiederholen.

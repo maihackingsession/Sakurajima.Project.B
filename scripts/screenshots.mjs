@@ -25,7 +25,8 @@ const EDGE = [
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 720, mobile: false },
   { name: "mobile", width: 375, height: 812, mobile: true },
-].slice(0, args.includes("--live") ? 1 : 2);
+  { name: "tablet", width: 768, height: 1024, mobile: true },
+].slice(0, args.includes("--live") ? 1 : args.includes("--tablet") ? 3 : 2);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function launch() {
@@ -120,7 +121,23 @@ async function run() {
     await cdp.send("Emulation.setDeviceMetricsOverride", { width: vp.width, height: vp.height, deviceScaleFactor: scale, mobile: vp.mobile });
     const shot = async (name, full = false) => {
       if (only && !only.includes(name)) return;
-      await sleep(250);
+      // Let fade/slide-in animations finish (loader shots stay quick).
+      await sleep(name.includes("laden") ? 250 : 900);
+      // Design checks: no horizontal scroll, no text under 13 px, no rounded corners / shadows (except .dot).
+      const issues = await js(`(() => {
+        const out = [];
+        if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push("horizontal scroll " + document.documentElement.scrollWidth + "px");
+        for (const el of document.querySelectorAll("body *")) {
+          if (el.closest(".print-sheet, svg") || !el.offsetParent) continue;
+          const cs = getComputedStyle(el);
+          const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+          if (own && parseFloat(cs.fontSize) < 13) out.push("text " + cs.fontSize + ": " + el.textContent.trim().slice(0, 30));
+          if (!el.classList.contains("dot") && cs.borderRadius !== "0px") out.push("radius " + el.tagName);
+          if (cs.boxShadow !== "none") out.push("shadow " + el.tagName);
+        }
+        return [...new Set(out)].slice(0, 5).join("; ");
+      })()`);
+      if (issues) errors.push(`[${vp.name}] ${name}: ${issues}`);
       let clip;
       if (full) {
         const m = await cdp.send("Page.getLayoutMetrics");

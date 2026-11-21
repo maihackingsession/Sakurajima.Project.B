@@ -87,7 +87,7 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
             <textarea
               id="report"
               aria-label="Bautagesbericht"
-              className="line-field min-h-56 font-serif text-[18px] leading-[1.6]"
+              className="line-field max-h-[45vh] min-h-56 overflow-y-auto font-serif text-[18px] leading-[1.6]"
               placeholder="Bautagesbericht hier einfügen …"
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -165,6 +165,10 @@ function NoticeBand({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
           <p className="mt-3 font-sans text-[15px] font-bold">{type} empfohlen · {u.text}</p>
         </div>
       </div>
+      {/* Phones: the main button right under the band. */}
+      <div className="wrap pt-5 sm:hidden">
+        <button className={`${btnPrimary} w-full`} onClick={onDraft}>Anzeige entwerfen</button>
+      </div>
       <div className="wrap flex flex-wrap items-end gap-x-14 gap-y-6 pt-7">
         {crew.length > 0 && crew.length <= 24 && (
           <div>
@@ -192,7 +196,7 @@ function NoticeBand({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
         )}
       </div>
       <div className="wrap pt-6">
-        <button className={`${btnPrimary} w-full sm:w-auto`} onClick={onDraft}>Anzeige entwerfen</button>
+        <button className={`${btnPrimary} hidden sm:inline-flex`} onClick={onDraft}>Anzeige entwerfen</button>
         {d.explanation && <p className="mt-3 max-w-[760px] text-[16px] italic text-[var(--grey)]">{d.explanation}</p>}
       </div>
     </article>

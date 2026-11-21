@@ -206,3 +206,25 @@ Checked: no English/technical words in the UI (except the label „Beispielmodus
 - docs/deck-assets/architektur.svg + architektur.png (1920×1080).
 - REAL AI on live (e7c9357): hero run Tagesbericht prüfen 8.1 s · Anzeige entwerfen → Rückfrage 2.3 s · Schreiben erstellen → Entwurf 6.4 s, no console errors. Bedenkenanzeige (s10) real: type bedenken ✓, valid JSON, signature not in the body ✓, 0 invented facts (deadline + evidence stay [Platzhalter]), alternative (drückendes Wasser / WU-Beton), „vor Entscheidung nicht ausführen → Behinderung, Mehrkosten vorbehalten“, „Anlagen:“ line. New prompt kept. Fix: Prüfliste „Vor Ausführung“ now checked per sentence (was ✗ because the deadline placeholder sat in the same paragraph).
 - Open (prompt, not changed): for s10 the Rückfragen step asked 0 questions although the Bedenken deadline is missing → letter has [Frist für Ihre Entscheidung einsetzen]; Prüfliste shows it as ✗.
+
+### Phase 3 — Redesign „Zeitung, mutiger“ (branch `design-mutig`): done (17:30–18:00)
+- Tokens + Newsreader / Libre Franklin via next/font (self-hosted), global no-radius/no-shadow, visible focus (white on navy), reduced motion turns every animation off.
+- Navy masthead with I-beam logo (also app/icon.svg), text tabs, yellow badge = deadlines ≤ 2 days / overdue. Yellow deadline band = most urgent open deadline (hidden if none; demo entries only with `?beispiel=1`).
+- Crane loader band (min. 900 ms) for Analysieren, Anzeige entwerfen, Schreiben erstellen, Bericht prüfen, Zusammenfassen; „Angaben werden geprüft“ (label only) for Trotzdem Entwurf / type change; errors as red kicker + sentence + „Erneut versuchen“.
+- Tagesbericht: red band per notice, crew blocks, Ursache · Gefährdet · Pro Tag (only with real data), „Im Blick“ items. Schreiben: intro, status band (navy → green), letter with type rule, stamp, Randnotizen (per-type Prüfliste + placeholders + legal basis + Versand), yellow cost band with count-up. Neuer Eintrag: closed/open input, Sprechen/Stopp with existing dictation, Offene Schreiben. Rückfragen, Zusammenfassen, Fristen & Verlauf in the same system.
+- Hidden because the data does not exist: report number in the red band kicker (uses the report date), crew blocks / „Pro Tag“ when the report has no counts, Zeitstempel „in X s entworfen“ in Beispielmodus.
+
+### Phase 4 — Review loop: done
+Screenshots `?beispiel=1` at 1280×720, 768×1024, 375×812: docs/screenshots/zeitung-1 → fixes → docs/screenshots/zeitung-2. The screenshot script now also fails on horizontal scroll, text < 13 px, rounded corners or shadows: zeitung-2 = 0 findings, 0 console errors, 9.280 € check ok.
+Top 10 problems in zeitung-1 (all fixed):
+1. Schreiben at 1280×720: 3-line headline pushed letter + notes below the fold → smaller headline (34–56 px), tighter intro.
+2. Freigegeben: stamp landed outside the viewport → stamp scrolls into view on approval.
+3. Zusammenfassen: pasted Protokoll grew the field to full length, result far below → field max 45 vh with scrolling, 160 px after the result.
+4. Tagesbericht: same for the pasted report → max 45 vh.
+5. Mobile: grey scrollbar line under the tab row → scrollbar hidden.
+6. Mobile deadline band took 3 lines → one line (type name hidden < 600 px, truncated, link inline).
+7. Mobile Tagesbericht result: „Anzeige entwerfen“ below the fold → button directly under the red band on phones.
+8. Mobile Schreiben kicker broke inside „§ 6 Abs. 1 VOB/B“ → legal basis kept on one line.
+9. Kicker had a double space before „· § 6 …“ → fixed.
+10. Saved letter (Verlauf) headline as large as the page title → same size as the Schreiben screen.
+Checked: no horizontal scroll, key content + main button above the fold at 1280×720 (Tagesbericht result, Schreiben), focus outline on every control, no text < 13 px, reduced motion, no radius/shadow/gradient, signature exactly once, no English/technical words (only „Word“, „PDF“).
