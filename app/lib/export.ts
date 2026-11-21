@@ -13,9 +13,47 @@ export function paragraphs(text: string) {
   return text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 }
 
-function fileBase(kind: string) {
+/** Removes lines like "ENTWURF – zur Prüfung durch den Bauleiter" that the model may add to the text. */
+export function stripDraftLines(text: string) {
+  return text
+    .split("\n")
+    .filter((line) => !/^[\s*_[(]*entwurf\b/i.test(line))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/** Full letter as plain text: Empfänger, Betreff, Anrede, Text, Gruß (+ Unterschrift). */
+export function plainText(letter: Letter) {
+  const sign = signature.filter(Boolean).join("\n");
+  return [letter.recipient, letter.subject, letter.salutation, letter.body, `${letter.closing}\n\n${sign}`]
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function fileBase(kind: string, isDraft: boolean) {
   const safe = kind.split("(")[0].trim().replace(/[^\p{L}\p{N}]+/gu, "_");
-  return `ENTWURF_${safe || "Schreiben"}_${new Date().toISOString().slice(0, 10)}`;
+  return `${isDraft ? "ENTWURF_" : ""}${safe || "Schreiben"}_${new Date().toISOString().slice(0, 10)}`;
+}
+
+/** Diagonal "ENTWURF" as a transparent PNG, drawn in the browser (no image files needed). */
+async function watermarkPng(): Promise<ArrayBuffer> {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1400;
+  canvas.height = 1400;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("no canvas");
+  ctx.translate(700, 700);
+  ctx.rotate(-Math.PI / 5);
+  ctx.font = "800 260px Arial, Helvetica, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "rgba(180, 83, 9, 0.18)";
+  ctx.fillText("ENTWURF", 0, 0);
+  const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/png"));
+  if (!blob) throw new Error("no png");
+  return blob.arrayBuffer();
 }
 
 function download(blob: Blob, name: string) {
@@ -30,8 +68,11 @@ function download(blob: Blob, name: string) {
 }
 
 /** Word export in the browser, DIN 5008-like layout. Nothing is sent anywhere. */
-export async function exportDocx(letter: Letter, kind = "Schreiben") {
-  const { Document, Packer, Paragraph, TextRun, AlignmentType, Footer, BorderStyle } = await import("docx");
+export async function exportDocx(letter: Letter, kind = "Schreiben", isDraft = true) {
+  const {
+    Document, Packer, Paragraph, TextRun, AlignmentType, Footer, Header, BorderStyle, ImageRun,
+    HorizontalPositionRelativeFrom, VerticalPositionRelativeFrom, HorizontalPositionAlign, VerticalPositionAlign,
+  } = await import("docx");
   const lines = (s: string, opts: { bold?: boolean; size?: number } = {}) =>
     s.split("\n").map((line, i) => new TextRun({ text: line, break: i > 0 ? 1 : 0, ...opts }));
 
@@ -42,16 +83,40 @@ export async function exportDocx(letter: Letter, kind = "Schreiben") {
         properties: {
           page: { margin: { top: 1134, bottom: 1134, left: 1418, right: 1134 } }, // 2 / 2.5 cm
         },
-        footers: {
-          default: new Footer({
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: "ENTWURF – vor Versand prüfen", bold: true, color: "B45309", size: 18 })],
-              }),
-            ],
-          }),
-        },
+        ...(isDraft && {
+          // Watermark sits in the header so Word repeats it on every page, behind the text.
+          headers: {
+            default: new Header({
+              children: [
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      type: "png",
+                      data: await watermarkPng(),
+                      transformation: { width: 520, height: 520 },
+                      floating: {
+                        horizontalPosition: { relative: HorizontalPositionRelativeFrom.PAGE, align: HorizontalPositionAlign.CENTER },
+                        verticalPosition: { relative: VerticalPositionRelativeFrom.PAGE, align: VerticalPositionAlign.CENTER },
+                        behindDocument: true,
+                        allowOverlap: true,
+                      },
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          },
+          footers: {
+            default: new Footer({
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: "ENTWURF – vor Versand prüfen", bold: true, color: "B45309", size: 18 })],
+                }),
+              ],
+            }),
+          },
+        }),
         children: [
           new Paragraph({
             alignment: AlignmentType.RIGHT,
@@ -79,5 +144,5 @@ export async function exportDocx(letter: Letter, kind = "Schreiben") {
       },
     ],
   });
-  download(await Packer.toBlob(doc), `${fileBase(kind)}.docx`);
+  download(await Packer.toBlob(doc), `${fileBase(kind, isDraft)}.docx`);
 }

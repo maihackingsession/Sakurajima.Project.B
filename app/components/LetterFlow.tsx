@@ -14,7 +14,7 @@ import {
 } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { btnPrimary, btnSecondary, card, field, label, linkBtn } from "../lib/ui";
-import DraftEditor from "./DraftEditor";
+import DraftEditor, { NEW_APPROVAL, type Approval } from "./DraftEditor";
 import MicButton from "./MicButton";
 
 /** Lets the deviation checker jump into the letter flow ("Anzeige entwerfen"). */
@@ -37,6 +37,8 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
   const [questions, setQuestions] = useState<GapQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [draft, setDraft] = useState<Letter | null>(null);
+  // Every newly generated draft starts as "Entwurf".
+  const [approval, setApproval] = useState<Approval>(NEW_APPROVAL);
   const [redirect, setRedirect] = useState<RouterResult["intent"] | null>(null);
   const [busy, setBusy] = useState<"" | "analyse" | "letter">("");
   const [error, setError] = useState("");
@@ -118,6 +120,7 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
         answers: given,
       });
       setDraft(letter);
+      setApproval(NEW_APPROVAL);
       setStep("draft");
       scrollTop();
     } catch (e) {
@@ -275,6 +278,8 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
           title={LETTER_LABELS[letterType]}
           draft={draft}
           onChange={setDraft}
+          approval={approval}
+          onApprovalChange={setApproval}
           onBack={() => setStep("questions")}
           onRestart={restart}
         />

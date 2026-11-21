@@ -26,4 +26,19 @@ body {
   body > *:not(#print-sheet) { display: none !important; }
   #print-sheet { display: block !important; }
   @page { size: A4; margin: 20mm 20mm 20mm 25mm; }
+  /* Fixed = repeated on every printed page. */
+  .print-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 84pt;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: rgba(180, 83, 9, 0.16);
+    pointer-events: none;
+    z-index: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
