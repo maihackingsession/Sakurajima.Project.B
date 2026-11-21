@@ -30,14 +30,14 @@ export default function Header({ children }: { children?: React.ReactNode }) {
 
   return (
     <header className="border-b border-[var(--border)] bg-white">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 md:py-0">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 md:py-0">
         <div className="flex min-w-0 items-center gap-3 md:py-3">
           <Logo />
           <div className="min-w-0 leading-tight">
             <p className="text-lg font-bold text-[var(--navy)]">
               Baufrist <span className="hidden text-sm font-medium text-[var(--muted)] sm:inline">Bauleiter-Assistent</span>
             </p>
-            <p className="truncate text-sm text-[var(--muted)] md:max-w-[220px] xl:max-w-none">{project.bauvorhaben}</p>
+            <p className="truncate text-sm text-[var(--muted)] md:max-w-[200px] xl:max-w-[260px]">{project.bauvorhaben}</p>
           </div>
         </div>
         {children}

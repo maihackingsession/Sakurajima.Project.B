@@ -163,26 +163,27 @@ export default function DraftEditor(props: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_440px]">
-        {/* Left: the letter as a sheet of paper. */}
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_460px]">
+        {/* Left: the letter as a sheet of paper, with the status strip as its top edge. */}
         <div className="flex min-w-0 flex-col gap-3">
-          {isDraft ? (
-            <div className="rounded-xl border border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2.5 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
-              Entwurf – vor Versand prüfen
-            </div>
-          ) : (
-            <div role="status" className="rounded-xl border border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2.5 text-center text-base font-bold text-[var(--success-text)]">
-              Freigegeben von {approval.by} am {approvalTime(approval.at)}
-            </div>
-          )}
-          <div className="flex items-center justify-between gap-3">
+          <div className="-mt-2 flex items-center justify-between gap-3">
             <h2 className="text-xl font-semibold text-[var(--navy)]">{title}</h2>
             <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
               {editing ? "Fertig" : "Text bearbeiten"}
             </button>
           </div>
+          <div className="overflow-hidden rounded-lg border border-[var(--border)] shadow-[0_1px_3px_rgba(31,42,68,0.08)]">
+          {isDraft ? (
+            <div className="border-b border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
+              Entwurf – vor Versand prüfen
+            </div>
+          ) : (
+            <div role="status" className="border-b border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2 text-center text-base font-bold text-[var(--success-text)]">
+              Freigegeben von {approval.by} am {approvalTime(approval.at)}
+            </div>
+          )}
           <article
-            className="relative rounded-lg border border-[var(--border)] bg-white px-5 py-6 text-[16px] leading-relaxed text-[#111827] shadow-[0_1px_3px_rgba(31,42,68,0.08)] sm:px-12 sm:py-10 lg:text-[17px]"
+            className="relative bg-white px-5 py-6 text-[16px] leading-relaxed text-[#111827] sm:px-12 sm:py-8 lg:text-[17px]"
             aria-label="Schreiben"
             onDoubleClick={() => !editing && setEditing(true)}
           >
@@ -227,6 +228,7 @@ export default function DraftEditor(props: Props) {
               <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
             </div>
           </article>
+          </div>
           {holes > 0 && (
             <p className="text-sm font-semibold text-[var(--warning-text)]">
               {holes === 1 ? "1 Platzhalter" : `${holes} Platzhalter`} [ … ] im Text – bitte ergänzen („Text bearbeiten“).
@@ -249,13 +251,15 @@ export default function DraftEditor(props: Props) {
         {/* Right: status, Prüfliste, cost, export. */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-4">
           <div className={`${card} py-4`}>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-3">
               <p className={h2}>Status</p>
               <Chip kind={isDraft ? "entwurf" : "freigegeben"} />
+              {isDraft && !asking && (
+                <button className={`${btnPrimary} sm:ml-auto sm:w-auto sm:flex-1`} onClick={() => setAsking(true)}>Freigeben</button>
+              )}
             </div>
             {isDraft && !asking && (
-              <div className="mt-3 flex flex-col gap-2">
-                <button className={`${btnPrimary} sm:w-full`} onClick={() => setAsking(true)}>Freigeben</button>
+              <div className="mt-2">
                 <p className="text-sm leading-snug text-[var(--muted)]">
                   {open > 0 ? <span className="font-semibold text-[var(--warning-text)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste. </span> : null}
                   Nur Sie geben frei. Es wird nichts automatisch versendet.
@@ -339,21 +343,36 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
   const total = perDay * n(days);
   const ok = Number.isFinite(perDay) && perDay >= 0;
   const inputs: [string, string, string, (v: string) => void, string][] = [
-    ["cost-workers", "Arbeits­kräfte ohne Arbeit", workers, setWorkers, "1"],
-    ["cost-hours", "Stunden pro Tag", hours, setHours, "0.5"],
-    ["cost-rate", "Verrech­nungs­satz €/h", rate, setRate, "1"],
+    ["cost-workers", "Arbeitskräfte", workers, setWorkers, "1"],
+    ["cost-hours", "Std. pro Tag", hours, setHours, "0.5"],
+    ["cost-rate", "€ pro Std.", rate, setRate, "1"],
     ["cost-days", "Tage", days, setDays, "1"],
   ];
   return (
     <div className={`${card} py-4`}>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
         <p className={h2}>Was kostet der Stillstand?</p>
-        <p className="text-sm text-[var(--muted)]">Schätzung – zur internen Information</p>
+        <p className="text-sm font-semibold text-[var(--muted)]">Schätzung – zur internen Information</p>
+      </div>
+      <div className="mt-2 rounded-lg bg-[var(--surface)] px-3 py-2" aria-live="polite">
+        {ok ? (
+          <>
+            <p className="flex flex-wrap items-baseline gap-x-2 text-[var(--navy)]">
+              <span className="text-[26px] leading-tight font-bold">{euro(Number.isFinite(total) ? total : perDay)}</span>
+              <span className="font-semibold">{Number.isFinite(total) ? `bisher ${days} ${n(days) === 1 ? "Tag" : "Tage"}` : "pro Tag"}</span>
+            </p>
+            <p className="text-sm text-[var(--muted)]">
+              {workers} Arbeitskräfte × {hours} h × {rate} €/h = {euro(perDay)} pro Tag
+            </p>
+          </>
+        ) : (
+          <p className="font-semibold text-[var(--muted)]">Bitte fehlende Werte eintragen.</p>
+        )}
       </div>
       <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
         {inputs.map(([id, text, value, setter, step]) => (
           <div key={id} className="flex flex-col justify-end">
-            <label htmlFor={id} className="mb-1 text-sm leading-tight text-[var(--muted)]">{text}</label>
+            <label htmlFor={id} className="mb-1 text-sm font-semibold leading-tight text-[var(--navy)]">{text}</label>
             <input
               id={id}
               type="number"
@@ -366,21 +385,6 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
             />
           </div>
         ))}
-      </div>
-      <div className="mt-3 rounded-lg bg-[var(--surface)] px-3 py-2" aria-live="polite">
-        {ok ? (
-          <>
-            <p className="text-sm text-[var(--muted)]">
-              {workers} Arbeitskräfte × {hours} h × {rate} €/h = {euro(perDay)} pro Tag
-            </p>
-            <p className="flex flex-wrap items-baseline gap-x-2 text-[var(--navy)]">
-              <span className="text-2xl font-bold">{euro(Number.isFinite(total) ? total : perDay)}</span>
-              <span className="font-semibold">{Number.isFinite(total) ? `bisher ${days} ${n(days) === 1 ? "Tag" : "Tage"}` : "pro Tag"}</span>
-            </p>
-          </>
-        ) : (
-          <p className="font-semibold text-[var(--muted)]">Bitte fehlende Werte eintragen.</p>
-        )}
       </div>
       <p className="mt-2 text-sm text-[var(--muted)]">Nur Personal. Geräte (z. B. Kran) und Baustellengemeinkosten kommen hinzu.</p>
     </div>

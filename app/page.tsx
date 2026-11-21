@@ -63,7 +63,7 @@ export default function Home() {
               key={t.id}
               onClick={() => go(t.id)}
               aria-current={tab === t.id ? "page" : undefined}
-              className={`flex h-full min-h-12 items-center gap-2 border-b-[3px] px-3 text-base font-semibold lg:px-4 ${
+              className={`flex h-full min-h-12 items-center gap-2 border-b-[3px] px-2 text-base font-semibold whitespace-nowrap lg:px-4 ${
                 tab === t.id ? "border-[var(--navy)] text-[var(--navy)]" : "border-transparent text-[var(--muted)] hover:text-[var(--navy)]"
               }`}
             >
@@ -75,7 +75,7 @@ export default function Home() {
       </nav>
       </Header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-28 md:pb-12">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 pt-6 pb-28 md:pb-12">
         {/* Tabs stay mounted (hidden) so switching does not lose input. */}
         <div hidden={tab !== "situation"}>
           <LetterFlow ref={letterFlow} onRedirect={redirect} />

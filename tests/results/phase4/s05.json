@@ -1,0 +1,46 @@
+{
+  "id": "s05",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "Frost, kein Betonieren möglich, Decke UG verschiebt sich",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Frost",
+      "auswirkung": "kein Betonieren möglich",
+      "beobachtung": "Decke UG verschiebt sich"
+    },
+    "reason": "Frost verhindert das Betonieren und ist damit eine Behinderung; gewöhnliche Witterung begründet allerdings meist keinen Anspruch auf Mehrkosten. Die Verschiebung der Decke im UG sollte zusätzlich geprüft und dem Auftraggeber gemeldet werden."
+  },
+  "ms": {
+    "router": 4595,
+    "gaps": 2692,
+    "letter": 6412
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Datum Beginn",
+        "question": "Seit wann ist das Betonieren wegen des Frostes nicht möglich?",
+        "example": "19.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Witterungsbedingte Behinderung der Betonarbeiten\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind die Betonarbeiten an der Decke über dem Untergeschoss ([genaues Bauteil bzw. Abschnitt einsetzen]).\n\nUrsache ist Frost, der ein Betonieren derzeit nicht zulässt.\n\nDie Behinderung besteht seit [Datum des Beginns einsetzen].\n\nSolange kein Betonieren möglich ist, verschiebt sich die Fertigstellung der Decke über dem Untergeschoss. Die nachfolgenden Termine verschieben sich entsprechend.\n\nDie Verlängerung der Ausführungsfristen gem. § 6 Abs. 2 VOB/B behalten wir uns vor. Die Witterung geht [bitte prüfen: außergewöhnliche Witterung?] über das bei Angebotsabgabe zu erwartende Maß hinaus.\n\nDas Ende der Behinderung werden wir Ihnen gesondert anzeigen.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 6 Abs. 1 VOB/B (Behinderungsanzeige), § 6 Abs. 2 Nr. 1 c und Nr. 2 VOB/B (Verlängerung der Ausführungsfristen bei Witterung) – bitte prüfen",
+    "deadline_hint": "Heute noch per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Die Anzeige sollte unverzüglich nach Beginn der Behinderung erfolgen. Beginn der Behinderung und die Einordnung der Witterung (über dem bei Angebotsabgabe zu erwartenden Maß?) vor Versand ergänzen bzw. prüfen, z. B. mit Temperaturaufzeichnungen im Bautagebuch belegen.",
+    "missing": [
+      "Genaues betroffenes Bauteil bzw. Abschnitt der Decke UG",
+      "Datum des Beginns der Behinderung",
+      "Prüfung: außergewöhnliche Witterung über das bei Angebotsabgabe zu erwartende Maß hinaus"
+    ]
+  }
+}

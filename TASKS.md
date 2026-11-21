@@ -122,3 +122,27 @@ Code check: all AI routes already have `maxDuration = 60`; no timeouts, slowest 
 - Letter date line: „Garching, <Datum des Tagesberichts>“, otherwise today.
 - Numbers everywhere: 6 geplant, 2 umgesetzt, 4 ohne produktive Arbeit, 1 Tag. Mocks follow the story; the typed deadline answer is inserted into the mock letter.
 - data/DEMO_SCRIPT.md.
+
+### Phase 4 — Prompts v2 (router, gaps, letter): done (full run results below in tests/results/report.md)
+- v1 archived in prompts/archive/*.v1.xml.
+- Router: outcomes „anzeige“ / „keine_anzeige“ / „eigener_bereich“ with one-sentence reason; UI shows a calm card with „Trotzdem Entwurf erstellen“ (never a dead end). Any input language; facts include Arbeitskräfte/Tage for the cost card.
+- Gaps: max 3 questions (code also caps at 3), only missing required fields, example answer, asked in the input's language; „Frist zur Abhilfe“ added to required_fields.behinderung; no Abhilfe/Verantwortung questions for weather or own equipment.
+- Letter: DIN-5008 style, Betreff in 2 lines, Behinderungsanzeige in the required 8-part order, „gem. § … VOB/B“, legal_basis ends with „– bitte prüfen“, concrete deadline_hint, placeholders only for real gaps, no ENTWURF lines, no meta sentences, special case weather (no remedy request, no § 6 Abs. 6). One short example per type.
+- Any language: hint under the textarea; Polish (s20) and Turkish (s21) tested: questions in the input language, letter in German.
+- tests/situations.json: +2 keine Anzeige (s16, s17), +2 eigener Bereich (s18, s19), +1 Polish (s20), +1 Turkish (s21).
+- Quick test (9 situations, live, router+gaps on Haiku): 8/9; s01 „Bagger ausgefallen“ now → „eigener Bereich – bitte prüfen“ (defensible, owner of the excavator unknown). Hero story: 1 question, 0 invented facts, 17.6 s total.
+- Fast model decision: Haiku stays on router + gaps (no type regressions vs. Sonnet in Phase 1).
+
+### Phase 5 — Design system + restyle: done
+- Tokens in globals.css (white/surface/border/navy/muted, one orange accent, muted success/warning/error), system font stack, sizes 24/18/16/14, one card style, buttons primary/secondary/link (min 48 px, full width on mobile), one Chip component (Angaben fehlen / Entwurf / Freigegeben / Prüfung erforderlich / Keine Anzeige nötig), inline SVG icons only.
+- Header bar: navy crane logo + „Baufrist“ + „Bauleiter-Assistent“ + project, desktop tabs inside the bar, mobile bottom tab bar with icons. Tab title „Baufrist – Bauleiter-Assistent“, SVG favicon (app/icon.svg), Next default favicon + Geist fonts removed, visible focus ring.
+- Main screen: one question, big textarea, one orange „Analysieren“, secondary links. Tagesbericht: report collapses after the check, notice card is the most prominent element. Draft: two columns at ≥1024 px (paper sheet left with ENTWURF strip; status, Prüfliste, Stillstand-Kosten, export right) – everything key visible at 1280×720.
+- Loading: small navy crane lifting an orange block + step text; static with prefers-reduced-motion. Empty states with „Beispiel laden“, errors with „Erneut versuchen“.
+
+### Phase 6 — Human in control: done (incl. both IF-TIME items)
+- Status Entwurf → Freigegeben only by the user; yellow ENTWURF strip + watermark in Word/PDF while Entwurf; inline approver field (name remembered in the browser), approval (name + time) saved in localStorage; ENTWURF lines removed on approval; editing after approval → back to Entwurf; „Offen: X Punkte der Prüfliste“ next to the button (approval still allowed); „Kopieren“ copies Empfänger, Betreff, Anrede, Text, Gruß.
+- Prüfliste vor Versand (code only): Datum, Ursache, betroffene Leistung, Auswirkung, Frist zur Abhilfe, Vorbehalt, Nachweise, Unverzüglich (0–1 Tage ✓, sonst orange „seit X Tagen – sofort versenden“).
+- Word/PDF get „Anlage – Dokumentation“ (Eingabe, Antworten, Erstellt am, Tagesbericht-Auszug). „Entwurf in X s erstellt“ (hidden in Beispielmodus).
+
+### Phase 7 — Was kostet der Stillstand?: done
+- Card for Behinderungsanzeigen only: result first („1.856 € bisher 1 Tag“, formula line „4 Arbeitskräfte × 8 h × 58 €/h = 1.856 € pro Tag“), four editable inputs (workers/days from facts, hours/rate from project.json, empty if unknown), updates instantly (5 Tage → 9.280 €, checked by scripts/screenshots.mjs). „Schätzung – zur internen Information“ + „Nur Personal. Geräte (z. B. Kran) und Baustellengemeinkosten kommen hinzu.“ Never in the letter.

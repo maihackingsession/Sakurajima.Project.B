@@ -1,0 +1,39 @@
+{
+  "id": "s06",
+  "expected": "mehrkosten",
+  "messy": false,
+  "input": "In der Baubesprechung am 19.11.2026 hat Architekt Vogel angeordnet, im UG Achse B/3 zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen. Das ist nicht im LV. Wir wollen am 24.11. mit den Arbeiten anfangen.",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "outcome": "anzeige",
+    "facts": {
+      "datum_anordnung": "19.11.2026",
+      "angeordnet_durch": "Architekt Vogel (Baubesprechung)",
+      "betroffene_leistung": "Pumpensumpf mit Hebeanlage",
+      "ort": "UG Achse B/3",
+      "ursache": "Zusätzliche Leistung, die nicht im LV enthalten ist",
+      "datum_beginn": "24.11. (geplanter Beginn der Arbeiten)"
+    },
+    "reason": "Architekt Vogel hat in der Baubesprechung eine zusätzliche Leistung angeordnet, die nicht im LV steht – das ist eine Mehrkostenanzeige an den Auftraggeber."
+  },
+  "ms": {
+    "router": 3641,
+    "gaps": 1853,
+    "letter": 4730
+  },
+  "gaps": {
+    "complete": true,
+    "questions": []
+  },
+  "letter": {
+    "subject": "Anzeige von Mehrkosten gem. § 2 Abs. 6 VOB/B – Pumpensumpf mit Hebeanlage, UG Achse B/3\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "in der Baubesprechung am 19.11.2026 hat Herr Vogel (Architekt) angeordnet, im Untergeschoss, Achse B/3, zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen.\n\nDiese Leistung ist im Leistungsverzeichnis nicht enthalten. Gem. § 2 Abs. 6 VOB/B kündigen wir Ihnen hiermit vor Beginn der Ausführung unseren Anspruch auf besondere Vergütung an.\n\nDie Ausführung ist ab dem 24.11.2026 geplant. Die Mehrkosten beziffern wir mit einem gesonderten Nachtragsangebot.\n\nWir bitten Sie, die Anordnung schriftlich zu bestätigen.",
+    "closing": "Mit freundlichen Grüßen",
+    "legal_basis": "§ 2 Abs. 6 VOB/B (Ankündigung des Vergütungsanspruchs vor Ausführung für zusätzliche Leistungen), ergänzend § 2 Abs. 5 VOB/B für geänderte Leistungen – bitte prüfen",
+    "deadline_hint": "Möglichst heute noch, in jedem Fall vor Beginn der Arbeiten am 24.11.2026, per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Jahr des Beginns (2026) aus dem Anordnungsdatum abgeleitet, bitte prüfen. Mit den Arbeiten idealerweise erst nach schriftlicher Bestätigung der Anordnung beginnen.",
+    "missing": []
+  }
+}
