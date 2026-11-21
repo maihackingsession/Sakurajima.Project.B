@@ -43,6 +43,10 @@ Use only facts from the input, the answers and the project data. Never take fact
 - "example" ist eine kurze, realistische Beispielantwort in derselben Sprache (wird als Platzhalter im Eingabefeld gezeigt). Daten als TT.MM.JJJJ.
 - "field" ist der deutsche Name der Pflichtangabe aus required_fields (exakt übernehmen).
 - "complete" ist true, wenn nichts mehr fehlt; dann ist "questions" leer.
+- "language": ISO-Code der Sprache der Eingabe (de, pl, tr, ro, en …).
+- "intro": EIN kurzer Satz in der Sprache der Eingabe, der dem Bauleiter sagt, dass noch Angaben für das Schreiben fehlen (Deutsch: "Für das Schreiben fehlen noch diese Angaben.").
+- "unknown_label": die Übersetzung von „Weiß ich nicht“ in die Sprache der Eingabe (Deutsch: "Weiß ich nicht").
+- Bei "mengenaenderung" (Mengenänderung nach § 2 Abs. 3 VOB/B) frage jede dieser Angaben, die nicht schon in Eingabe oder Fakten steht, mit genau diesen "field"-Namen: "LV-Position" (Nummer und Kurztext), "Vertragsmenge" (mit Einheit), "Ausgeführte Menge" (tatsächlich oder voraussichtlich, mit Einheit), "Einheitspreisvertrag" (ja/nein), "Ursache der Abweichung", "Anordnung des Auftraggebers" (hat der AG etwas angeordnet? ja/nein). Mengen immer als Zahl mit Einheit, z. B. "1.200 m³".
 - Antworte ausschließlich mit dem JSON-Objekt, ohne Markdown, ohne Erklärungen.
 </rules>
 
@@ -74,6 +78,9 @@ Eingabe (polnisch): "Huber nie zagęścił podłoża w BA1, próba płytowa niez
 Ausgabe:
 {
   "complete": false,
+  "language": "pl",
+  "intro": "Do pisma brakuje jeszcze tych informacji.",
+  "unknown_label": "Nie wiem",
   "questions": [
     { "field": "Feststellungsdatum", "question": "Kiedy stwierdzono wadę?", "example": "20.11.2026" },
     { "field": "Frist", "question": "Do kiedy firma Huber ma usunąć wadę?", "example": "27.11.2026" }
@@ -95,6 +102,9 @@ Bereits bekannte Fakten:
 JSON mit genau diesen Schlüsseln:
 {
   "complete": boolean,
+  "language": string,
+  "intro": string,
+  "unknown_label": string,
   "questions": [ { "field": string, "question": string, "example": string } ]
 }
 </output_format>

@@ -1,6 +1,6 @@
 // Shared types and labels. Output keys must match the prompts in /prompts.
 
-export const LETTER_TYPES = ["behinderung", "mehrkosten", "bedenken", "maengel"] as const;
+export const LETTER_TYPES = ["behinderung", "mehrkosten", "bedenken", "maengel", "mengenaenderung"] as const;
 export type LetterType = (typeof LETTER_TYPES)[number];
 
 export const LETTER_LABELS: Record<LetterType, string> = {
@@ -8,6 +8,7 @@ export const LETTER_LABELS: Record<LetterType, string> = {
   mehrkosten: "Mehrkostenanzeige",
   bedenken: "Bedenkenanzeige",
   maengel: "Mängelanzeige (an Nachunternehmer)",
+  mengenaenderung: "Mengenänderung – Preisanpassung",
 };
 
 export function isLetterType(v: unknown): v is LetterType {
@@ -42,7 +43,8 @@ export type RouterResult = {
 };
 
 export type GapQuestion = { field: string; question: string; example: string };
-export type GapsResult = { complete: boolean; questions: GapQuestion[] };
+/** language/intro/unknown_label: Rückfragen-Seite in the language of the input (teil3, Teil 1). */
+export type GapsResult = { complete: boolean; questions: GapQuestion[]; language?: string; intro?: string; unknown_label?: string };
 
 export type Deviation = {
   activity: string;

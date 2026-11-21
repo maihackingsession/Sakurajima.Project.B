@@ -62,6 +62,7 @@ export const DEADLINE_LABEL: Record<LetterType, string> = {
   mehrkosten: "Frist",
   bedenken: "Frist",
   maengel: "Frist zur Mängelbeseitigung",
+  mengenaenderung: "Frist",
 };
 
 /** Countdown for a deadline: "noch 3 Tage" (green), ≤ 2 days amber, past red "überfällig". */

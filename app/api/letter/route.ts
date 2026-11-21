@@ -1,5 +1,6 @@
 import { jsonRoute, PromptError, runPrompt } from "@/lib/claude";
 import project from "@/data/project.json";
+import { mengenBlocker, mengenCalc, mengenPromptBlock } from "@/lib/mengen";
 import { stripDraftLines, stripDraftSubject, stripSignoff } from "@/lib/text";
 import { isLetterType, UNKNOWN, type Letter } from "@/lib/types";
 
@@ -10,6 +11,15 @@ type Body = { letter_type?: unknown; input?: unknown; facts?: unknown; answers?:
 export const POST = jsonRoute<Body>(async (body, ctx) => {
   if (!isLetterType(body.letter_type)) throw new PromptError("Bitte eine Schreibenart wählen.", 400);
   const input = typeof body.input === "string" ? body.input.trim().slice(0, 12000) : "";
+  const obj = (v: unknown) => (v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {});
+  // Mengenänderung: the code calculates; the AI only gets the fixed numbers (and no letter at <= 10 % or without unit prices).
+  let mengen = "";
+  if (body.letter_type === "mengenaenderung") {
+    const calc = mengenCalc(input, obj(body.facts), obj(body.answers));
+    const blocked = mengenBlocker(calc);
+    if (blocked) throw new PromptError(blocked, 400);
+    mengen = mengenPromptBlock(calc);
+  }
   const letter = await runPrompt<Partial<Letter>>(
     "letter",
     {
@@ -17,6 +27,7 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
       user_input: input || "(keine Beschreibung)",
       facts: body.facts ?? {},
       answers: body.answers ?? {},
+      mengen,
     },
     {
       mockVariant: body.letter_type,

@@ -1,0 +1,10 @@
+{
+  "complete": false,
+  "language": "pl",
+  "intro": "Do pisma brakuje jeszcze tych informacji.",
+  "unknown_label": "Nie wiem",
+  "questions": [
+    { "field": "Frist zur Abhilfe", "question": "Do kiedy plany zbrojenia muszą najpóźniej do Pana dotrzeć?", "example": "{T+2}, 12:00" },
+    { "field": "Datum Beginn", "question": "Od kiedy brakuje planów?", "example": "{T}" }
+  ]
+}

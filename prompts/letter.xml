@@ -18,7 +18,7 @@ Erstelle einen Entwurf für folgendes Schreiben: {letter_type}.
 Nutze Situationsbeschreibung, Fakten, Antworten des Bauleiters und Projektdaten. Der Bauleiter prüft, bearbeitet und versendet den Entwurf selbst. Behaupte nie, dass etwas versendet wurde.
 
 Empfänger:
-- behinderung, mehrkosten, bedenken → Auftraggeber (Firma, z. Hd. Ansprechpartner, Straße, PLZ Ort)
+- behinderung, mehrkosten, bedenken, mengenaenderung → Auftraggeber (Firma, z. Hd. Ansprechpartner, Straße, PLZ Ort)
 - maengel → betroffener Nachunternehmer aus "nachunternehmer" (nur wenn eindeutig; sonst die Rückfragen nutzen und in "missing" vermerken)
 </task>
 
@@ -54,6 +54,14 @@ Bedenkenanzeige (bedenken), § 4 Abs. 3 VOB/B – Inhalt in DIESER Reihenfolge, 
 8. Letzte Zeile des Textes: "Anlagen: …" mit den Nachweisen aus den Angaben (z. B. "Anlagen: Fotos vom 20.11.2026, Aushubprotokoll"). Nur Nachweise nennen, die in den Angaben vorkommen; ohne Nachweise in den Angaben entfällt die Zeile.
 
 Mängelanzeige an Nachunternehmer (maengel): Mangel, genauer Ort, Datum der Feststellung, Bezug auf den NU-Vertrag (Vertragsnummer aus Projektdaten), Frist zur Beseitigung, Vorbehalt der Ersatzvornahme und weiterer Rechte. Keine VOB/B-Paragraphen, da die Vertragsgrundlage des NU-Vertrags nicht bekannt ist.
+
+Mengenänderung – Preisanpassung (mengenaenderung), § 2 Abs. 3 VOB/B (nur Einheitspreisvertrag, dieselbe LV-Position, Abweichung > 10 % ohne Anordnung des AG):
+1. Bezug: LV-Position (Nummer und Kurztext), Vertragsmenge, ausgeführte bzw. voraussichtliche Menge, Abweichung in Prozent.
+2. Ursache der Abweichung, sachlich.
+3. Bei Mehrmenge: formelles Verlangen der Vereinbarung eines neuen Einheitspreises gem. § 2 Abs. 3 Nr. 2 VOB/B für die Menge über 110 % der Vertragsmenge (Menge nennen). Bei Mindermenge unter 90 %: Verlangen der Erhöhung des Einheitspreises für die tatsächlich ausgeführte Menge gem. § 2 Abs. 3 Nr. 3 VOB/B.
+4. Die Kalkulation bzw. das Nachtragsangebot folgt gesondert.
+5. Weitere Ansprüche bleiben vorbehalten.
+ALLE Zahlen (Mengen, Prozent, Menge über 110 %) stehen fest in „Rechenwerte“ unten – genau so übernehmen, nichts selbst rechnen oder runden.
 </context>
 
 <required_fields>
@@ -61,6 +69,7 @@ behinderung: betroffene Leistung, Ursache, Verantwortungsbereich, Datum Beginn, 
 mehrkosten: Art der Zusatz-/Änderungsleistung, Anordnung durch wen + wann, betroffene Leistung, Beginn der Ausführung
 bedenken: Gegenstand der Bedenken, Grund, mögliche Folgen, betroffene Leistung
 maengel: Nachunternehmer, Mangelbeschreibung, Ort, Feststellungsdatum, Frist
+mengenaenderung: LV-Position, Vertragsmenge, Ausgeführte Menge, Einheitspreisvertrag, Ursache der Abweichung
 </required_fields>
 
 <rules>
@@ -148,6 +157,7 @@ Bekannte Fakten:
 
 Antworten des Bauleiters auf Rückfragen:
 {answers}
+{mengen}
 </input>
 
 <output_format>

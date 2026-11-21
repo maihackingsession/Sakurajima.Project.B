@@ -29,12 +29,15 @@ const PROJECT_META = `Projekt: ${project.bauvorhaben}. "Wir" = Auftragnehmer (Ba
 // Demo-Modus only (no API key): crude keyword guess, no prepared facts.
 function guess(text: string): RouterReply {
   const t = text.toLowerCase();
-  const r = (type: RouterType, reason: string): RouterReply => ({ type, reason, confidence: 0.5, language: "de", facts: {} });
+  const language = /[ąćęłńśźż]|\bnie\b/.test(t) ? "pl" : "de";
+  const r = (type: RouterType, reason: string): RouterReply => ({ type, reason, confidence: 0.5, language, facts: {} });
+  if (/\b(?:lv|vertragsmenge)\b\D{0,6}\d/.test(t) && /tatsächlich|aufmaß|ausgeführt|voraussichtlich|werden es/.test(t) && !/angeordnet/.test(t))
+    return r("mengenaenderung", "Die Menge einer LV-Position weicht ohne Anordnung deutlich von der Vertragsmenge ab.");
   if (/unser(?:e|en|em)? (?:eigene[rn]? )?(?:kran|bagger|kolonne|leute|polier)|selbst falsch|krank/.test(t)) return r("keine", "Ursache im eigenen Bereich – keine Anzeige an den Auftraggeber.");
   if (/nachunternehmer|subunternehmer/.test(t) && /mangel|mängel|schief|hohl|offen|riss|fehlerhaft|nicht ordentlich/.test(t)) return r("maengel", "Unser Nachunternehmer hat mangelhaft gearbeitet.");
   if (/angeordnet|zusätzlich|statt|nicht im lv|nachtrag|not in our contract|will .* jetzt/.test(t)) return r("mehrkosten", "Der Auftraggeber verlangt eine zusätzliche oder geänderte Leistung.");
   if (/bedenken|ungeeignet|zu flach|zu feucht|feuchte|widersprechen|halten wir/.test(t)) return r("bedenken", "Bedenken gegen die vorgesehene Ausführung.");
-  if (/nicht fertig|gesperrt|nicht geliefert|fehlen|können nicht|kann nicht|nie przekazał|warten/.test(t)) return r("behinderung", "Die Arbeit kann aus Gründen außerhalb unseres Bereichs nicht wie geplant laufen.");
+  if (/nicht fertig|gesperrt|nicht geliefert|fehlen|können nicht|kann nicht|nie przekazał|nie dotarły|stoi|warten/.test(t)) return r("behinderung", "Die Arbeit kann aus Gründen außerhalb unseres Bereichs nicht wie geplant laufen.");
   return r("keine", "Normaler Baufortschritt – keine Anzeige nötig.");
 }
 

@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import project from "@/data/project.json";
+import { mengenCalc } from "@/lib/mengen";
 import { LETTER_LABELS, type Letter, type LetterType } from "@/lib/types";
 import { checklist, euro, numberFact, placeholders } from "../lib/checks";
 import {
@@ -19,6 +20,7 @@ import {
 import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
 import { prefs } from "../lib/store";
 import { btnPrimary, h1, issueTitle, kicker, linkBtn, meta } from "../lib/ui";
+import MengenBox from "./MengenBox";
 import VoiceField from "./VoiceField";
 
 /** Review status of a draft. Only the user changes it. Approvals are remembered in this browser only. */
@@ -109,7 +111,8 @@ export default function DraftEditor(props: Props) {
   useEffect(() => {
     if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, [isDraft]);
-  const checks = checklist(letterType, draft, facts, eventDate, !!flow.report);
+  const mengen = letterType === "mengenaenderung" ? mengenCalc(flow.input, facts, flow.answers) : null;
+  const checks = checklist(letterType, draft, facts, eventDate, !!flow.report, mengen);
   const open = checks.filter((c) => !c.ok).length;
   const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };
 
@@ -235,6 +238,8 @@ export default function DraftEditor(props: Props) {
           {holeList.map((h) => <MissingField key={h} hole={h} onFill={(v) => fillHole(h, v)} />)}
         </div>
       )}
+
+      {mengen && <MengenBox calc={mengen} />}
 
       {/* The letter in a thin black box. */}
       <article
@@ -374,11 +379,15 @@ function stampLine(iso: string, by: string) {
   return `${day} · ${time} · ${name}`;
 }
 
-/** Animated euro amount (0.9 s ease-out count-up; instant under reduced motion). */
-function CountUp({ value }: { value: number }) {
+/**
+ * Animated euro amount: on every change 0.6 s ease-out from the old to the new value; instant under reduced motion.
+ * `null` (a field is empty while typing) shows „– €“ but keeps the old value, so the next number counts from there.
+ */
+function CountUp({ value }: { value: number | null }) {
   const [shown, setShown] = useState(0);
   const from = useRef(0);
   useEffect(() => {
+    if (value === null) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const start = from.current;
     if (reduce || start === value) {
@@ -389,7 +398,7 @@ function CountUp({ value }: { value: number }) {
     let raf = 0;
     const t0 = performance.now();
     const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / 900);
+      const p = Math.min(1, (t - t0) / 600);
       const v = start + (value - start) * (1 - Math.pow(1 - p, 3));
       setShown(v);
       from.current = v;
@@ -398,7 +407,7 @@ function CountUp({ value }: { value: number }) {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [value]);
-  return <>{euro(Math.round(shown))}</>;
+  return <>{value === null ? "– €" : euro(Math.round(shown))}</>;
 }
 
 /** Standstill cost estimate (Behinderung only). Pure arithmetic; unknown values stay empty. Never in the letter. */
@@ -420,7 +429,7 @@ function CostSection({ facts }: { facts: Record<string, unknown> }) {
     <section className="mt-12 border-t-2 border-[var(--ink)] pt-[10px]" aria-labelledby="h-kosten" aria-live="polite">
       <h2 id="h-kosten" className="font-sans text-[13px] font-extrabold tracking-[.04em] uppercase">Stillstand</h2>
       <p className="mt-3 mb-[6px] font-serif text-[clamp(56px,8vw,88px)] leading-[1.05] font-bold tracking-[-.03em] whitespace-nowrap">
-        {ok ? <CountUp value={amount} /> : "– €"}
+        <CountUp value={ok ? amount : null} />
       </p>
       <p className="text-[19px] leading-[2.1]">
         {input("cost-workers", "Arbeitskräfte", workers, setWorkers, "w-[52px]")} Leute ×{" "}

@@ -65,6 +65,13 @@ Tabs: **Heute · Tagesberichte · Fristen & Verlauf · Zusammenfassen**.
 23. Optional: photo per entry (IndexedDB, resized in the browser, never sent to the AI; letter lists it as Anlage).
 24. Storage: browser only (localStorage, photos in IndexedDB), all access in `app/lib/store.ts`.
 
+### Router-Fix + Teil 3 (branch teil-final, not merged into main)
+25. **Router v3:** strict type enum incl. „keine“, only the input text goes to the router, visible „KI nicht erreichbar“, no sample leakage (16/16 router tests, `npm run test:router`).
+26. **Rückfragen in the user's language:** questions, examples, the short explanation and the „Weiß ich nicht“ switch come translated from the gaps prompt; the letter stays formal German; all other UI stays German.
+27. **Stillstand count-up on every change:** 0.6 s ease-out from the old to the new value, instant under reduced motion.
+28. **Mengenänderung – Preisanpassung (§ 2 Abs. 3 VOB/B):** new letter type (router, Heute, Schreibenart wählen, Rückfragen, letter prompt, Prüfliste with 7 points, Fristen & Verlauf, Tagesbericht, demo data). The code (`lib/mengen.ts`) computes the deviation in %, the quantity above 110 % (Mehrmenge) or the < 90 % hint (Mindermenge); ≤ 10 % → no letter; no unit-price contract → red hint instead of the letter; AG order → Mehrkostenanzeige. The numbers go to the letter prompt as fixed values.
+29. **Wetter on Heute:** server route without fetch cache, browser retries and falls back to Open-Meteo directly.
+
 ### Pitch only / next steps
 - Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
 - „Dokumente prüfen“ (PDF upload)

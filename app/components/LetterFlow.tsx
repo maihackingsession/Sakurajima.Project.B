@@ -2,6 +2,7 @@
 
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { formatDate, today } from "@/lib/dates";
+import { mengenBlocker, mengenCalc } from "@/lib/mengen";
 import { LETTER_LABELS, LETTER_TYPES, UNKNOWN, type GapQuestion, type GapsResult, type Letter, type LetterType } from "@/lib/types";
 import { errorText, isBeispiel, postJson } from "../lib/api";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, shortType } from "../lib/ui";
@@ -9,6 +10,7 @@ import CraneLoader, { atLeast } from "./CraneLoader";
 import type { Tab } from "./Header";
 import DraftEditor, { NEW_APPROVAL, type Approval, type FlowInfo } from "./DraftEditor";
 import HeuteView from "./HeuteView";
+import MengenBox from "./MengenBox";
 import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 
@@ -54,6 +56,8 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
   const [source, setSource] = useState<DraftSource>({});
   const [reason, setReason] = useState("");
   const [questions, setQuestions] = useState<GapQuestion[]>([]);
+  /** Rückfragen page texts in the language of the input (from the gaps prompt; German by default). */
+  const [lang, setLang] = useState({ code: "de", intro: "", unknownLabel: UNKNOWN });
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [unknown, setUnknown] = useState<Record<string, boolean>>({});
   const [draft, setDraft] = useState<Letter | null>(null);
@@ -99,6 +103,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
   async function checkGaps(type: LetterType, text: string, knownFacts: Record<string, unknown>) {
     const gaps = await timed<GapsResult>("/api/gaps", { letter_type: type, input: text, facts: knownFacts });
     setQuestions(gaps.questions);
+    setLang({ code: gaps.language || "de", intro: gaps.intro || "", unknownLabel: gaps.unknown_label || UNKNOWN });
     setAnswers({});
     setUnknown({});
     setStep("questions");
@@ -133,9 +138,14 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
   // Every question needs an answer or „Weiß ich nicht“ before the letter is written.
   const answered = (field: string) => unknown[field] || !!answers[field]?.trim();
   const allAnswered = questions.every((q) => answered(q.field));
+  // Mengenänderung: code calculation from input, facts and the answers so far (unknown answers left out).
+  const known: Record<string, string> = {};
+  for (const q of questions) if (!unknown[q.field] && answers[q.field]?.trim()) known[q.field] = answers[q.field].trim();
+  const mengen = letterType === "mengenaenderung" ? mengenCalc(input, facts, known) : null;
+  const mengenStop = !!mengen && (!!mengenBlocker(mengen) || mengen.ordered === true);
 
   function createLetter() {
-    if (!allAnswered) return;
+    if (!allAnswered || mengenStop) return;
     void run("letter", async () => {
       const given: Record<string, string> = {};
       for (const q of questions) {
@@ -193,7 +203,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
           {reason && <p className="-mt-2 line-clamp-2 text-[18px] text-[var(--grey)] italic">{reason}</p>}
           {questions.length > 0 ? (
             <div className="mt-8">
-              <p className={kickerUrgent}>{questions.length === 1 ? "Eine Angabe fehlt noch" : `${questions.length} Angaben fehlen noch`}</p>
+              <p className={kickerUrgent}>{lang.code !== "de" && lang.intro ? lang.intro : questions.length === 1 ? "Eine Angabe fehlt noch" : `${questions.length} Angaben fehlen noch`}</p>
               {questions.map((q, i) => {
                 const off = !!unknown[q.field];
                 return (
@@ -202,7 +212,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
                     <VoiceField
                       id={`q${i}`}
                       className={`line-field ${off ? "text-[var(--muted)]" : ""}`}
-                      placeholder={off ? "Weiß ich nicht" : q.example ? `z. B. ${q.example}` : ""}
+                      placeholder={off ? lang.unknownLabel : q.example ? `z. B. ${q.example}` : ""}
                       value={off ? "" : answers[q.field] ?? ""}
                       disabled={off}
                       autoFocus={i === 0}
@@ -216,7 +226,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
                       className={`${greyLink} gap-2 text-[13px]`}
                     >
                       <span aria-hidden className={`inline-block h-[14px] w-[14px] border ${off ? "border-[var(--ink)] bg-[var(--ink)]" : "border-[var(--grey)]"}`} />
-                      Weiß ich nicht
+                      {lang.unknownLabel}
                     </button>
                   </div>
                 );
@@ -226,8 +236,14 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
             <p className={`${kicker} mt-8`}>✓ Angaben vollständig</p>
           )}
 
+          {mengen && <MengenBox calc={mengen} />}
+
           <div className="mt-8">
-            <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={createLetter} disabled={!allAnswered}>Schreiben erstellen</button>
+            {mengenStop ? (
+              mengen?.ordered && <button className={`${linkBtn} font-bold`} onClick={() => changeType("mehrkosten")}>Als Mehrkostenanzeige weiter →</button>
+            ) : (
+              <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={createLetter} disabled={!allAnswered}>Schreiben erstellen</button>
+            )}
           </div>
           {errorView}
 

@@ -26,6 +26,7 @@ Zuordnung Abweichung → vorgeschlagenes Schreiben:
 - Vom AG angeordnete Zusatz- oder Änderungsleistung → "mehrkosten"
 - Bedenken gegen Planung, Material oder Vorleistung anderer Unternehmer → "bedenken"
 - Mangelhafte Leistung eines eigenen Nachunternehmers → "maengel"
+- Dieselbe LV-Position wird ohne Anordnung des Auftraggebers in einer Menge ausgeführt, die mehr als 10 % von der Vertragsmenge abweicht → "mengenaenderung"
 - Geringe Abweichung ohne rechtlichen Handlungsbedarf → null
 </context>
 
@@ -65,7 +66,7 @@ Ausgabe (gekürzt):
 JSON mit genau diesen Schlüsseln:
 {
   "deviations": [
-    { "activity": string, "planned": string, "actual": string, "severity": "niedrig" | "mittel" | "hoch", "suggested_letter": "behinderung" | "mehrkosten" | "bedenken" | "maengel" | null, "reason": string, "explanation": string, "event_date": string, "facts": object }
+    { "activity": string, "planned": string, "actual": string, "severity": "niedrig" | "mittel" | "hoch", "suggested_letter": "behinderung" | "mehrkosten" | "bedenken" | "maengel" | "mengenaenderung" | null, "reason": string, "explanation": string, "event_date": string, "facts": object }
   ],
   "summary": string
 }

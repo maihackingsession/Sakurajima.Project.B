@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Pflichtangaben je Schreibenart für den Gap-Checker. Frei bearbeitbar; Schlüssel (behinderung, mehrkosten, bedenken, maengel) nicht umbenennen.",
+  "_hinweis": "Pflichtangaben je Schreibenart für den Gap-Checker. Frei bearbeitbar; Schlüssel (behinderung, mehrkosten, bedenken, maengel, mengenaenderung) nicht umbenennen.",
   "behinderung": [
     "Datum Beginn",
     "Ursache",
@@ -26,5 +26,13 @@
     "Ort",
     "Feststellungsdatum",
     "Frist"
+  ],
+  "mengenaenderung": [
+    "LV-Position",
+    "Vertragsmenge",
+    "Ausgeführte Menge",
+    "Einheitspreisvertrag",
+    "Ursache der Abweichung",
+    "Anordnung des Auftraggebers"
   ]
 }

@@ -361,7 +361,7 @@ async function run() {
       await sleep(100);
       await js(`__type("#situation", "Bewehrungspläne fehlen")`);
       await js(`__click("Speichern")`);
-      await waitFor("Erneut prüfen");
+      await waitFor("KI nicht erreichbar");
       await shot("10-fehler");
     });
   }

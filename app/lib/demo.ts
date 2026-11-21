@@ -14,7 +14,7 @@ export function loadDemo() {
   const id = (n: number) => `beispiel-${n}`;
 
   const entries: Entry[] = [
-    // Today: three entries, one with a recommended Behinderungsanzeige.
+    // Today: four entries, one Behinderungsanzeige and one Mengenänderung recommended.
     {
       id: id(1), kind: "eintrag", date: today, time: "06:50", example: true,
       text: "Baustelle offen. Musterbau Betonbau mit 6 Arbeitskräften vor Ort, Polier Stefan Maier.",
@@ -29,6 +29,16 @@ export function loadDemo() {
       id: id(3), kind: "eintrag", date: today, time: "10:30", example: true,
       text: "Beton für die Fundamente Achse A geliefert, 8 m³, eingebaut.",
       check: none("Normaler Baufortschritt – keine Anzeige nötig."),
+    },
+    {
+      id: id(8), kind: "eintrag", date: today, time: "11:15", example: true,
+      text: "Aushub Baugrube, Pos. 02.03.0010, LV 1.200 m³, tatsächlich 1.650 m³, weil der Baugrund schlechter ist als im Gutachten.",
+      check: {
+        status: "done",
+        letterType: "mengenaenderung",
+        reason: "Die Menge der Position 02.03.0010 weicht ohne Anordnung um mehr als 10 % von der LV-Menge ab.",
+        facts: { lv_position: "Pos. 02.03.0010 Aushub Baugrube", vertragsmenge: "1.200 m³", ist_menge: "1.650 m³", ursache: "Baugrund schlechter als im Gutachten" },
+      },
     },
     // Yesterday: two entries with a finished, signed Tagesbericht.
     {

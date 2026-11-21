@@ -21,6 +21,7 @@ const LABELS = {
   mehrkosten: "Mehrkostenanzeige",
   bedenken: "Bedenkenanzeige",
   maengel: "Mängelanzeige",
+  mengenaenderung: "Mengenänderung",
   keine_anzeige: "Keine Anzeige nötig",
   eigener_bereich: "Eigener Bereich – prüfen",
 };
