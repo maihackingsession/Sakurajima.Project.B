@@ -246,3 +246,51 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - [x] 8. Zusammenfassen → „Als Tagesbericht speichern“
 - [x] 9. Demo data without API
 - [x] 10. (optional) Photo per entry
+
+## Router-Diagnose 21.11. (branch router-fix, FIX_PROMPT_ROUTER.md Schritt 1, keine Code-Änderung)
+
+**a) Wie der Typ entschieden wird**
+- Prompt `prompts/router.xml` (93 Zeilen, v2): intent letter/deviation/summary, letter_type behinderung/mehrkosten/bedenken/maengel/null, outcome anzeige/keine_anzeige/eigener_bereich, facts, reason. Definition „behinderung“ schließt Witterung und Geräteausfall ein (:13), outcome-Regel „Im Zweifel anzeige“ (:22). Von 3 Few-shot-Beispielen sind **alle 3 letter_type behinderung** (:50-79), das erste ist die Demo-Geschichte (Bewehrungspläne Bodenplatte, Tragwerksplaner).
+- Aufruf: `app/api/route/route.ts:23-49` → `runPrompt("router", …, {effort: "low", fast: true})`. Einziger Client-Aufrufer in V2: `checkEntry()` `app/components/HeuteView.tsx:38-47` (nach „Speichern“ auf Heute, im Hintergrund; „Erneut prüfen“). „Analysieren“ gibt es in V2 nicht mehr. „Mit Bauzeitenplan prüfen“ (`BerichteTab.tsx:166`) und „Fremden Bericht einfügen“ (`DeviationTab.tsx:56`) rufen `/api/deviation`, nicht den Router; „Anzeige entwerfen“ übernimmt `suggested_letter` aus der Abweichung und überspringt den Router.
+- Default/Fallback: ungültiges `intent` → "letter", ungültiges `outcome` → **"anzeige"** (`route.ts:41,45`), ungültiger `letter_type` → null. „Keine Anzeige nötig“ ist möglich (outcome keine_anzeige), aber nur als Unterfall eines letter_type. Im Demo-Modus fällt `guess()` (`route.ts:7-21`) bei vielen Wörtern („fehl“, „wart“, „kann nicht“) auf behinderung.
+- Parsing: kein strenges JSON – `parseJson()` (`lib/claude.ts:43-53`) entfernt ```-Zäune und nimmt das erste {…}; Enums werden danach im Code geprüft (s. o.), ungültige Werte werden still ersetzt statt wiederholt.
+
+**b) Was außer dem Text in den KI-Kontext geht**
+- Router: `{project_context}` = ganzes `data/project.json` (`lib/claude.ts:88`, router.xml:31) ⚠ enthält Ingenieurbüro Kraus, Jagtap, Rohbau Schneider, Huber, Vogel, Maier; `{today}`; 3 Few-shot-Beispiele ⚠ Bewehrungspläne Bodenplatte. Kein Bauzeitenplan, keine anderen Einträge.
+- Gaps: project.json ⚠ (Kraus, Jagtap, Schneider), required_fields.json, facts vom Router, Beispiel ⚠ „Bewehrung Bodenplatte … Pläne vom Tragwerksplaner“ (gaps.xml:50-55).
+- Letter: project.json ⚠, facts, answers, Beispiele ⚠ Bodenplatte/Bewehrungspläne/Ingenieurbüro Kraus (letter.xml:91-99, 117-125).
+- Deviation: project.json ⚠ + ganzer `data/plan.json` ⚠ (Bodenplatte bewehren, Bewehrungspläne, Kraus).
+- Demo-Modus/Router-Mock: `data/mocks/router.json` ⚠ – facts (Bewehrungspläne, Kraus, Bodenplatte) und reason („Fehlende Pläne … Bewehrung“) werden für **jede** als behinderung geratene Eingabe zurückgegeben (`route.ts:36-37`).
+- Demo-Einträge (`app/lib/demo.ts`): liegen im selben Store `baufrist:eintraege` wie echte (Flag `example`), Eintrag 2 trägt eine fertige Prüfung mit der Mock-reason und den Mock-facts ⚠ Kraus/Bodenplatte. „Beispiel einfügen“ auf Heute (`HeuteView.tsx:124-128`) speichert einen Text aus tests/situations.json als normalen Eintrag (ohne Flag).
+
+**c) Fallback-Pfade auf Beispielantworten**
+| Bedingung | Mock? | Nutzer informiert? | Log? |
+|---|---|---|---|
+| ANTHROPIC_API_KEY fehlt (`lib/claude.ts:20-22,78`) | ja, alle KI-Routen | nur kleines graues „Beispielmodus“ im Kopf (Header.tsx:42, nach /api/health) | nein |
+| `?beispiel=1` → Header `x-beispiel: 1` (`app/lib/api.ts:12`, `lib/claude.ts:152`) | ja, auch mit Schlüssel | „Beispielmodus“ im Kopf | nein |
+| API-Fehler, Timeout, Rate-Limit, 401 (`lib/claude.ts:123-133`) | nein – Fehler | Heute: grau „Prüfung nicht möglich. Erneut prüfen“ (HeuteView.tsx:60-65); LetterFlow: ErrorBox + „Erneut versuchen“ | console.error nur bei APIError, ohne Route |
+| ungültiges JSON (2 Versuche, `:135-144`) | nein – Fehler | wie oben | nein |
+| leere Antwort | wird als „kein JSON“ behandelt → Fehler | wie oben | nein |
+| Client-catch (`postJson`) | nein | Fehlertext | nein |
+→ Mit Schlüssel gibt es **keinen stillen** Fallback auf Mocks; „keine echte KI“ entsteht nur durch fehlenden Schlüssel (z. B. Vercel-Preview ohne Env-Var) oder `?beispiel=1` – beide nur am kleinen grauen Wort erkennbar.
+
+**d) Modell und Parameter** (alle ohne System-Prompt – alles in einer User-Nachricht; Antwortformat JSON-Text, tolerant geparst; Timeout 55 s + 1 SDK-Retry `lib/claude.ts:96`; max_tokens 8000 Default `:111`; temperature nicht gesetzt – Sonnet/Haiku 5.5 lehnen Nicht-Default mit 400 ab, `:101`)
+| Route | Modell | effort | Prompt |
+|---|---|---|---|
+| /api/route | Haiku (ANTHROPIC_FAST_MODEL, `route.ts:30`) | low | router.xml |
+| /api/gaps | Haiku (`gaps/route.ts:19`) | low | gaps.xml |
+| /api/letter | Sonnet (ANTHROPIC_MODEL, `lib/claude.ts:10`) + server-side fallback beta | medium | letter.xml |
+| /api/deviation | Sonnet | medium | deviation.xml |
+| /api/daily-report | Sonnet | low | daily-report.xml |
+| /api/summary | Sonnet | medium | summary.xml |
+
+**e) Client**
+- Kein hart codiertes Label: „… EMPFOHLEN“ kommt aus `LETTER_LABELS[check.letterType]` (HeuteView.tsx:70), Tagesbericht-Karten aus `suggested_letter`. `LetterFlow` startet mit State „behinderung“ (LetterFlow.tsx:51), wird aber bei jedem Start überschrieben.
+- „Schreibenart selbst wählen“ überschreibt korrekt (HeuteView.tsx:142-147: Prüfung = gewählter Typ, kein Router-Aufruf).
+- Kein Wiederverwenden alter Ergebnisse: Prüfung hängt an der Entry-ID, POSTs werden nicht gecacht; `prepare()` setzt Entwurf/Typ/Fakten neu, Fragen/Antworten werden in `checkGaps` neu gesetzt.
+- Demo-Daten mischen sich in echte Einträge (gleicher Store, gleiche Listen „Heute festgehalten“/Tagesberichte), inkl. fertiger „BEHINDERUNGSANZEIGE EMPFOHLEN“ mit Kraus/Bodenplatte-Begründung.
+
+**Zusammenfassung (wahrscheinlichste Ursachen)**
+1. Fast alles wird Behinderung, weil der Router-Prompt nur Behinderungs-Beispiele zeigt, Witterung/Geräteausfall ausdrücklich als Behinderung definiert und „im Zweifel anzeige“ sagt, es keinen echten „keine“-Typ gibt und der Demo-Modus-`guess()` bei häufigen Wörtern auf Behinderung fällt.
+2. Bodenplatte/Bewehrungspläne/Kraus tauchen auf, weil der Router das ganze project.json (mit Kraus, Schneider …) und ein Demo-Beispiel mit Bewehrungsplänen bekommt, der Router-Mock diese Fakten und Begründung für jede Behinderung zurückgibt und die Demo-Einträge dieselbe Begründung im echten Store zeigen.
+3. „Keine echte KI“ entsteht, wenn der Server keinen Schlüssel hat (Preview/lokal) oder `?beispiel=1` aktiv ist – dann antworten alle Routen aus data/mocks, erkennbar nur am kleinen grauen „Beispielmodus“; echte Fehler erscheinen auf Heute nur als graues „Prüfung nicht möglich“.
