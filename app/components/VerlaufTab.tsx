@@ -21,6 +21,7 @@ import {
 import { btnPrimary, greyLink, h1, issueTitle, kicker, linkBtn, meta, sectionLabel, shortType } from "../lib/ui";
 import { useDueItems, useVerlaufEntries } from "../lib/useVerlauf";
 import { DEADLINE_LABEL, countdown, letterDateOf, letterOf, type VerlaufEntry } from "../lib/verlauf";
+import { loadDemo } from "../lib/demo";
 import { approvalTime, PrintSheet } from "./DraftEditor";
 import { EntryText } from "./HeuteView";
 import VoiceField from "./VoiceField";
@@ -122,6 +123,10 @@ export default function VerlaufTab({ onOpenDay }: { onOpenDay?: (day: string) =>
             </ul>
           </section>
         ))
+      )}
+
+      {events.length === 0 && (
+        <button className={`${greyLink} mt-2 text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>
       )}
 
       {anything && (

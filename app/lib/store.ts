@@ -245,3 +245,11 @@ export function clearAll() {
   writeJSON("baufrist:berichte", null);
   writeJSON("baufrist:verlauf", null);
 }
+
+/** Demo data („Beispieldaten laden“): added next to what is already there, never replacing it. */
+export function saveDemo(entries: Entry[], reports: DailyReport[]) {
+  const have = new Set(entryStore.get().map((e) => e.id));
+  entryStore.set([...entryStore.get(), ...entries.filter((e) => !have.has(e.id))]);
+  const days = new Set(reportStore.get().map((r) => r.date));
+  reportStore.set([...reportStore.get(), ...reports.filter((r) => !days.has(r.date))]);
+}

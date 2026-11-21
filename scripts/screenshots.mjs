@@ -308,6 +308,20 @@ async function run() {
       await waitFor("Zusammenfassung");
       await shot("09-zusammenfassen-tagesbericht");
     });
+    await step("beispieldaten", async () => {
+      await js("localStorage.clear(); true");
+      await open();
+      await js(`__click("Beispieldaten laden")`);
+      await waitFor("Behinderungsanzeige empfohlen");
+      await shot("21-heute-beispiel", true);
+      await js(`__click("Tagesberichte")`);
+      await waitFor("Abgezeichnet");
+      await shot("22-tagesberichte-beispiel");
+      await js(`__click("Fristen & Verlauf")`);
+      await waitFor("Bewehrungspläne Bodenplatte (Zusage");
+      await shot("23-verlauf-beispiel", true);
+      await js("localStorage.clear(); true");
+    });
     await step("fehler", async () => {
       await open();
       await js(`window.fetch = () => Promise.reject(new TypeError("offline")); true`);

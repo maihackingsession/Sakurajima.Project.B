@@ -6,6 +6,7 @@ import project from "@/data/project.json";
 import { formatDate } from "@/lib/dates";
 import type { DailyReportResult, DeviationResult, LetterType } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
+import { loadDemo } from "../lib/demo";
 import {
   dayDate,
   entriesOfDay,
@@ -78,7 +79,10 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
       )}
 
       {days.length === 0 ? (
-        <p className="mt-8 text-[var(--grey)]">Noch keine Einträge.</p>
+        <p className="mt-8 flex flex-wrap items-center gap-x-5 text-[var(--grey)]">
+          Noch keine Einträge.
+          <button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>
+        </p>
       ) : (
         <ul className="mt-8 border-t-2 border-[var(--ink)]">
           {days.map((d) => (

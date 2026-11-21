@@ -5,6 +5,7 @@ import situations from "@/tests/situations.json";
 import { formatDate } from "@/lib/dates";
 import { isLetterType, LETTER_LABELS, LETTER_TYPES, type LetterType, type RouterResult } from "@/lib/types";
 import { postJson } from "../lib/api";
+import { loadDemo } from "../lib/demo";
 import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, updateEntry, useEntries, type Entry } from "../lib/store";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, recBtn, sectionLabel, shortType } from "../lib/ui";
 import { useDueItems } from "../lib/useVerlauf";
@@ -182,6 +183,7 @@ export default function HeuteView({ onDraft, onTab }: Props) {
           {isOpen && <button className={`${greyLink} text-[13px]`} onClick={discard}>Verwerfen</button>}
           <button className={`${greyLink} text-[13px]`} onClick={example}>Beispiel einfügen</button>
           <button className={`${greyLink} text-[13px]`} onClick={() => setChooseType((v) => !v)} aria-expanded={chooseType}>Schreibenart selbst wählen</button>
+          {all.length === 0 && <button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>}
         </div>
         {chooseType && (
           <div className="open-in mt-3">

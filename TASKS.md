@@ -244,5 +244,5 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - [x] 6. Wetter via Open-Meteo (/api/weather), cached, manual fallback
 - [x] 7. Fristen & Verlauf: „Neues Ereignis“, timeline by day, shared store
 - [x] 8. Zusammenfassen → „Als Tagesbericht speichern“
-- [ ] 9. Demo data without API
+- [x] 9. Demo data without API
 - [ ] 10. (optional) Photo per entry
