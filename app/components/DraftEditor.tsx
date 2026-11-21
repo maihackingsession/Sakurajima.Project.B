@@ -119,7 +119,7 @@ export default function DraftEditor(props: Props) {
   const [approver, setApprover] = useState(() => recall("baufrist:freigeber", project.bauleiter.name));
 
   const isDraft = approval.status !== "freigegeben";
-  const checks = checklist(draft, facts, eventDate, !!flow.report);
+  const checks = checklist(letterType, draft, facts, eventDate, !!flow.report);
   const open = checks.filter((c) => !c.ok).length;
   const holes = placeholders(`${draft.recipient}\n${draft.subject}\n${draft.body}`).length;
   const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };

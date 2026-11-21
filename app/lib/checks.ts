@@ -1,6 +1,6 @@
 // "Prüfliste vor Versand" and "Was kostet der Stillstand?" – plain code, no AI.
 import { parseGermanDate, urgency } from "@/lib/dates";
-import type { Letter } from "@/lib/types";
+import type { Letter, LetterType } from "@/lib/types";
 
 export type Check = { label: string; ok: boolean; note?: string };
 
@@ -25,10 +25,41 @@ export function placeholders(text: string) {
   return text.match(/\[[^\]\n]{2,}\]/g) ?? [];
 }
 
-export function checklist(letter: Letter, facts: Record<string, unknown>, eventDate: string, hasReport: boolean): Check[] {
+export function checklist(letterType: LetterType, letter: Letter, facts: Record<string, unknown>, eventDate: string, hasReport: boolean): Check[] {
   const body = letter.body;
   // A paragraph that still has a placeholder does not count as "present".
   const filled = (re: RegExp) => body.split(/\n\s*\n/).some((p) => re.test(p) && placeholders(p).length === 0);
+  const deadline = /bis (?:spätestens |zum )+(?!\[)[^\s,.]/i.test(body);
+  const evidence = (re: RegExp) => hasReport || filled(re);
+
+  if (letterType === "bedenken") {
+    return [
+      { label: "Bedenken konkret", ok: has(facts, "bedenken", "gegenstand") || filled(/bedenken gegen|bedenken[^.]*(?:ausführung|planung|abdichtung)/i) },
+      { label: "Folgen", ok: filled(/drohen|folge|schäden|schaden|risiko|gefahr/i) },
+      { label: "Alternative / Vorschlag", ok: filled(/schlagen[^.]*vor|vorschlag|alternativ|empfehlen/i) },
+      { label: "Frist für Entscheidung", ok: deadline },
+      { label: "Vor Ausführung", ok: filled(/vor (?:ihrer entscheidung|beginn|der ausführung)|nicht (?:ausführen|beginnen)/i) },
+      { label: "Nachweise", ok: evidence(/anlage|foto|protokoll|gutachten/i) },
+    ];
+  }
+  if (letterType === "mehrkosten") {
+    return [
+      { label: "Anordnung (wer / wann)", ok: filled(/angeordnet|anordnung/i) && /\d{1,2}\.\d{1,2}\.\d{4}/.test(body) },
+      { label: "Zusätzliche / geänderte Leistung", ok: filled(/zusätzlich|geändert|änderung|nicht vorgesehen/i) },
+      { label: "Vor Ausführung angekündigt", ok: filled(/vor (?:beginn der )?ausführung/i) },
+      { label: "Kosten folgen / Nachtragsangebot", ok: filled(/nachtrag|gesondert beziffer/i) },
+      { label: "Nachweise", ok: evidence(/protokoll|anlage|baubesprechung|schreiben vom|e-mail vom/i) },
+    ];
+  }
+  if (letterType === "maengel") {
+    return [
+      { label: "Mangel konkret (Lage)", ok: filled(/achse|geschoss|nordseite|südseite|ostseite|westseite|bereich|raum|treppenhaus/i) },
+      { label: "Frist zur Beseitigung", ok: deadline },
+      { label: "Folgen bei Fristablauf", ok: filled(/fristablauf|ablauf der frist|ersatzvornahme|durch dritte/i) },
+      { label: "Nachweise", ok: evidence(/foto|anlage|protokoll/i) },
+    ];
+  }
+
   const date = eventDateOf(eventDate, facts, body);
   const u = urgency(date);
   return [
@@ -36,7 +67,7 @@ export function checklist(letter: Letter, facts: Record<string, unknown>, eventD
     { label: "Ursache", ok: has(facts, "ursache", "mangel", "bedenken", "anordnung") || filled(/ursache|grund|weil|wegen/i) },
     { label: "Betroffene Leistung", ok: has(facts, "betroffene_leistung") || filled(/betroffen/i) },
     { label: "Auswirkung Termine/Kosten", ok: filled(/termin|verzug|verz[öo]ger|verschieb|gef[äa]hrdet|mehrkosten/i) },
-    { label: "Frist zur Abhilfe", ok: /bis (?:spätestens |zum )+(?!\[)[^\s,.]/i.test(body) },
+    { label: "Frist zur Abhilfe", ok: deadline },
     { label: "Vorbehalt Bauzeit/Kosten", ok: /vorbehalt|behalten (?:wir )?uns[^.]*vor/i.test(body) },
     { label: "Nachweise", ok: hasReport || has(facts, "quelle", "nachfrage") || /tagesbericht|protokoll|foto|anlage|telefonisch|schreiben vom/i.test(body), note: hasReport ? "Tagesbericht" : undefined },
     {

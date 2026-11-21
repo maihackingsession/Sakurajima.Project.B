@@ -15,6 +15,10 @@
     "ansprechpartner": "Herr Dipl.-Ing. Peter Kraus",
     "rolle": "Tragwerksplanung, beauftragt vom Auftraggeber"
   },
+  "architekt_ag": {
+    "name": "Herr Vogel",
+    "rolle": "Architekt, Planer des Auftraggebers (in Protokoll und Beispielen genannt)"
+  },
   "auftragnehmer": {
     "name": "Musterbau GmbH",
     "strasse": "Industriestraße 42",

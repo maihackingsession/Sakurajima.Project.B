@@ -1,5 +1,6 @@
 import { jsonRoute, PromptError, runPrompt } from "@/lib/claude";
-import { stripDraftLines, stripDraftSubject } from "@/lib/text";
+import project from "@/data/project.json";
+import { stripDraftLines, stripDraftSubject, stripSignoff } from "@/lib/text";
 import { isLetterType, type Letter } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -36,7 +37,8 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
     subject: stripDraftSubject(str(letter.subject)),
     recipient: str(letter.recipient),
     salutation: str(letter.salutation) || "Sehr geehrte Damen und Herren,",
-    body: stripDraftLines(str(letter.body)),
+    // The template adds closing + signature; remove any the model wrote into the body.
+    body: stripSignoff(stripDraftLines(str(letter.body)), [project.auftragnehmer.name, project.bauleiter.name, project.bauleiter.funktion]),
     closing: str(letter.closing) || "Mit freundlichen Grüßen",
     legal_basis: str(letter.legal_basis),
     deadline_hint: str(letter.deadline_hint),

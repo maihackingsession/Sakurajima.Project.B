@@ -181,3 +181,20 @@ Checked: no English/technical words in the UI (except the label „Beispielmodus
 | Local .env.local API key returns 401 (Vercel key works). Local real-AI tests impossible until replaced. | Builder | todo (team) |
 | Rückfrage wording from Haiku varies run to run (e.g. „beim Auftraggeber vorliegen“). Content is right, wording sometimes clumsy. | Builder | known |
 | „Tagesbericht prüfen“ is the slowest step (~9 s, Sonnet). | Builder | known – crane + step text cover it |
+
+## FINAL v3 (Sat 21 Nov, from 17:21)
+### Phase 0 — State check
+- Local commits not on origin/main: `4f6812c` Design v2 (yellow), `a6be546` Fristen & Verlauf. Tag `pre-v3`.
+- a) Signature once (prompt + code strip): OPEN → done in Phase 1
+- b) Prüfliste per type + Bedenkenanzeige prompt + Beispielmodus examples for all four types: OPEN → done in Phase 1
+- c) Names: „Musterbau GmbH“ = auftragnehmer, „Rohbau Schneider GmbH“ = Nachunternehmer Rohbau – both from data/project.json, used deliberately (plan.json, Tagesberichte). DONE (checked again in Phase 1)
+- d) README.md, docs/ARCHITEKTUR.md, docs/INTEGRATION.md: DONE (81f0a68) – refreshed in Phase 2
+- e) git-history check for API keys: OPEN → Phase 2
+- f) HANDOVER §3 cleanup: DONE (81f0a68) – rechecked in Phase 2
+
+### Phase 1 — Content fixes: done
+- Signature once: prompts/letter.xml rule (body ends before the closing, never greeting/closing/signature); `stripSignoff()` (lib/text.ts) in /api/letter and in the Verlauf example. The Beispielmodus Mängelanzeige body ends with „Mit freundlichen Grüßen / Musterbau GmbH / Thomas Berger / Bauleiter“ – stripped, signature block shown once.
+- Prüfliste per type (app/lib/checks.ts, code only): Behinderung 8 points, Bedenken 6, Mehrkosten 5, Mängel 4. All four Beispielmodus letters: all ✓ (checked by script).
+- Bedenkenanzeige prompt: facts with evidence, risk, suggested alternative to check (drückendes Wasser / WU-Beton), deadline, no start before decision → Behinderung + cost reservation, last line „Anlagen: …“.
+- Names: added `architekt_ag` (Herr Vogel, already in the Protokoll sample, mock letters and the letter example) to data/project.json so every person in the demo data is in project.json. No other changes needed: client, Bauleiter, place (Garching, from project.json in the date line) and contract number BV-2026-0417 are identical everywhere.
+- DEMO_SCRIPT: plan deadline answer = „heute + 3 Tage, 12:00 Uhr“ (Sa → 24.11.2026, So → 25.11.2026).

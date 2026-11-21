@@ -3,6 +3,7 @@
 import behinderung from "@/data/mocks/letter-behinderung.json";
 import maengel from "@/data/mocks/letter-maengel.json";
 import { addDays, daysBetween, fillDates, formatDate, parseGermanDate, today } from "@/lib/dates";
+import { stripSignoff } from "@/lib/text";
 import type { Letter, LetterType } from "@/lib/types";
 
 export type VerlaufEntry = {
@@ -155,7 +156,7 @@ export function exampleEntries(): VerlaufEntry[] {
       approvedAt: at(-2, 16, 15),
       approvedBy: "Thomas Berger",
       deadline: fill("{T+5}"),
-      text: { salutation: maengel.salutation, body: fill(maengel.body.replace("[Frist einsetzen]", "{T+5}")), closing: maengel.closing },
+      text: { salutation: maengel.salutation, body: fill(stripSignoff(maengel.body)), closing: maengel.closing },
       example: true,
     },
   ];
