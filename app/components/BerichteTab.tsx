@@ -34,7 +34,9 @@ import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 import WeatherLine, { loadWeather } from "./WeatherLine";
 
-type Props = { onDraft: (text: string, letterType: LetterType, source: DraftSource) => void; openDay?: string | null };
+/** A request from another tab to open a day (n changes on every request). */
+export type OpenDay = { day: string; n: number } | null;
+type Props = { onDraft: (text: string, letterType: LetterType, source: DraftSource) => void; openDay?: OpenDay };
 
 const longDay = (day: string) => dayDate(day).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
 const longDayYear = (day: string) => dayDate(day).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -52,10 +54,10 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
   const [day, setDay] = useState<string | null>(null);
   const [foreign, setForeign] = useState(false);
   // Other tabs can open a day (e.g. „Im Tagesbericht vom 21.11. gespeichert“).
-  const [handled, setHandled] = useState<string | null | undefined>(undefined);
-  if (openDay !== handled) {
-    setHandled(openDay);
-    if (openDay) setDay(openDay);
+  const [handled, setHandled] = useState(0);
+  if (openDay && openDay.n !== handled) {
+    setHandled(openDay.n);
+    setDay(openDay.day);
   }
 
   const days = [...new Set([...entries.map((e) => e.date), ...reports.map((r) => r.date)])].sort().reverse();

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { LetterType } from "@/lib/types";
-import BerichteTab from "./components/BerichteTab";
+import BerichteTab, { type OpenDay } from "./components/BerichteTab";
 import Header, { type Tab } from "./components/Header";
 import LetterFlow, { type DraftSource, type LetterFlowHandle } from "./components/LetterFlow";
 import SummaryTab from "./components/SummaryTab";
@@ -13,6 +13,13 @@ export default function Home() {
   // Start screen uses the big nameplate; every other screen the smaller one.
   const [onStart, setOnStart] = useState(true);
   const letterFlow = useRef<LetterFlowHandle>(null);
+  const [openDay, setOpenDay] = useState<OpenDay>(null);
+
+  /** Opens the Tagesbericht of a day (from Fristen & Verlauf or Zusammenfassen). */
+  function showDay(day: string) {
+    setOpenDay({ day, n: Date.now() });
+    go("berichte");
+  }
 
   function go(t: Tab) {
     setTab(t);
@@ -35,10 +42,10 @@ export default function Home() {
           <LetterFlow ref={letterFlow} onTab={go} onStartScreen={setOnStart} />
         </div>
         <div hidden={tab !== "berichte"}>
-          <BerichteTab onDraft={draft} />
+          <BerichteTab onDraft={draft} openDay={openDay} />
         </div>
         <div hidden={tab !== "verlauf"}>
-          <VerlaufTab />
+          <VerlaufTab onOpenDay={showDay} />
         </div>
         <div hidden={tab !== "zusammenfassen"}>
           <SummaryTab />

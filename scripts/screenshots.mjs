@@ -78,6 +78,13 @@ window.__type = (sel, value) => {
   el.dispatchEvent(new Event("input", { bubbles: true }));
   return true;
 };
+window.__select = (sel, value) => {
+  const el = document.querySelector(sel);
+  if (!el) throw new Error("no select: " + sel);
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(el, value);
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+};
 window.__has = (text) => document.body.innerText.toLowerCase().includes(text.toLowerCase());
 // The situation box opens on click („Hier schreiben …“).
 window.__write = (value) => { if (!document.querySelector("#situation")) __click("Hier schreiben"); return true; };
@@ -215,7 +222,7 @@ async function run() {
     });
     await step("verlauf", async () => {
       await js(`__click("Fristen & Verlauf")`);
-      await waitFor("Anstehende Fristen");
+      await waitFor("Neues Ereignis");
       await js(`window.scrollTo(0, 0)`);
       await shot("11-verlauf");
       await js(`__click("Frist zur Abhilfe")`);
@@ -223,11 +230,29 @@ async function run() {
       await shot("12-verlauf-schreiben");
       await js(`__click("Zurück zu Fristen")`);
       await sleep(150);
+      // New event dated yesterday must land in yesterday's Tagesbericht.
+      await js(`__click("Neues Ereignis")`);
+      await sleep(150);
+      await js(`__select("#ev-kind", "lieferung")`);
+      await js(`__type("#ev-title", "Betonstahl BSt 500 geliefert, 4,2 t")`);
+      await js(`(() => { const d = new Date(); d.setDate(d.getDate() - 1); const p = (n) => String(n).padStart(2, "0"); return __type("#ev-date", d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate())); })()`);
+      await shot("18-neues-ereignis");
+      await js(`[...document.querySelectorAll("form[aria-label='Neues Ereignis'] button[type=submit]")][0].click()`);
+      await waitFor("Betonstahl BSt 500");
+      await shot("19-zeitachse", true);
+      await js(`__click("Tagesberichte")`);
+      await sleep(200);
+      await js(`(() => { const d = new Date(); d.setDate(d.getDate() - 1); return __click(d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })); })()`);
+      await waitFor("Betonstahl BSt 500");
+      await shot("20-tagesbericht-gestern");
+      await js(`__click("Alle Tagesberichte")`);
+      await js(`__click("Fristen & Verlauf")`);
+      await sleep(200);
       await js(`__click("Verlauf löschen")`);
       await sleep(150);
       await shot("13-verlauf-loeschen");
       await js(`__click("Ja, löschen")`);
-      await waitFor(live ? "Noch keine freigegebenen" : "Beispiele aus der Demo");
+      await waitFor(live ? "Noch keine Ereignisse" : "Fristen & Verlauf");
       await shot("14-verlauf-leer");
     });
     if (live) continue;

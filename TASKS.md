@@ -242,7 +242,7 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - [x] 4. „Heute“ start screen (save first, check in background)
 - [x] 5. Tagesberichte (list, day view, /api/daily-report, plan check, PDF, Abzeichnen)
 - [x] 6. Wetter via Open-Meteo (/api/weather), cached, manual fallback
-- [ ] 7. Fristen & Verlauf: „Neues Ereignis“, timeline by day, shared store
+- [x] 7. Fristen & Verlauf: „Neues Ereignis“, timeline by day, shared store
 - [ ] 8. Zusammenfassen → „Als Tagesbericht speichern“
 - [ ] 9. Demo data without API
 - [ ] 10. (optional) Photo per entry

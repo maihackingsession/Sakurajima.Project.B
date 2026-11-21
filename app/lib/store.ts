@@ -238,3 +238,10 @@ export const prefs = {
 export function letterCollection<T>() {
   return collection<T>("baufrist:verlauf");
 }
+
+/** „Verlauf löschen“: entries, events, Tagesberichte and approved letters in this browser. */
+export function clearAll() {
+  writeJSON("baufrist:eintraege", null);
+  writeJSON("baufrist:berichte", null);
+  writeJSON("baufrist:verlauf", null);
+}
