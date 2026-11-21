@@ -7,6 +7,7 @@ import {
   LETTER_LABELS,
   LETTER_TYPES,
   isLetterType,
+  UNKNOWN,
   type GapQuestion,
   type GapsResult,
   type Letter,
@@ -62,6 +63,7 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
   const [outcome, setOutcome] = useState<Outcome>("anzeige");
   const [questions, setQuestions] = useState<GapQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [unknown, setUnknown] = useState<Record<string, boolean>>({});
   const [draft, setDraft] = useState<Letter | null>(null);
   const [approval, setApproval] = useState<Approval>(NEW_APPROVAL);
   const [redirect, setRedirect] = useState<RouterResult["intent"] | null>(null);
@@ -111,6 +113,7 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
     const gaps = await timed<GapsResult>("/api/gaps", { letter_type: type, input: text, facts: knownFacts });
     setQuestions(gaps.questions);
     setAnswers({});
+    setUnknown({});
     setStep("questions");
     scrollTop();
   }
@@ -158,14 +161,16 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
     void run("gaps", () => checkGaps(type, input, facts));
   }
 
-  function createLetter(useAnswers: boolean) {
+  // Every question needs an answer or „Weiß ich nicht“ before the letter is written.
+  const answered = (field: string) => unknown[field] || !!answers[field]?.trim();
+  const allAnswered = questions.every((q) => answered(q.field));
+
+  function createLetter() {
+    if (!allAnswered) return;
     void run("letter", async () => {
       const given: Record<string, string> = {};
-      if (useAnswers) {
-        for (const q of questions) {
-          const a = answers[q.field]?.trim();
-          if (a) given[q.field] = a;
-        }
+      for (const q of questions) {
+        given[q.field] = unknown[q.field] ? UNKNOWN : answers[q.field].trim();
       }
       const letter = await timed<Letter>("/api/letter", { letter_type: letterType, input, facts, answers: given });
       setAnswers(given);
@@ -370,28 +375,40 @@ export default function LetterFlow({ ref, onRedirect, onTab, onStartScreen }: Pr
           {questions.length > 0 ? (
             <div className="mt-8">
               <p className={kickerUrgent}>{questions.length === 1 ? "Eine Angabe fehlt noch" : `${questions.length} Angaben fehlen noch`}</p>
-              {questions.map((q, i) => (
-                <div key={`${q.field}-${i}`} className="mt-4">
-                  <label htmlFor={`q${i}`} className="block font-serif text-[20px] leading-snug font-semibold">{q.question}</label>
-                  <input
-                    id={`q${i}`}
-                    className="line-field"
-                    placeholder={q.example ? `z. B. ${q.example}` : ""}
-                    value={answers[q.field] ?? ""}
-                    autoFocus={i === 0}
-                    onChange={(e) => setAnswers((a) => ({ ...a, [q.field]: e.target.value }))}
-                    onKeyDown={(e) => e.key === "Enter" && createLetter(true)}
-                  />
-                </div>
-              ))}
+              {questions.map((q, i) => {
+                const off = !!unknown[q.field];
+                return (
+                  <div key={`${q.field}-${i}`} className="mt-5">
+                    <label htmlFor={`q${i}`} className="block font-serif text-[20px] leading-snug font-semibold">{q.question}</label>
+                    <input
+                      id={`q${i}`}
+                      className={`line-field ${off ? "text-[var(--muted)]" : ""}`}
+                      placeholder={off ? "Weiß ich nicht" : q.example ? `z. B. ${q.example}` : ""}
+                      value={off ? "" : answers[q.field] ?? ""}
+                      disabled={off}
+                      autoFocus={i === 0}
+                      onChange={(e) => setAnswers((a) => ({ ...a, [q.field]: e.target.value }))}
+                      onKeyDown={(e) => e.key === "Enter" && createLetter()}
+                    />
+                    <button
+                      type="button"
+                      aria-pressed={off}
+                      onClick={() => setUnknown((u) => ({ ...u, [q.field]: !u[q.field] }))}
+                      className={`${greyLink} gap-2 text-[13px] no-underline`}
+                    >
+                      <span aria-hidden className={`inline-block h-[14px] w-[14px] border ${off ? "border-[var(--ink)] bg-[var(--ink)]" : "border-[var(--grey)]"}`} />
+                      Weiß ich nicht
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <p className={`${kicker} mt-8`}>✓ Angaben vollständig</p>
           )}
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <button className={btnPrimary} onClick={() => createLetter(true)}>Schreiben erstellen</button>
-            {questions.length > 0 && <button className={linkBtn} onClick={() => createLetter(false)}>Ohne Antworten erstellen</button>}
+            <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={createLetter} disabled={!allAnswered}>Schreiben erstellen</button>
           </div>
           {errorView}
 

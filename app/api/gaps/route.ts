@@ -18,7 +18,7 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
     },
     { mockVariant: body.letter_type, effort: "low", fast: true, mock: ctx.mock },
   );
-  const questions = Array.isArray(result.questions) ? result.questions.slice(0, 3) : [];
+  const questions = Array.isArray(result.questions) ? result.questions.slice(0, 6) : [];
   return {
     complete: questions.length === 0,
     questions: questions.map((q) => ({

@@ -190,7 +190,18 @@ export default function DraftEditor(props: Props) {
     ...(draft.legal_basis ? [{ label: "Rechtsgrundlage", detail: draft.legal_basis }] : []),
     ...(draft.deadline_hint ? [{ label: "Frist / Form", detail: draft.deadline_hint }] : []),
   ];
-  const statusText = isDraft ? "Entwurf" : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
+  const statusText = isDraft
+    ? holeList.length > 0 ? `Entwurf · ${holeList.length === 1 ? "1 Angabe fehlt" : `${holeList.length} Angaben fehlen`}` : "Entwurf"
+    : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
+
+  /** „Angabe fehlt“: the typed value replaces the [bracket] right in the text (no AI call). */
+  function fillHole(hole: string, value: string) {
+    const v = value.trim();
+    if (!v) return;
+    const fill = (s: string) => s.split(hole).join(v);
+    onChange({ ...draft, recipient: fill(draft.recipient), subject: fill(draft.subject), body: fill(draft.body) });
+    if (approval.status === "freigegeben") onApprovalChange(NEW_APPROVAL);
+  }
 
   return (
     <section className="fade-in">
@@ -218,7 +229,7 @@ export default function DraftEditor(props: Props) {
               required
             />
             {open > 0 && <span className="text-[13px] font-bold text-[var(--urgent)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</span>}
-            <button type="submit" className={`${btnPrimary} min-h-[46px] px-[26px]`} disabled={!approver.trim()}>Freigabe bestätigen</button>
+            <button type="submit" className={`${btnPrimary} min-h-[46px] px-[26px]`} disabled={!approver.trim() || holeList.length > 0}>Freigabe bestätigen</button>
             <button type="button" className={linkBtn} onClick={() => setAsking(false)}>Abbrechen</button>
           </form>
         ) : (
@@ -227,11 +238,16 @@ export default function DraftEditor(props: Props) {
             <button className={linkBtn} onClick={word} disabled={exporting}>{exporting ? "Word …" : "Word"}</button>
             <button className={linkBtn} onClick={printSheet}>PDF</button>
             <button className={linkBtn} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
-            {isDraft && <button className={`${btnPrimary} min-h-[46px] px-[26px]`} onClick={() => setAsking(true)}>Freigeben</button>}
+            {isDraft && <button className={`${btnPrimary} min-h-[46px] px-[26px]`} onClick={() => setAsking(true)} disabled={holeList.length > 0} title={holeList.length > 0 ? "Erst alle fehlenden Angaben einsetzen" : undefined}>Freigeben</button>}
           </div>
         )}
       </div>
       {error && <p role="alert" className="mt-3 font-sans text-[14px] font-bold text-[var(--urgent)]">{error}</p>}
+      {holeList.length > 0 && (
+        <div className="mt-4" aria-label="Fehlende Angaben">
+          {holeList.map((h) => <MissingField key={h} hole={h} onFill={(v) => fillHole(h, v)} />)}
+        </div>
+      )}
 
       {/* The letter in a thin black box. */}
       <article
@@ -323,6 +339,28 @@ export default function DraftEditor(props: Props) {
       {typeof document !== "undefined" &&
         createPortal(<PrintSheet draft={draft} isDraft={isDraft} date={letterDate} appendix={appendix} />, document.body)}
     </section>
+  );
+}
+
+/** One leftover [bracket]: a field whose value replaces it in the letter. */
+function MissingField({ hole, onFill }: { hole: string; onFill: (value: string) => void }) {
+  const [value, setValue] = useState("");
+  const label = hole.slice(1, -1).replace(/s*einsetzen$/i, "");
+  const id = `hole-${label.replace(/[^p{L}p{N}]+/gu, "-")}`;
+  return (
+    <form
+      className="border-b border-[var(--rule)] py-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onFill(value);
+      }}
+    >
+      <label htmlFor={id} className="block font-sans text-[12px] font-bold tracking-[.06em] text-[var(--urgent)] uppercase">Angabe fehlt: {label}</label>
+      <div className="flex flex-wrap items-end gap-x-5">
+        <input id={id} className="line-field min-w-0 flex-1 !text-[19px]" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Hier eintragen …" />
+        <button type="submit" className={linkBtn} disabled={!value.trim()}>Einsetzen</button>
+      </div>
+    </form>
   );
 }
 

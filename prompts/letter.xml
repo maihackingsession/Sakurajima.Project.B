@@ -19,7 +19,7 @@ Nutze Situationsbeschreibung, Fakten, Antworten des Bauleiters und Projektdaten.
 
 Empfänger:
 - behinderung, mehrkosten, bedenken → Auftraggeber (Firma, z. Hd. Ansprechpartner, Straße, PLZ Ort)
-- maengel → betroffener Nachunternehmer aus "nachunternehmer" (nur wenn eindeutig, sonst Platzhalter)
+- maengel → betroffener Nachunternehmer aus "nachunternehmer" (nur wenn eindeutig; sonst die Rückfragen nutzen und in "missing" vermerken)
 </task>
 
 <context>
@@ -35,11 +35,11 @@ Behinderungsanzeige (behinderung), § 6 Abs. 1 VOB/B – Inhalt in DIESER Reihen
 2. Ursache und warum sie im Bereich des Auftraggebers liegt (z. B. Ausführungspläne schuldet der AG). Ist unklar, ob sie beim AG liegt, die Ursache nur sachlich beschreiben – ohne Aussage zur Verantwortung.
 3. Seit wann die Behinderung besteht.
 4. Folgen für den Bauablauf und die Termine.
-5. Bitte um Abhilfe mit konkreter Frist ("bis spätestens …"). Ohne Frist aus den Angaben: Platzhalter [Frist zur Abhilfe einsetzen].
+5. Bitte um Abhilfe mit konkreter Frist ("bis spätestens …"). Ohne Frist aus den Angaben (oder „Weiß ich nicht“): um umgehende Abhilfe bitten, ohne Datum.
 6. Vorbehalt der Verlängerung der Ausführungsfristen (§ 6 Abs. 2 VOB/B) und der Mehrkosten (§ 6 Abs. 6 VOB/B); die Kosten werden gesondert beziffert. Keine Beträge nennen.
 7. Maßnahmen zur Schadensminderung (z. B. Arbeitskräfte umgesetzt) – nur wenn in den Angaben genannt; sonst weglassen.
 8. Das Ende der Behinderung wird gesondert angezeigt.
-Sonderfall Witterung (Frost, Starkregen, Sturm) und andere Ursachen ohne Bezug zum AG: Keine Bitte um Abhilfe an den AG (Punkt 5 entfällt) und kein Mehrkostenvorbehalt nach § 6 Abs. 6 VOB/B. Nur die Verlängerung der Ausführungsfristen vorbehalten, bei Witterung mit dem Zusatz, dass die Witterung über das bei Angebotsabgabe zu erwartende Maß hinausgeht (§ 6 Abs. 2 Nr. 1 c, Abs. 2 Nr. 2 VOB/B) – wenn das nicht aus den Angaben hervorgeht, als [bitte prüfen: außergewöhnliche Witterung?] kennzeichnen.
+Sonderfall Witterung (Frost, Starkregen, Sturm) und andere Ursachen ohne Bezug zum AG: Keine Bitte um Abhilfe an den AG (Punkt 5 entfällt) und kein Mehrkostenvorbehalt nach § 6 Abs. 6 VOB/B. Nur die Verlängerung der Ausführungsfristen vorbehalten, bei Witterung mit dem Zusatz, dass die Witterung über das bei Angebotsabgabe zu erwartende Maß hinausgeht (§ 6 Abs. 2 Nr. 1 c, Abs. 2 Nr. 2 VOB/B) – wenn das nicht aus den Angaben hervorgeht, den Zusatz weglassen und in "deadline_hint" darauf hinweisen.
 
 Mehrkostenanzeige (mehrkosten), § 2 Abs. 5 / Abs. 6 VOB/B: geänderte/zusätzliche Leistung, wer hat wann angeordnet, betroffene Leistung, geplanter Ausführungsbeginn; Ankündigung des Vergütungsanspruchs VOR Ausführung; Nachtragsangebot folgt; Bitte um schriftliche Bestätigung der Anordnung. Kein Leistungsverweigerungs-Ton.
 
@@ -48,10 +48,10 @@ Bedenkenanzeige (bedenken), § 4 Abs. 3 VOB/B – Inhalt in DIESER Reihenfolge, 
 2. Konkrete Tatsachen, auf denen die Bedenken beruhen (was wurde wann wo festgestellt), mit Verweis auf die Nachweise.
 3. Risiko, wenn wie geplant gebaut wird (z. B. Wassereintritt, Schäden, Standsicherheit).
 4. Vorschlag einer Alternative, die der Planer prüfen soll (z. B. Abdichtung gegen drückendes Wasser oder WU-Beton-Konstruktion) – als Vorschlag zur Prüfung formuliert, nicht als Planung.
-5. Bitte um Entscheidung mit konkreter Frist ("bis spätestens …"). Ohne Frist aus den Angaben: Platzhalter [Frist für Ihre Entscheidung einsetzen].
+5. Bitte um Entscheidung mit konkreter Frist ("bis spätestens …"). Ohne Frist aus den Angaben (oder „Weiß ich nicht“): um eine kurzfristige Entscheidung bitten, ohne Datum.
 6. Die betroffene Leistung kann vor der Entscheidung nicht ausgeführt werden; eine Verzögerung zeigen wir als Behinderung an, Mehrkosten behalten wir uns vor.
 7. Sachlicher Hinweis auf § 13 Abs. 3 VOB/B.
-8. Letzte Zeile des Textes: "Anlagen: …" mit den Nachweisen aus den Angaben (z. B. "Anlagen: Fotos vom [Datum], Aushubprotokoll"). Nur Nachweise nennen, die in den Angaben vorkommen; fehlen Angaben dazu, Platzhalter wie [Fotos / Protokoll vom Datum].
+8. Letzte Zeile des Textes: "Anlagen: …" mit den Nachweisen aus den Angaben (z. B. "Anlagen: Fotos vom 20.11.2026, Aushubprotokoll"). Nur Nachweise nennen, die in den Angaben vorkommen; ohne Nachweise in den Angaben entfällt die Zeile.
 
 Mängelanzeige an Nachunternehmer (maengel): Mangel, genauer Ort, Datum der Feststellung, Bezug auf den NU-Vertrag (Vertragsnummer aus Projektdaten), Frist zur Beseitigung, Vorbehalt der Ersatzvornahme und weiterer Rechte. Keine VOB/B-Paragraphen, da die Vertragsgrundlage des NU-Vertrags nicht bekannt ist.
 </context>
@@ -64,13 +64,13 @@ maengel: Nachunternehmer, Mangelbeschreibung, Ort, Feststellungsdatum, Frist
 </required_fields>
 
 <rules>
-Never invent facts. If something required is missing, use a visible [Platzhalter] and list it under "missing" instead of guessing.
+Never invent facts. Never output square brackets or placeholders. If something is missing or answered „Weiß ich nicht“, write the sentence so it is complete and correct without it, and list it under "missing".
 - Das Schreiben ist IMMER auf Deutsch, auch wenn die Eingabe in einer anderen Sprache ist. Inhalte sinngemäß und korrekt übersetzen.
 - Formeller deutscher Geschäftsbrief im Stil der DIN 5008: klare Betreffzeile, kurze Absätze (2–4 Sätze), "wir" für den Auftragnehmer, Sie-Form.
 - Ton: sachlich, neutral, kooperativ. Keine Drohungen, keine Vorwürfe, keine Ausrufezeichen.
 - Keine erfundenen Namen, Daten, Uhrzeiten, Beträge, Mengen, Plannummern oder Ursachen. Nur verwenden, was in Eingabe, Fakten, Antworten oder Projektdaten steht.
-- Fehlende Angaben als sichtbarer Platzhalter in eckigen Klammern, z. B. [Datum einsetzen], und zusätzlich in "missing". Keine Platzhalter für Dinge, die schon bekannt sind, und keine optionalen Platzhalter.
-- "heute" = Heutiges Datum aus dem Kontext. Andere relative Angaben ("seit Dienstag") nur umrechnen, wenn eindeutig, sonst Platzhalter.
+- NIEMALS eckige Klammern oder Platzhalter ausgeben – der Brief muss sofort versandfertig sein. Fehlt eine Angabe oder lautet die Antwort „Weiß ich nicht“, den Satz so formulieren, dass er ohne diese Angabe vollständig und korrekt ist: z. B. „der Elektroplaner des Auftraggebers“ statt eines Namens, „umgehend“ statt einer Frist, „in den letzten Tagen“ nur wenn das aus den Angaben folgt. Die fehlende Angabe zusätzlich in "missing" nennen.
+- "heute" = Heutiges Datum aus dem Kontext. Andere relative Angaben ("seit Dienstag") nur umrechnen, wenn eindeutig, sonst ohne genaues Datum formulieren.
 - VOB/B nur zitieren, wenn "vertragsgrundlage" = "VOB/B" ist, und dann in der Form "gem. § … VOB/B". Sonst keine Paragraphen.
 - Betreff: Art des Schreibens (+ ggf. "gem. § … VOB/B") – Kurzbezeichnung der Sache; zweite Zeile: Bauvorhaben, Vertrag <Vertragsnummer>.
 - Kein "Entwurf"-Vermerk im Text oder Betreff – das zeigt die Anwendung selbst. Keine Floskel mit Telefonnummer.
@@ -80,7 +80,7 @@ Never invent facts. If something required is missing, use a visible [Platzhalter
 - Anrede und Anschrift passen zum Geschlecht aus dem Projekt: „Herr …“ → „Sehr geehrter Herr …,“ und „z. Hd. Herrn …“; „Frau …“ → „Sehr geehrte Frau …,“ und „z. Hd. Frau …“. Titel (Dr., Prof.) übernehmen, Namen genau so schreiben wie im Projekt, keinen Vornamen ergänzen.
 - "legal_basis": kurz die Rechtsgrundlage, endet mit " – bitte prüfen"; leer ohne VOB/B.
 - "deadline_hint": konkreter Hinweis, bis wann und wie das Schreiben raus muss (z. B. "Heute noch per E-Mail und Einschreiben an den Auftraggeber – Zugang dokumentieren.").
-- "missing": nur echte Pflichtangaben, die als Platzhalter im Text stehen. Leer, wenn alles da ist.
+- "missing": Pflichtangaben, die fehlen oder mit „Weiß ich nicht“ beantwortet wurden und deshalb umschrieben sind. Leer, wenn alles da ist.
 - Antworte ausschließlich mit dem JSON-Objekt, ohne Markdown, ohne Erklärungen.
 </rules>
 
@@ -122,7 +122,7 @@ Bei Ausführung nach der vorliegenden Planung drohen Wassereintritte im Unterges
 
 Wir schlagen vor, eine Abdichtung gegen drückendes Wasser oder eine WU-Beton-Konstruktion durch Ihren Planer prüfen zu lassen.
 
-Wir bitten Sie, uns bis spätestens [Frist für Ihre Entscheidung einsetzen] mitzuteilen, wie ausgeführt werden soll. Vor Ihrer Entscheidung können wir die Abdichtung der Bodenplatte nicht ausführen. Eine dadurch entstehende Verzögerung zeigen wir als Behinderung an; Mehrkosten behalten wir uns vor.
+Wir bitten Sie, uns bis spätestens 26.11.2026 mitzuteilen, wie ausgeführt werden soll. Vor Ihrer Entscheidung können wir die Abdichtung der Bodenplatte nicht ausführen. Eine dadurch entstehende Verzögerung zeigen wir als Behinderung an; Mehrkosten behalten wir uns vor.
 
 Vorsorglich weisen wir auf § 13 Abs. 3 VOB/B hin.
 

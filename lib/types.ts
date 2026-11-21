@@ -63,3 +63,6 @@ export type SummaryResult = {
   deadlines: { date: string; what: string }[];
   risks: string[];
 };
+
+/** Answer value for a Rückfrage marked „Weiß ich nicht“ (the letter prompt rephrases around it). */
+export const UNKNOWN = "Weiß ich nicht";

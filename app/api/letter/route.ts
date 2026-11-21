@@ -1,7 +1,7 @@
 import { jsonRoute, PromptError, runPrompt } from "@/lib/claude";
 import project from "@/data/project.json";
 import { stripDraftLines, stripDraftSubject, stripSignoff } from "@/lib/text";
-import { isLetterType, type Letter } from "@/lib/types";
+import { isLetterType, UNKNOWN, type Letter } from "@/lib/types";
 
 export const maxDuration = 60;
 
@@ -27,7 +27,10 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
         const answers = (body.answers && typeof body.answers === "object" ? body.answers : {}) as Record<string, unknown>;
         const frist = String(answers["Frist zur Abhilfe"] ?? Object.values(answers)[0] ?? "").trim();
         const letter = m as Letter;
-        return { ...letter, body: letter.body.replace("{FRIST}", frist || "[Frist einsetzen]") };
+        // Unknown deadline: the sentence is rephrased without a date (never a [placeholder]).
+        const known = frist && frist !== UNKNOWN;
+        const text = known ? letter.body.replace("{FRIST}", frist) : letter.body.replace(" bis spätestens {FRIST}", " umgehend").replace("{FRIST}", "umgehend");
+        return { ...letter, body: text };
       },
     },
   );
