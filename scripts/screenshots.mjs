@@ -212,6 +212,21 @@ async function run() {
       if (!(await js(`__has("9.280 €")`))) throw new Error("5 Tage ergeben nicht 9.280 €");
       await js(`__type("#cost-days", "1")`);
     });
+    await step("angabe-fehlt", async () => {
+      // Safety net: a [bracket] in the letter → „Angabe fehlt“ field, Freigeben locked, value replaces the bracket.
+      await js(`__click("Bearbeiten")`);
+      await sleep(150);
+      await js(`__type("#edit-body", document.querySelector("#edit-body").value + "\\n\\nAnsprechpartner ist [Name des Elektroplaners].")`);
+      await js(`__click("Fertig")`);
+      await waitFor("Angabe fehlt: Name des Elektroplaners");
+      if (!(await js(`[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "Freigeben").disabled`))) throw new Error("Freigeben nicht gesperrt");
+      await js(`window.scrollTo(0, 0)`);
+      await shot("06-angabe-fehlt");
+      await js(`__type("[id^=hole-]", "Herr Brandl")`);
+      await js(`__click("Einsetzen")`);
+      await waitFor("Ansprechpartner ist Herr Brandl.");
+      if (await js(`__has("Angabe fehlt")`)) throw new Error("Angabe fehlt noch sichtbar");
+    });
     await step("freigabe", async () => {
       await js(`__click("Freigeben")`);
       await sleep(150);
