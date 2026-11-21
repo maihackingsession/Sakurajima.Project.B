@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { btnBase, btnPrimary, btnSecondary, wide } from "../lib/ui";
 
 // Minimal Web Speech API typings (not part of TypeScript's DOM lib).
 type SpeechResult = { isFinal: boolean; 0: { transcript: string } };
@@ -26,7 +27,7 @@ function getCtor(): RecognitionCtor | null {
 
 const noop = () => () => {};
 // null = not yet known (server render), true/false after hydration.
-function useSupported() {
+export function useSpeechSupported() {
   return useSyncExternalStore(noop, () => getCtor() !== null, () => null);
 }
 
@@ -38,8 +39,9 @@ const ERRORS: Record<string, string> = {
   "audio-capture": "Kein Mikrofon gefunden.",
 };
 
-export default function MicButton({ onText }: { onText: (text: string) => void }) {
-  const supported = useSupported();
+/** Full-width "● Aufnahme" (browser dictation). Amber only while it is the primary action (empty text box). */
+export default function MicButton({ onText, primary = false }: { onText: (text: string) => void; primary?: boolean }) {
+  const supported = useSpeechSupported();
   const [recording, setRecording] = useState(false);
   const [interim, setInterim] = useState("");
   const [error, setError] = useState("");
@@ -105,16 +107,14 @@ export default function MicButton({ onText }: { onText: (text: string) => void }
         type="button"
         onClick={recording ? stop : start}
         aria-pressed={recording}
-        className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-base font-semibold sm:w-auto ${
-          recording
-            ? "bg-[var(--error-text)] text-white"
-            : "border border-[var(--navy)] bg-white text-[var(--navy)] hover:bg-[var(--surface)]"
-        }`}
+        className={recording ? `${wide(btnBase)} border-2 border-[var(--error-text)] bg-[var(--error-bg)] text-base text-[var(--error-text)]` : wide(primary ? btnPrimary : btnSecondary)}
       >
-        <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          {recording ? <rect x="6" y="6" width="12" height="12" rx="2" /> : <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></>}
-        </svg>
-        {recording ? "Aufnahme beenden" : "Diktieren"}
+        {recording ? (
+          <span aria-hidden className="inline-block h-3.5 w-3.5 rounded-sm bg-[var(--error-text)]" />
+        ) : (
+          <span aria-hidden className="inline-block h-3.5 w-3.5 rounded-full bg-[#c0261f] ring-2 ring-white" />
+        )}
+        {recording ? "Aufnahme beenden" : "Aufnahme"}
       </button>
       {recording && (
         <p className="rounded-lg bg-[var(--error-bg)] p-2 text-sm text-[var(--error-text)]" aria-live="polite">

@@ -15,10 +15,10 @@ import {
   type RouterResult,
 } from "@/lib/types";
 import { errorText, isBeispiel, postJson } from "../lib/api";
-import { btnPrimary, btnSecondary, card, field, h1, h2, hint, label, linkBtn } from "../lib/ui";
+import { btnPrimary, btnSecondary, card, field, h1, h2, hint, label, linkBtn, wide } from "../lib/ui";
 import Chip from "./Chip";
 import DraftEditor, { NEW_APPROVAL, type Approval, type FlowInfo } from "./DraftEditor";
-import MicButton from "./MicButton";
+import MicButton, { useSpeechSupported } from "./MicButton";
 import { ErrorBox, Loading } from "./Status";
 
 /** Where a draft came from: typed situation or a deviation found in a Tagesbericht. */
@@ -61,6 +61,7 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
   const [aiMs, setAiMs] = useState(0);
   const [createdAt, setCreatedAt] = useState("");
   const retry = useRef<(() => void) | null>(null);
+  const mic = useSpeechSupported();
   const topRef = useRef<HTMLDivElement>(null);
 
   function scrollTop() {
@@ -211,11 +212,16 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
             onChange={(e) => setInput(e.target.value)}
           />
           <p className={hint}>Eingabe in jeder Sprache möglich – das Schreiben wird auf Deutsch erstellt.</p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <button className={btnPrimary} onClick={() => analyse(input, override)} disabled={!!busy || !input.trim()}>
+          {/* Exactly one amber button: "Aufnahme" while the box is empty, "Analysieren" once there is text. */}
+          <div className="flex flex-col gap-3">
+            <MicButton primary={!input.trim()} onText={(t) => setInput((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t))} />
+            <button
+              className={wide(mic && !input.trim() ? btnSecondary : btnPrimary)}
+              onClick={() => analyse(input, override)}
+              disabled={!!busy || !input.trim()}
+            >
               Analysieren
             </button>
-            <MicButton onText={(t) => setInput((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t))} />
           </div>
           <div className="flex flex-wrap items-center gap-x-6">
             <button className={linkBtn} onClick={example} disabled={!!busy}>Beispiel einfügen</button>
@@ -272,7 +278,7 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
                 ? "Keine Anzeige nötig"
                 : "Ursache möglicherweise im eigenen Bereich – bitte prüfen"}
             </h2>
-            {reason && <p className="mt-2 text-lg text-[var(--navy)]">{reason}</p>}
+            {reason && <p className="mt-2 text-lg text-[var(--ink)]">{reason}</p>}
             <p className={`${hint} mt-3`}>Sie entscheiden. Wenn Sie trotzdem ein Schreiben brauchen, erstellen wir einen Entwurf.</p>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <button className={btnSecondary} onClick={() => void run("gaps", () => checkGaps(letterType, input, facts))} disabled={!!busy}>
@@ -307,7 +313,7 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
               </p>
               {questions.map((q, i) => (
                 <div key={`${q.field}-${i}`}>
-                  <label htmlFor={`q${i}`} className="mb-2 block text-lg font-semibold text-[var(--navy)]">{q.question}</label>
+                  <label htmlFor={`q${i}`} className="mb-2 block text-lg font-semibold text-[var(--ink)]">{q.question}</label>
                   <input
                     id={`q${i}`}
                     className={`${field} text-lg`}
@@ -341,7 +347,7 @@ export default function LetterFlow({ ref, onRedirect }: Props) {
           {errorView}
 
           <details className={card}>
-            <summary className="cursor-pointer font-semibold text-[var(--navy)]">Beschreibung und Schreibenart</summary>
+            <summary className="cursor-pointer font-semibold text-[var(--ink)]">Beschreibung und Schreibenart</summary>
             <p className="mt-3 whitespace-pre-line">{input}</p>
             <label htmlFor="type" className={`${label} mt-4`}>Schreibenart</label>
             <select

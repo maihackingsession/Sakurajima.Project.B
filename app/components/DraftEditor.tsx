@@ -47,6 +47,12 @@ function recall<T>(key: string, fallback: T): T {
   }
 }
 
+/** Prints the open draft (not a letter opened from the Verlauf; see globals.css). */
+function printSheet() {
+  delete document.body.dataset.print;
+  window.print();
+}
+
 async function copyText(text: string) {
   try {
     await navigator.clipboard.writeText(text);
@@ -159,7 +165,7 @@ export default function DraftEditor(props: Props) {
     }
   }
 
-  const editField = "w-full resize-none rounded-md border border-dashed border-[var(--border)] bg-[#fffdf7] px-2 py-1 focus:border-[var(--navy)] focus:outline-none [field-sizing:content]";
+  const editField = "w-full resize-none rounded-md border border-dashed border-[var(--border)] bg-[#fffdf7] px-2 py-1 focus:border-[var(--ink)] focus:outline-none [field-sizing:content]";
 
   return (
     <section className="flex flex-col gap-4">
@@ -167,13 +173,13 @@ export default function DraftEditor(props: Props) {
         {/* Left: the letter as a sheet of paper, with the status strip as its top edge. */}
         <div className="flex min-w-0 flex-col gap-3">
           <div className="-mt-2 flex flex-wrap items-center justify-between gap-x-3">
-            <h2 className="text-xl font-semibold text-[var(--navy)]">{title}</h2>
+            <h2 className="text-xl font-semibold text-[var(--ink)]">{title}</h2>
             <a href="#freigabe" className={`${linkBtn} lg:hidden`}>Zur Freigabe ↓</a>
             <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
               {editing ? "Fertig" : "Text bearbeiten"}
             </button>
           </div>
-          <div className="overflow-hidden rounded-lg border border-[var(--border)] shadow-[0_1px_3px_rgba(31,42,68,0.08)]">
+          <div className="overflow-hidden rounded-lg border border-[var(--border)] shadow-[0_1px_3px_rgba(26,26,26,0.08)]">
           {isDraft ? (
             <div className="border-b border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
               Entwurf – vor Versand prüfen
@@ -295,7 +301,7 @@ export default function DraftEditor(props: Props) {
                   {c.ok ? (
                     <span className="shrink-0 font-semibold text-[var(--success-text)]">✓ {c.note && c.label === "Unverzüglich" ? c.note : ""}</span>
                   ) : (
-                    <span className="shrink-0 text-right font-semibold text-[var(--accent-hover)]">{c.note && c.label === "Unverzüglich" ? c.note : "fehlt"}</span>
+                    <span className="shrink-0 text-right font-semibold text-[var(--accent-strong)]">{c.note && c.label === "Unverzüglich" ? c.note : "fehlt"}</span>
                   )}
                 </li>
               ))}
@@ -310,7 +316,7 @@ export default function DraftEditor(props: Props) {
               <button className={`${isDraft ? btnSecondary : btnPrimary} sm:w-full`} onClick={word} disabled={exporting}>
                 {exporting ? "…" : "Word"}
               </button>
-              <button className={`${btnSecondary} sm:w-full`} onClick={() => window.print()}>PDF</button>
+              <button className={`${btnSecondary} sm:w-full`} onClick={printSheet}>PDF</button>
               <button className={`${btnSecondary} sm:w-full`} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
             </div>
             <p className={`${hint} mt-2`}>
@@ -358,7 +364,7 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
       <div className="mt-2 rounded-lg bg-[var(--surface)] px-3 py-2" aria-live="polite">
         {ok ? (
           <>
-            <p className="flex flex-wrap items-baseline gap-x-2 text-[var(--navy)]">
+            <p className="flex flex-wrap items-baseline gap-x-2 text-[var(--ink)]">
               <span className="text-[26px] leading-tight font-bold">{euro(Number.isFinite(total) ? total : perDay)}</span>
               <span className="font-semibold">{Number.isFinite(total) ? `bisher ${days} ${n(days) === 1 ? "Tag" : "Tage"}` : "pro Tag"}</span>
             </p>
@@ -373,7 +379,7 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
       <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
         {inputs.map(([id, text, value, setter, step]) => (
           <div key={id} className="flex flex-col justify-end">
-            <label htmlFor={id} className="mb-1 text-sm font-semibold leading-tight text-[var(--navy)]">{text}</label>
+            <label htmlFor={id} className="mb-1 text-sm font-semibold leading-tight text-[var(--ink)]">{text}</label>
             <input
               id={id}
               type="number"
@@ -393,9 +399,9 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
 }
 
 /** Hidden on screen; the only thing visible when printing (see globals.css). */
-function PrintSheet({ draft, isDraft, date, appendix }: { draft: Letter; isDraft: boolean; date: string; appendix: Appendix }) {
+export function PrintSheet({ draft, isDraft, date, appendix, sheet = "entwurf" }: { draft: Letter; isDraft: boolean; date: string; appendix?: Appendix; sheet?: "entwurf" | "verlauf" }) {
   return (
-    <div id="print-sheet" className="hidden bg-white font-sans text-[11pt] leading-snug text-black">
+    <div data-sheet={sheet} className="print-sheet hidden bg-white font-sans text-[11pt] leading-snug text-black">
       {isDraft && <div aria-hidden className="print-watermark">ENTWURF</div>}
       <div className="text-right">
         <p className="text-[13pt] font-bold">{signature[0]}</p>
@@ -412,15 +418,17 @@ function PrintSheet({ draft, isDraft, date, appendix }: { draft: Letter; isDraft
       <p className="mt-6 whitespace-pre-line">{draft.closing}</p>
       <p className="whitespace-pre-line">{signature.join("\n")}</p>
       {isDraft && <p className="mt-10 text-center text-[9pt] font-bold text-amber-700">ENTWURF – vor Versand prüfen</p>}
-      <div style={{ breakBefore: "page" }}>
-        <p className="text-[13pt] font-bold">Anlage – Dokumentation</p>
-        {appendixSections(appendix).map((s) => (
-          <div key={s.title} className="mt-4">
-            <p className="font-bold">{s.title}</p>
-            <p className="whitespace-pre-line text-[10pt]">{s.text}</p>
-          </div>
-        ))}
-      </div>
+      {appendix && (
+        <div style={{ breakBefore: "page" }}>
+          <p className="text-[13pt] font-bold">Anlage – Dokumentation</p>
+          {appendixSections(appendix).map((s) => (
+            <div key={s.title} className="mt-4">
+              <p className="font-bold">{s.title}</p>
+              <p className="whitespace-pre-line text-[10pt]">{s.text}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

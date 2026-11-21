@@ -135,15 +135,15 @@ function NoticeCard({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
   const u = urgency(d.event_date);
   const kind = LETTER_LABELS[d.suggested_letter as LetterType];
   return (
-    <article className="rounded-xl border-2 border-[var(--accent)] bg-white p-5 shadow-[0_2px_10px_rgba(232,113,10,0.12)]">
+    <article className="rounded-xl border-2 border-[var(--accent)] bg-white p-5 shadow-[0_2px_10px_rgba(255,176,0,0.12)]">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Chip kind="pruefung">{kind.split(" (")[0]} empfohlen</Chip>
-        <span className={`text-base font-bold ${u.late ? "text-[var(--error-text)]" : "text-[var(--accent-hover)]"}`}>
+        <span className={`text-base font-bold ${u.late ? "text-[var(--error-text)]" : "text-[var(--accent-strong)]"}`}>
           ⏱ {u.text}
         </span>
       </div>
-      <h3 className="mt-3 text-2xl font-semibold text-[var(--navy)]">{d.activity}</h3>
-      {d.reason && <p className="mt-1 text-lg font-semibold text-[var(--navy)]">{d.reason}</p>}
+      <h3 className="mt-3 text-2xl font-semibold text-[var(--ink)]">{d.activity}</h3>
+      {d.reason && <p className="mt-1 text-lg font-semibold text-[var(--ink)]">{d.reason}</p>}
       <button className={`${btnPrimary} mt-4 sm:hidden`} onClick={onDraft}>Anzeige entwerfen</button>
       <dl className="mt-3 grid gap-1 text-[15px] sm:grid-cols-[110px_1fr]">
         <dt className="font-semibold text-[var(--muted)]">Geplant</dt>

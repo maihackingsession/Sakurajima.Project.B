@@ -1,27 +1,30 @@
 @import "tailwindcss";
 
 /* Light theme only: the app is used outdoors on phones/iPads, high contrast matters. */
-/* Design tokens (Baufrist). One accent (orange) only for the primary action per screen. */
+/* Design tokens (Baufrist v2): amber header, cream page, white cards, near-black text. */
 :root {
-  --background: #ffffff;
-  --foreground: #1f2a44;
-  --surface: #f6f7f9;
-  --border: #e3e6eb;
-  --navy: #1f2a44;
-  --muted: #5b6475;
-  --accent: #e8710a;
-  --accent-hover: #c95f05;
-  --accent-text: #ffffff;
+  /* Page and cards */
+  --background: #fff8e7;   /* light cream page */
+  --foreground: #1a1a1a;
+  --surface: #fbf3df;      /* quiet panels inside cards */
+  --border: #eadfc8;
+  --ink: #1a1a1a;          /* text, icons, outlines */
+  --muted: #5c5446;        /* secondary text: 6.9:1 on cream, 7.4:1 on white */
+  /* Amber: header + THE primary action. Always black text on amber (10:1), never white. */
+  --accent: #ffb000;
+  --accent-hover: #f0a500;
+  --accent-text: #1a1a1a;
+  --accent-strong: #8a5a00; /* amber as text/icon on white: 5.6:1 */
+  /* Status (muted green / amber / red) */
   --success-bg: #ecf6ef;
   --success-border: #a9d5b5;
   --success-text: #1d5a32;
-  --warning-bg: #fff6e0;
+  --warning-bg: #fff3d1;
   --warning-border: #f0c96a;
   --warning-text: #6b4a00;
   --error-bg: #fdeeee;
   --error-border: #efb1b1;
   --error-text: #8a1f1f;
-  --info-bg: #eef2f8;
   color-scheme: light;
 }
 
@@ -41,31 +44,33 @@ body {
 
 /* Visible keyboard focus everywhere. */
 :focus-visible {
-  outline: 3px solid #2f6fd6;
+  outline: 3px solid #1a1a1a;
   outline-offset: 2px;
 }
 
-/* Loading crane: the hook lowers and lifts the block. Static when motion is reduced. */
-.crane-hook, .crane-block { animation: crane-lift 1.8s ease-in-out infinite; }
-.crane-hook { transform-origin: 42px 16px; }
-@keyframes crane-lift {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(8px); }
-}
-.crane-hook { animation-name: crane-rope; }
+/* Loading crane: the hook lifts the block (rope shortens with it). Static when motion is reduced. */
+.crane-rope { transform-origin: 36.2px 16px; animation: crane-rope 2.2s ease-in-out infinite; }
+.crane-load { animation: crane-load 2.2s ease-in-out infinite; }
 @keyframes crane-rope {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(1.85); }
+  0%, 15%, 100% { transform: scaleY(1); }
+  55%, 70% { transform: scaleY(0.2); }
+}
+@keyframes crane-load {
+  0%, 15%, 100% { transform: translateY(0); }
+  55%, 70% { transform: translateY(-8.8px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .crane-hook, .crane-block { animation: none; }
+  .crane-rope, .crane-load { animation: none; }
 }
 
 /* Print view for PDF export: only the letter sheet is printed. */
 @media print {
   body { background: #fff; }
-  body > *:not(#print-sheet) { display: none !important; }
-  #print-sheet { display: block !important; }
+  body > *:not(.print-sheet) { display: none !important; }
+  .print-sheet { display: block !important; }
+  /* Two sheets can exist (open draft + letter from the Verlauf): print only the requested one. */
+  body[data-print="verlauf"] .print-sheet:not([data-sheet="verlauf"]),
+  body:not([data-print="verlauf"]) .print-sheet[data-sheet="verlauf"] { display: none !important; }
   @page { size: A4; margin: 20mm 20mm 20mm 25mm; }
   /* Fixed = repeated on every printed page. */
   .print-watermark {

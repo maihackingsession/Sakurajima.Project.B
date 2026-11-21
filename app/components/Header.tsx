@@ -3,20 +3,11 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import project from "@/data/project.json";
 import { isBeispiel } from "../lib/api";
+import { Crane } from "./Crane";
 
 const noop = () => () => {};
 
-export function Logo({ size = 36 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden className="shrink-0">
-      <rect width="40" height="40" rx="9" fill="#1f2a44" />
-      <path d="M15 32V12M6 12h27M15 12V6M15 6l17 6M15 6l-8 6M27 12v5M10 32h10" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <rect x="6.5" y="12.5" width="4.5" height="3.5" rx="0.8" fill="#fff" />
-      <rect x="23.5" y="17" width="7" height="5.5" rx="1" fill="#e8710a" />
-    </svg>
-  );
-}
-
+/** Amber header: crane logo, name, project, Beispielmodus label; the tab tiles sit in it (below on phones). */
 export default function Header({ children }: { children?: React.ReactNode }) {
   const [serverMock, setServerMock] = useState(false);
   const beispiel = useSyncExternalStore(noop, isBeispiel, () => false);
@@ -29,23 +20,23 @@ export default function Header({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <header className="border-b border-[var(--border)] bg-white">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 md:py-0">
-        <div className="flex min-w-0 items-center gap-3 md:py-3">
-          <Logo />
+    <header className="bg-[var(--accent)] text-[var(--ink)]">
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-4 lg:flex-row lg:items-end lg:justify-between lg:gap-6">
+        <div className="flex min-w-0 items-center gap-3 py-3 lg:py-4">
+          <Crane size={44} />
           <div className="min-w-0 leading-tight">
-            <p className="text-lg font-bold text-[var(--navy)]">
-              Baufrist <span className="hidden text-sm font-medium text-[var(--muted)] sm:inline">Bauleiter-Assistent</span>
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-[22px] font-extrabold tracking-tight">Baufrist</span>
+              {(beispiel || serverMock) && (
+                <span className="rounded-full border border-[var(--ink)] bg-white px-2 py-0.5 text-[13px] leading-tight font-semibold">
+                  Beispielmodus (offline)
+                </span>
+              )}
             </p>
-            <p className="truncate text-sm text-[var(--muted)] md:max-w-[200px] xl:max-w-[260px]">{project.bauvorhaben}</p>
+            <p className="truncate text-sm font-medium lg:max-w-[300px]">{project.bauvorhaben}</p>
           </div>
         </div>
         {children}
-        {(beispiel || serverMock) && (
-          <span className="shrink-0 rounded-full border border-[var(--warning-border)] bg-[var(--warning-bg)] px-2.5 py-1 text-center text-sm leading-tight font-semibold text-[var(--warning-text)] sm:px-3">
-            Beispielmodus (offline)
-          </span>
-        )}
       </div>
     </header>
   );
