@@ -32,26 +32,22 @@ Site managers lose hours on documentation and formal notices. The brief asks for
 
 ## 3. Scope — what we build, in this order
 
-### Built Saturday (checked in the app at `freeze-candidate`)
+### Built (in the app, checked in Beispielmodus and with real AI)
 Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to today (`{T}` tokens in /data).
 
-1. **Text input:** site manager types or dictates a situation
-2. **Letter writer:** drafts the correct notice in German
-3. **Edit screen:** manager edits the draft before export
-4. **Export:** Word (.docx) and PDF
-5. **Tagesbericht prüfen:** report vs. Bauzeitenplan → deviation card („Behinderungsanzeige empfohlen“, reason, urgency computed in code) → „Anzeige entwerfen“ with the report's facts (usually 1 Rückfrage left).
-6. **Router with verdict:** letter type + „Keine Anzeige nötig“ / „Ursache möglicherweise im eigenen Bereich – bitte prüfen“ (calm card, „Trotzdem Entwurf erstellen“).
-7. **Gap checker:** max. 3 questions, only missing required fields, asked in the input's language.
-8. **Input in any language** (tested: Polish, Turkish); the letter is always formal German.
-9. **Draft screen:** letter as a DIN-5008-like paper sheet, editable, [Platzhalter] highlighted; status Entwurf → Freigegeben (approver name + time, only by the user, edit → back to Entwurf); ENTWURF strip + watermark in Word/PDF.
-10. **Prüfliste vor Versand** (code, no AI): Datum, Ursache, Leistung, Auswirkung, Frist, Vorbehalt, Nachweise, Unverzüglich.
-11. **„Was kostet der Stillstand?“** (Behinderung only): workers × hours × rate × days, editable, internal only, never in the letter.
-12. **Export:** Word (.docx), PDF (print view), Kopieren; „Anlage – Dokumentation“ (input, answers, time, Tagesbericht excerpt).
-13. **Summariser:** minutes / diary / e-mails → deadlines, decisions, open items, risks.
-14. **Voice input** via browser dictation (Web Speech API); not tested on real iPad/Android devices.
-15. **Beispielmodus `?beispiel=1`:** prepared answers, no AI call, visible label „Beispielmodus (offline)“ – presenter fallback.
-16. **Test set:** 21 situations, runner `npm run test:letters`, report in tests/results/report.md (20/21 correct, 0 invented facts).
-17. Models: router + gaps on claude-haiku-5-5 (ANTHROPIC_FAST_MODEL), letters/report check/summary on claude-sonnet-5-5.
+1. **Neuer Eintrag:** type or dictate a situation (browser dictation, Web Speech API; not tested on real iPad/Android devices), in any language (tested: Polish, Turkish); the letter is always formal German.
+2. **Router with verdict:** letter type (Behinderung, Mehrkosten, Bedenken, Mängel an NU) + „Keine Anzeige nötig“ / „Ursache möglicherweise im eigenen Bereich – bitte prüfen“ with „Trotzdem Entwurf erstellen“.
+3. **Rückfragen:** max. 3 questions, only missing required facts, in the input's language.
+4. **Tagesbericht prüfen:** report vs. Bauzeitenplan → deviation („Unverzüglich anzeigen – heute“, urgency computed in code) → „Anzeige entwerfen“ with the report's facts (usually 1 Rückfrage left).
+5. **Schreiben:** DIN-5008-like letter, editable, [Platzhalter] highlighted, signature block exactly once (added by the template; any closing the AI writes is stripped in code). Status Entwurf → Freigegeben (approver name + time, only by the user; editing → back to Entwurf); ENTWURF strip + watermark in Word/PDF.
+6. **Prüfliste per letter type** (code, no AI): Behinderung 8 points, Bedenken 6, Mehrkosten 5, Mängel 4.
+7. **„Was kostet der Stillstand?“** (Behinderung only): workers × hours × rate × days, editable, internal only, never in the letter.
+8. **Export:** Word (.docx), PDF (print view), Kopieren; „Anlage – Dokumentation“ (input, answers, time, Tagesbericht excerpt).
+9. **Zusammenfassen:** minutes / diary / e-mails → deadlines, decisions, open items, risks.
+10. **Fristen & Verlauf:** approved letters with deadline countdowns, stored only in this browser (localStorage), read-only view with Word/PDF, „Verlauf löschen“.
+11. **Beispielmodus `?beispiel=1`:** prepared answers, no AI call, visible label – presenter fallback.
+12. **Test set:** 21 situations, `npm run test:letters`, report in tests/results/report.md (20/21 correct, 0 invented facts).
+13. Models: router + Rückfragen on claude-haiku-5-5 (ANTHROPIC_FAST_MODEL); letters, report check and summary on claude-sonnet-5-5.
 
 ### Pitch only / next steps
 - Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
@@ -61,7 +57,7 @@ Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to to
 - Photos as evidence
 - Claim file (Nachtragsakte) across all notices
 - Vier-Augen-Freigabe Bauleiter → Oberbauleiter
-- API key / login per company, firm letterhead template
+- Protected interface (login / key) per company, firm letterhead template
 - E-mail forwarding (send a Tagesbericht to Baufrist), Outlook / calendar connector
 - GAEB import for Mehrkosten, connectors to Bautagebuch tools
 - Vector search for large document sets
@@ -195,6 +191,8 @@ Live: **https://sakurajima-project-b.vercel.app** (fallback: same URL with `?bei
 - [x] Vercel connected, auto-deploy from main
 - [x] MVP flow working (text → letter → edit → export)
 - [x] Saturday scope built (see section 3), tagged `freeze-candidate`
+- [x] FINAL v3 Phase 1–2: signature once, Prüfliste per letter type, Bedenkenanzeige prompt, docs; yellow v2 design + Fristen & Verlauf live as fallback (tag `fallback-live`)
+- [ ] Design „Zeitung, mutiger“ on branch `design-mutig` (Vercel preview) → merge after team OK
 - [ ] Mentor/Bauleiter rating column in tests/results/report.md
 - [ ] Backup video + pitch deck (from `freeze-candidate`)
 

@@ -6,7 +6,9 @@ Live: https://sakurajima-project-b.vercel.app · Offline demo: https://sakurajim
 
 ## What it does
 
-Baufrist checks a site manager's Tagesbericht (daily site report) or a free-text description against the Bauzeitenplan (construction schedule) and spots situations that need a formal notice: Behinderung (obstruction), Mehrkosten (extra costs), Bedenken (concerns) or Mängel (defects). It asks at most three short follow-up questions for missing facts. Then it writes an editable German letter that follows VOB/B in content and DIN 5008 in layout. Every letter stays a draft (ENTWURF) until the site manager approves it by name. Baufrist never sends anything; the manager exports and sends the letter.
+Baufrist checks a site manager’s Tagesbericht (daily site report) or a typed or dictated situation against the Bauzeitenplan and spots what needs a formal notice: Behinderung, Mehrkosten, Bedenken or Mängel. It asks at most three short follow-up questions and writes an editable German letter (content based on VOB/B, layout based on DIN 5008). Every letter stays a draft until the site manager approves it by name, and Baufrist never sends anything itself.
+
+**Flow:** Tagesbericht / Eingabe → Erkennen → Rückfragen → Schreiben → Prüfliste + Kosten → Freigabe → Word / PDF / Kopieren.
 
 ## Architecture
 
@@ -24,8 +26,8 @@ Mermaid diagram: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 - **Two models.** Router and Rückfragen run on `claude-haiku-5-5` (fast). The letter, the Tagesbericht check and the summariser run on `claude-sonnet-5-5`. You can change both in `.env.local`.
 - **Prompts are XML files** in `/prompts` (`router`, `gaps`, `letter`, `deviation`, `summary`). Every prompt returns JSON, and each API route checks and normalises that JSON before it reaches the UI.
 - **There are no agent frameworks.** Each step is one function and one Claude call.
-- **There is no database.** Project data and the schedule are JSON files in `/data`. An approval (name and time) is stored only in the user's browser.
-- **Plain code, no AI:** urgency ("heute" / "seit X Tagen"), the Prüfliste, the standstill cost estimate, draft/approval status and export.
+- **There is no database.** Project data and the schedule are JSON files in `/data`. Approvals and „Fristen & Verlauf“ (approved letters with deadlines) are stored only in the user's browser (localStorage).
+- **Plain code, no AI:** urgency ("heute" / "seit X Tagen"), the Prüfliste per letter type (Behinderung 8 points, Bedenken 6, Mehrkosten 5, Mängel 4), the standstill cost estimate, draft/approval status, the signature block and export.
 - **Beispielmodus (sample mode).** `?beispiel=1` answers every step from `data/mocks/` with no AI call and shows a visible label "Beispielmodus (offline)". It is the presenter's fallback. Without `ANTHROPIC_API_KEY`, the whole app runs this way.
 - **Demo dates are relative to today.** Files in `/data` use `{T}`, `{T+5}` and similar tokens, so the demo story always happens "today".
 
@@ -92,7 +94,7 @@ The "brauchbar" ratings are a first pass by the AI. The column for the rating by
 
 - [docs/SO_FUNKTIONIERT_ES.md](docs/SO_FUNKTIONIERT_ES.md) – how it works, for site managers (German)
 - [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md) – flow diagram
-- [docs/INTEGRATION.md](docs/INTEGRATION.md) – data in and out, API routes with examples (German)
+- [docs/INTEGRATION.md](docs/INTEGRATION.md) – data in and out, internal JSON routes with examples, next steps (German)
 - [data/DEMO_SCRIPT.md](data/DEMO_SCRIPT.md) – the 8-step live demo
 - [HANDOVER.md](HANDOVER.md) – scope and rules · [TASKS.md](TASKS.md) – task log
 

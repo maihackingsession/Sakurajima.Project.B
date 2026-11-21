@@ -1,28 +1,28 @@
 # Integration – wie Baufrist an bestehende Abläufe andockt
 
-Baufrist ist ein Prototyp. Hier steht, wie Daten heute hineinkommen und wieder herauskommen und welche Schritte als Nächstes kommen.
+Baufrist ist ein Prototyp. Hier steht ehrlich, wie Daten heute hineinkommen und herauskommen, wie die Technik innen aussieht und was als Nächstes kommt.
 
-## 3 Wege rein
+## Heute
 
-1. **Text oder Sprache.** Der Bauleiter beschreibt die Lage in eigenen Worten, getippt oder diktiert (Diktierfunktion des Browsers). Das geht auch auf Polnisch, Türkisch oder Englisch. Das Schreiben ist trotzdem immer auf Deutsch.
-2. **Eingefügte Texte aus anderen Programmen.** Ein Bautagesbericht aus der Bautagebuch-Software, eine E-Mail oder ein Besprechungsprotokoll wird einfach hineinkopiert. Baufrist braucht kein festes Format.
-3. **Die vorhandenen API-Routen.** Andere Programme können dieselben Schritte direkt aufrufen (siehe unten). Sie bekommen JSON zurück.
+**Rein:**
 
-## 3 Wege raus
+1. **Text** – der Bauleiter beschreibt die Lage in eigenen Worten.
+2. **Sprache** – Diktierfunktion des Browsers. Eingabe in jeder Sprache möglich (getestet: Polnisch, Türkisch); das Schreiben ist immer auf Deutsch.
+3. **Eingefügte Texte** – ein Bautagesbericht, eine E-Mail oder ein Besprechungsprotokoll wird hineinkopiert. Ein festes Format ist nicht nötig.
 
-1. **Word (.docx).** Bis zur Freigabe mit dem Wasserzeichen „ENTWURF“. Dazu kommt eine Anlage „Dokumentation“ mit Eingabe, Antworten, Zeitpunkt und Auszug aus dem Tagesbericht.
-2. **PDF** über die Druckansicht des Browsers („Als PDF speichern“).
-3. **Klartext zum Kopieren**, z. B. direkt in eine Outlook-Mail.
+**Raus:**
 
-Dazu kommt **JSON über die API** für alle, die die Ergebnisse in eigene Systeme übernehmen wollen.
+1. **Word (.docx)** – bis zur Freigabe mit Wasserzeichen „ENTWURF“, dazu eine Anlage „Dokumentation“ (Eingabe, Antworten, Zeitpunkt, Auszug aus dem Tagesbericht).
+2. **PDF** – über die Druckansicht des Browsers („Als PDF speichern“).
+3. **Kopieren** – der ganze Brief als Text, z. B. zum Einfügen in eine Outlook-Mail.
 
 Baufrist **versendet nichts selbst**. Verschicken tut immer der Bauleiter.
 
-## Die API-Routen
+## Technik
 
-Alle KI-Routen nehmen `POST` mit JSON an und antworten mit JSON. Bei einem Fehler kommt `{ "error": "…" }` mit Status 400 oder 500 zurück.
+Die Oberfläche spricht intern mit einigen JSON-Routen. Sie sind ein **Prototyp ohne Anmeldung und keine öffentliche Schnittstelle** – andere Programme sollen sie so nicht anbinden.
 
-Mit dem Header `x-beispiel: 1` kommt eine vorbereitete Antwort ohne KI-Aufruf (Beispielmodus).
+Alle KI-Routen nehmen `POST` mit JSON an und antworten mit JSON. Bei einem Fehler kommt `{ "error": "…" }` mit Status 400 oder 500 zurück. Mit dem Header `x-beispiel: 1` kommt eine vorbereitete Antwort ohne KI-Aufruf (Beispielmodus).
 
 Die Beispiele zeigen die Demo-Geschichte: Die Bewehrungspläne für die Bodenplatte fehlen. „Heute“ ist hier der 21.11.2026. In der App sind die Demo-Daten immer relativ zum aktuellen Tag. Lange Texte sind gekürzt (`…`).
 
@@ -178,25 +178,25 @@ Antwort:
 ### Weitere Routen (ohne KI)
 
 - `GET /api/health` gibt `{ "ok": true, "mock": false, "version": "<commit>" }` zurück.
-- `GET /api/samples` liefert die Beispieltexte für die Knöpfe „Beispiel laden“: `{ "reports": [...], "documents": [...] }`.
+- `GET /api/samples` liefert die Beispieltexte für „Beispiel laden“: `{ "reports": [...], "documents": [...] }`.
 
 ## Inhalt und Form
 
 - **Inhalt orientiert sich an der VOB/B** (z. B. § 2 Abs. 5/6, § 4 Abs. 3, § 6 Abs. 1/2/6). Die Rechtsgrundlage ist immer mit „bitte prüfen“ gekennzeichnet.
 - **Layout orientiert sich an DIN 5008** (Absender, Anschrift, Datum, Betreff, Anrede, Text, Gruß).
-- Baufrist ist **nicht zertifiziert** und ersetzt keine Rechtsberatung. Jedes Schreiben muss der Bauleiter prüfen.
+- Baufrist ersetzt keine Rechtsberatung. Jedes Schreiben muss der Bauleiter prüfen.
 
 ## Ehrliche Grenzen
 
 - **Prototyp.** Projektdaten und Bauzeitenplan sind fest hinterlegte Beispieldaten.
-- **Noch keine Anmeldung.** Die API-Routen sind nicht geschützt. Für den echten Einsatz braucht es einen Zugang pro Firma.
-- **Keine Datenbank.** Nichts wird auf dem Server gespeichert. Freigaben liegen nur im Browser.
+- **Keine Anmeldung.** Die Routen sind nicht geschützt und nur für die eigene Oberfläche gedacht.
+- **Keine Datenbank.** Nichts wird auf dem Server gespeichert. Freigaben und „Fristen & Verlauf“ liegen nur im Browser auf diesem Gerät.
 - Eine KI-Antwort dauert einige Sekunden.
 
 ## Nächste Schritte
 
-1. **API-Schlüssel pro Firma.** Jede Firma bekommt einen eigenen Zugang, damit die Routen geschützt sind.
-2. **Briefkopf der Firma als Vorlage.** Word-Export mit dem echten Briefpapier (Logo, Fußzeile, Bankdaten).
-3. **E-Mail-Weiterleitung.** Tagesbericht oder Protokoll an eine Baufrist-Adresse schicken, und der Entwurf wartet schon.
-4. **GAEB-Import für Mehrkosten.** Positionen aus dem Leistungsverzeichnis direkt in die Mehrkostenanzeige übernehmen.
-5. **Anbindung an Bautagebuch-Programme.** Tagesberichte automatisch abholen statt kopieren.
+1. **Geschützte Schnittstelle pro Firma** – eigener Zugang je Firma, erst dann können andere Programme Baufrist anbinden.
+2. **Firmen-Briefkopf** – Word-Export mit dem echten Briefpapier (Logo, Fußzeile, Bankdaten).
+3. **E-Mail-Weiterleitung** – Tagesbericht oder Protokoll an eine Baufrist-Adresse schicken, der Entwurf wartet schon.
+4. **GAEB-Import für Mehrkosten** – Positionen aus dem Leistungsverzeichnis direkt in die Mehrkostenanzeige übernehmen.
+5. **Anbindung an Bautagebuch-Software** – Tagesberichte automatisch abholen statt kopieren.

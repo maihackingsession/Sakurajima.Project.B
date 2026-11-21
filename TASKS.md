@@ -198,3 +198,9 @@ Checked: no English/technical words in the UI (except the label „Beispielmodus
 - Bedenkenanzeige prompt: facts with evidence, risk, suggested alternative to check (drückendes Wasser / WU-Beton), deadline, no start before decision → Behinderung + cost reservation, last line „Anlagen: …“.
 - Names: added `architekt_ag` (Herr Vogel, already in the Protokoll sample, mock letters and the letter example) to data/project.json so every person in the demo data is in project.json. No other changes needed: client, Bauleiter, place (Garching, from project.json in the date line) and contract number BV-2026-0417 are identical everywhere.
 - DEMO_SCRIPT: plan deadline answer = „heute + 3 Tage, 12:00 Uhr“ (Sa → 24.11.2026, So → 25.11.2026).
+
+### Phase 2 — Repo hygiene, docs, push: done
+- Git history (all commits, all branches): no Anthropic/OpenAI keys, only `.env.example` with placeholders ever committed. `.env*` is gitignored. Safe to make public.
+- README: 3-sentence intro + flow line, Prüfliste per type, Verlauf only in the browser. docs/ARCHITEKTUR.md: Mermaid updated (Prüfliste je Schreibenart, Fristen & Verlauf). docs/INTEGRATION.md: Heute (rein/raus) · Technik (internal JSON routes, prototype without login, not a public interface) · Nächste Schritte; VOB/B / DIN 5008 „orientiert sich“, no certification claims.
+- HANDOVER §3: one „Built“ list (13 items, incl. Fristen & Verlauf) + „Pitch only / next steps“; §13 status.
+- docs/deck-assets/architektur.svg + architektur.png (1920×1080).
