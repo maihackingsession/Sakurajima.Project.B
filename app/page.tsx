@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { LetterType } from "@/lib/types";
 import DeviationTab from "./components/DeviationTab";
 import LetterFlow, { type DraftSource, type LetterFlowHandle } from "./components/LetterFlow";
+import Header from "./components/Header";
 import SummaryTab from "./components/SummaryTab";
 
 type Tab = "bericht" | "situation" | "zusammenfassen";
@@ -53,15 +54,16 @@ export default function Home() {
 
   return (
     <>
-      {/* Desktop: tabs at the top. */}
-      <nav className="hidden border-b border-[var(--border)] bg-white md:block" aria-label="Bereiche">
-        <div className="mx-auto flex max-w-6xl gap-1 px-4">
+      {/* Desktop: tabs inside the header bar. */}
+      <Header>
+      <nav className="hidden self-stretch md:block" aria-label="Bereiche">
+        <div className="flex h-full gap-1">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => go(t.id)}
               aria-current={tab === t.id ? "page" : undefined}
-              className={`-mb-px flex min-h-12 items-center gap-2 border-b-2 px-4 text-base font-semibold ${
+              className={`flex h-full min-h-12 items-center gap-2 border-b-[3px] px-3 text-base font-semibold lg:px-4 ${
                 tab === t.id ? "border-[var(--navy)] text-[var(--navy)]" : "border-transparent text-[var(--muted)] hover:text-[var(--navy)]"
               }`}
             >
@@ -71,6 +73,7 @@ export default function Home() {
           ))}
         </div>
       </nav>
+      </Header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-28 md:pb-12">
         {/* Tabs stay mounted (hidden) so switching does not lose input. */}

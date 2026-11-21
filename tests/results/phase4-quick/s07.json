@@ -1,0 +1,52 @@
+{
+  "id": "s07",
+  "expected": "mehrkosten",
+  "messy": true,
+  "input": "AG will jetzt doch andere Fenster, größere Öffnungen in der Fassade Nord, Schalung muss geändert werden",
+  "router": {
+    "intent": "letter",
+    "letter_type": "mehrkosten",
+    "outcome": "anzeige",
+    "facts": {
+      "angeordnet_durch": "Auftraggeber",
+      "ursache": "Änderung der Planung: andere Fenster und größere Öffnungen in der Fassade Nord",
+      "betroffene_leistung": "Fassade Nord, Schalung",
+      "massnahmen": "Schalung muss geändert werden"
+    },
+    "reason": "Der Auftraggeber ordnet geänderte Leistungen an (andere Fenster, größere Öffnungen, geänderte Schalung), die nicht im Vertrag enthalten sind – das ist eine Mehrkostenanzeige."
+  },
+  "ms": {
+    "router": 1411,
+    "gaps": 2779,
+    "letter": 5912
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Anordnung durch wen + wann",
+        "question": "Wann hat der Auftraggeber die geänderten Fenster und größeren Öffnungen in der Fassade Nord angeordnet?",
+        "example": "18.11.2026"
+      },
+      {
+        "field": "Beginn der Ausführung",
+        "question": "Ab wann sollen die Schalungsänderungen an der Fassade Nord ausgeführt werden?",
+        "example": "24.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Mehrkostenanzeige gem. § 2 Abs. 5 / Abs. 6 VOB/B – Änderung der Fenster und Öffnungen in der Fassade Nord\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "Sie haben als Auftraggeber [Datum der Anordnung einsetzen] [Person/Art der Anordnung einsetzen, z. B. in der Baubesprechung] angeordnet, in der Fassade Nord andere Fenster vorzusehen und die Öffnungen zu vergrößern. Die Planung wurde damit gegenüber dem bisherigen Stand geändert.\n\nBetroffen sind die Leistungen in der Fassade Nord, insbesondere die Schalung. Diese muss an die geänderten Fenster und die größeren Öffnungen angepasst werden.\n\nDiese Änderung ist im bisherigen Vertrag nicht berücksichtigt. Gem. § 2 Abs. 5 und Abs. 6 VOB/B kündigen wir Ihnen hiermit vor Beginn der Ausführung unseren Anspruch auf besondere bzw. geänderte Vergütung an.\n\nDie Ausführung der geänderten Leistung ist ab dem [Beginn der Ausführung einsetzen] geplant. Die Mehrkosten beziffern wir mit einem gesonderten Nachtragsangebot.\n\nWir bitten Sie, die Anordnung schriftlich zu bestätigen.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 2 Abs. 5 VOB/B (Vergütungsanpassung bei geänderter Leistung) und § 2 Abs. 6 VOB/B (zusätzliche Leistung, Ankündigung vor Ausführung) – bitte prüfen",
+    "deadline_hint": "Vor Beginn der Ausführung der geänderten Schalung versenden, am besten heute per E-Mail und Einschreiben an den Auftraggeber – Zugang dokumentieren.",
+    "missing": [
+      "Datum der Anordnung",
+      "Person/Art der Anordnung (wer beim Auftraggeber, in welcher Form)",
+      "Beginn der Ausführung"
+    ]
+  }
+}

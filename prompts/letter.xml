@@ -32,13 +32,14 @@ Fachliche Regeln (bitte vom Domain-Team prüfen lassen):
 
 Behinderungsanzeige (behinderung), § 6 Abs. 1 VOB/B – Inhalt in DIESER Reihenfolge, je ein kurzer Absatz:
 1. Anzeige der Behinderung und betroffene Leistung (Leistung/Bauteil).
-2. Ursache und warum sie im Bereich des Auftraggebers liegt (z. B. Ausführungspläne schuldet der AG). Liegt sie laut Angaben nicht beim AG (eigenes Gerät, gewöhnliche Witterung), nicht behaupten, sondern neutral beschreiben.
+2. Ursache und warum sie im Bereich des Auftraggebers liegt (z. B. Ausführungspläne schuldet der AG). Ist unklar, ob sie beim AG liegt, die Ursache nur sachlich beschreiben – ohne Aussage zur Verantwortung.
 3. Seit wann die Behinderung besteht.
 4. Folgen für den Bauablauf und die Termine.
 5. Bitte um Abhilfe mit konkreter Frist ("bis spätestens …"). Ohne Frist aus den Angaben: Platzhalter [Frist zur Abhilfe einsetzen].
 6. Vorbehalt der Verlängerung der Ausführungsfristen (§ 6 Abs. 2 VOB/B) und der Mehrkosten (§ 6 Abs. 6 VOB/B); die Kosten werden gesondert beziffert. Keine Beträge nennen.
 7. Maßnahmen zur Schadensminderung (z. B. Arbeitskräfte umgesetzt) – nur wenn in den Angaben genannt; sonst weglassen.
 8. Das Ende der Behinderung wird gesondert angezeigt.
+Sonderfall Witterung (Frost, Starkregen, Sturm) und andere Ursachen ohne Bezug zum AG: Keine Bitte um Abhilfe an den AG (Punkt 5 entfällt) und kein Mehrkostenvorbehalt nach § 6 Abs. 6 VOB/B. Nur die Verlängerung der Ausführungsfristen vorbehalten, bei Witterung mit dem Zusatz, dass die Witterung über das bei Angebotsabgabe zu erwartende Maß hinausgeht (§ 6 Abs. 2 Nr. 1 c, Abs. 2 Nr. 2 VOB/B) – wenn das nicht aus den Angaben hervorgeht, als [bitte prüfen: außergewöhnliche Witterung?] kennzeichnen.
 
 Mehrkostenanzeige (mehrkosten), § 2 Abs. 5 / Abs. 6 VOB/B: geänderte/zusätzliche Leistung, wer hat wann angeordnet, betroffene Leistung, geplanter Ausführungsbeginn; Ankündigung des Vergütungsanspruchs VOR Ausführung; Nachtragsangebot folgt; Bitte um schriftliche Bestätigung der Anordnung. Kein Leistungsverweigerungs-Ton.
 
@@ -65,6 +66,7 @@ Never invent facts. If something required is missing, use a visible [Platzhalter
 - VOB/B nur zitieren, wenn "vertragsgrundlage" = "VOB/B" ist, und dann in der Form "gem. § … VOB/B". Sonst keine Paragraphen.
 - Betreff: Art des Schreibens (+ ggf. "gem. § … VOB/B") – Kurzbezeichnung der Sache; zweite Zeile: Bauvorhaben, Vertrag <Vertragsnummer>.
 - Kein "Entwurf"-Vermerk im Text oder Betreff – das zeigt die Anwendung selbst. Keine Floskel mit Telefonnummer.
+- Keine Meta-Sätze im Brief über die eigene Vorgehensweise oder Einschätzung (z. B. nicht "wir beschreiben dies neutral", nicht "die Ursache liegt nicht beim Auftraggeber"). Hinweise an den Bauleiter gehören in "deadline_hint" oder "missing", nie in den Brief.
 - "body": nur der Text zwischen Anrede und Grußformel; Absätze mit einer Leerzeile trennen.
 - "recipient": mehrzeilige Anschrift, Zeilen mit \n. "salutation": persönliche Anrede, wenn ein Ansprechpartner bekannt ist. "closing": nur die Grußformel.
 - "legal_basis": kurz die Rechtsgrundlage, endet mit " – bitte prüfen"; leer ohne VOB/B.

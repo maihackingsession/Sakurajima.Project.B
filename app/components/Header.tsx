@@ -17,7 +17,7 @@ export function Logo({ size = 36 }: { size?: number }) {
   );
 }
 
-export default function Header() {
+export default function Header({ children }: { children?: React.ReactNode }) {
   const [serverMock, setServerMock] = useState(false);
   const beispiel = useSyncExternalStore(noop, isBeispiel, () => false);
 
@@ -30,16 +30,17 @@ export default function Header() {
 
   return (
     <header className="border-b border-[var(--border)] bg-white">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 md:py-0">
+        <div className="flex min-w-0 items-center gap-3 md:py-3">
           <Logo />
           <div className="min-w-0 leading-tight">
             <p className="text-lg font-bold text-[var(--navy)]">
               Baufrist <span className="hidden text-sm font-medium text-[var(--muted)] sm:inline">Bauleiter-Assistent</span>
             </p>
-            <p className="truncate text-sm text-[var(--muted)]">{project.bauvorhaben}</p>
+            <p className="truncate text-sm text-[var(--muted)] md:max-w-[220px] xl:max-w-none">{project.bauvorhaben}</p>
           </div>
         </div>
+        {children}
         {(beispiel || serverMock) && (
           <span className="shrink-0 rounded-full border border-[var(--warning-border)] bg-[var(--warning-bg)] px-2.5 py-1 text-center text-sm leading-tight font-semibold text-[var(--warning-text)] sm:px-3">
             Beispielmodus (offline)

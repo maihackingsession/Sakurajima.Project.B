@@ -1,0 +1,47 @@
+{
+  "id": "s03",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "pläne für bewehrung bodenplatte immer noch nicht da, eigentlich sollten wir montag anfangen. schneider steht dann mit seinen leuten rum",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Pläne für die Bewehrung der Bodenplatte fehlen",
+      "datum_beginn": "Montag (geplanter Beginn)",
+      "betroffene_leistung": "Bewehrung Bodenplatte",
+      "nachunternehmer": "Rohbau Schneider GmbH",
+      "auswirkung": "Kolonne von Rohbau Schneider GmbH steht still"
+    },
+    "reason": "Fehlende Bewehrungspläne für die Bodenplatte verhindern den geplanten Baubeginn, und die Kolonne des Rohbau-Nachunternehmers muss warten – das ist eine Behinderung."
+  },
+  "ms": {
+    "router": 3753,
+    "gaps": 4566,
+    "letter": 5870
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Frist zur Abhilfe",
+        "question": "Bis wann müssen die Bewehrungspläne spätestens auf der Baustelle vorliegen?",
+        "example": "24.11.2026"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – fehlende Bewehrungspläne Bodenplatte\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.\n\nUrsache ist, dass uns die Pläne für die Bewehrung der Bodenplatte nicht vorliegen. Die Bereitstellung der Ausführungspläne liegt im Verantwortungsbereich des Auftraggebers.\n\nDie Behinderung besteht seit dem [Datum des geplanten Beginns einsetzen]. An diesem Tag sollten die Arbeiten beginnen.\n\nOhne die Pläne können wir mit der Bewehrung nicht beginnen. Die Kolonne unseres Nachunternehmers Rohbau Schneider GmbH kann nicht eingesetzt werden und steht still. Die nachfolgenden Arbeiten und Termine verschieben sich entsprechend.\n\nWir bitten Sie, uns die freigegebenen Bewehrungspläne bis spätestens [Frist zur Abhilfe einsetzen] zu übergeben.\n\nDie Verlängerung der Ausführungsfristen gem. § 6 Abs. 2 VOB/B sowie den Ersatz der uns entstehenden Mehrkosten gem. § 6 Abs. 6 VOB/B behalten wir uns vor. Die Kosten werden wir gesondert beziffern.\n\nDas Ende der Behinderung werden wir Ihnen gesondert anzeigen.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 6 Abs. 1 VOB/B (Behinderungsanzeige), § 6 Abs. 2 VOB/B (Fristverlängerung), § 6 Abs. 6 VOB/B (Mehrkosten) – bitte prüfen",
+    "deadline_hint": "Heute noch per E-Mail und Einschreiben an den Auftraggeber senden, damit die Anzeige unverzüglich zugeht – Zugang dokumentieren.",
+    "missing": [
+      "Datum Beginn der Behinderung (\"Montag\" ist nicht eindeutig als Kalenderdatum bestimmbar)",
+      "Frist zur Abhilfe"
+    ]
+  }
+}

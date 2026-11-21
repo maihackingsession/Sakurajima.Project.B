@@ -26,6 +26,8 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [sampleIndex, setSampleIndex] = useState(0);
+  // After a check the report collapses, so the result is visible without scrolling.
+  const [showReport, setShowReport] = useState(true);
 
   async function loadExample() {
     setError("");
@@ -35,6 +37,7 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
       setText(reports[sampleIndex % reports.length]?.text ?? "");
       setSampleIndex((i) => i + 1);
       setResult(null);
+      setShowReport(true);
     } catch (e) {
       setError(errorText(e));
     }
@@ -46,6 +49,7 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
     setResult(null);
     try {
       setResult(await postJson<DeviationResult>("/api/deviation", { input: text }));
+      setShowReport(false);
     } catch (e) {
       setError(errorText(e));
     } finally {
@@ -63,16 +67,24 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
   return (
     <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
       <label htmlFor="report" className={h1}>Tagesbericht prüfen</label>
-      <p className="-mt-2 text-[var(--muted)]">Bautagesbericht einfügen – Baufrist gleicht ihn mit dem Bauzeitenplan ab und erkennt, wann eine Anzeige nötig ist.</p>
+      {showReport ? (
+        <p className="-mt-2 text-[var(--muted)]">Bautagesbericht einfügen – Baufrist gleicht ihn mit dem Bauzeitenplan ab und erkennt, wann eine Anzeige nötig ist.</p>
+      ) : (
+        <div className="-mt-2 flex flex-wrap items-center gap-x-4">
+          <p className="text-[var(--muted)]">{text.split("\n").find((l) => l.trim())?.trim() || "Bericht"} – mit dem Bauzeitenplan abgeglichen.</p>
+          <button className={linkBtn} onClick={() => setShowReport(true)}>Bericht anzeigen</button>
+        </div>
+      )}
       {!text.trim() && !result && (
         <div className={`${card} flex flex-col items-start gap-1 bg-[var(--surface)] sm:flex-row sm:items-center sm:justify-between`}>
           <p>Noch kein Bericht eingefügt.</p>
           <button className={linkBtn} onClick={loadExample}>Beispiel laden</button>
         </div>
       )}
+      {showReport && (<>
       <textarea
         id="report"
-        className={`${field} ${result ? "min-h-28" : "min-h-64"} font-mono text-[15px]`}
+        className={`${field} min-h-64 font-mono text-[15px]`}
         placeholder="Bautagesbericht hier einfügen …"
         value={text}
         disabled={busy}
@@ -84,11 +96,12 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
         </button>
         {text.trim() && <button className={linkBtn} onClick={loadExample} disabled={busy}>Anderes Beispiel laden</button>}
       </div>
+      </>)}
       {busy && <Loading text="Tagesbericht wird geprüft …" />}
       {error && <ErrorBox message={error} onRetry={check} />}
 
       {result && (
-        <div className="mt-2 flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {deviations.length === 0 && (
             <div className={`${card} bg-[var(--surface)]`}>
               <Chip kind="keine" />

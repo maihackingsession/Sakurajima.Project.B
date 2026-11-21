@@ -163,19 +163,18 @@ export default function DraftEditor(props: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      {isDraft ? (
-        <div className="rounded-xl border border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2.5 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
-          Entwurf – vor Versand prüfen
-        </div>
-      ) : (
-        <div role="status" className="rounded-xl border border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2.5 text-center text-base font-bold text-[var(--success-text)]">
-          Freigegeben von {approval.by} am {approvalTime(approval.at)}
-        </div>
-      )}
-
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_440px]">
         {/* Left: the letter as a sheet of paper. */}
         <div className="flex min-w-0 flex-col gap-3">
+          {isDraft ? (
+            <div className="rounded-xl border border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2.5 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
+              Entwurf – vor Versand prüfen
+            </div>
+          ) : (
+            <div role="status" className="rounded-xl border border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2.5 text-center text-base font-bold text-[var(--success-text)]">
+              Freigegeben von {approval.by} am {approvalTime(approval.at)}
+            </div>
+          )}
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl font-semibold text-[var(--navy)]">{title}</h2>
             <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
@@ -249,7 +248,7 @@ export default function DraftEditor(props: Props) {
 
         {/* Right: status, Prüfliste, cost, export. */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-4">
-          <div className={card}>
+          <div className={`${card} py-4`}>
             <div className="flex items-center justify-between gap-2">
               <p className={h2}>Status</p>
               <Chip kind={isDraft ? "entwurf" : "freigegeben"} />
@@ -257,7 +256,7 @@ export default function DraftEditor(props: Props) {
             {isDraft && !asking && (
               <div className="mt-3 flex flex-col gap-2">
                 <button className={`${btnPrimary} sm:w-full`} onClick={() => setAsking(true)}>Freigeben</button>
-                <p className={hint}>
+                <p className="text-sm leading-snug text-[var(--muted)]">
                   {open > 0 ? <span className="font-semibold text-[var(--warning-text)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste. </span> : null}
                   Nur Sie geben frei. Es wird nichts automatisch versendet.
                 </p>
@@ -282,11 +281,11 @@ export default function DraftEditor(props: Props) {
             )}
           </div>
 
-          <div className={card}>
+          <div className={`${card} py-4`}>
             <p className={h2}>Prüfliste vor Versand</p>
-            <ul className="mt-2 flex flex-col">
+            <ul className="mt-1 grid gap-x-5 sm:grid-cols-2">
               {checks.map((c) => (
-                <li key={c.label} className="flex items-baseline justify-between gap-3 border-b border-[var(--border)] py-1.5 text-[15px] last:border-0">
+                <li key={c.label} className={`flex items-baseline justify-between gap-2 border-b border-[var(--border)] py-1.5 text-[15px] leading-snug ${c.label === "Unverzüglich" && !c.ok ? "sm:col-span-2" : ""}`}>
                   <span>{c.label}</span>
                   {c.ok ? (
                     <span className="shrink-0 font-semibold text-[var(--success-text)]">✓ {c.note && c.label === "Unverzüglich" ? c.note : ""}</span>
@@ -340,18 +339,18 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
   const total = perDay * n(days);
   const ok = Number.isFinite(perDay) && perDay >= 0;
   const inputs: [string, string, string, (v: string) => void, string][] = [
-    ["cost-workers", "Arbeitskräfte ohne produktive Arbeit", workers, setWorkers, "1"],
+    ["cost-workers", "Arbeits­kräfte ohne Arbeit", workers, setWorkers, "1"],
     ["cost-hours", "Stunden pro Tag", hours, setHours, "0.5"],
-    ["cost-rate", "Verrechnungssatz (€/h)", rate, setRate, "1"],
+    ["cost-rate", "Verrech­nungs­satz €/h", rate, setRate, "1"],
     ["cost-days", "Tage", days, setDays, "1"],
   ];
   return (
-    <div className={`${card} border-[var(--navy)]/30`}>
-      <div className="flex items-start justify-between gap-2">
+    <div className={`${card} py-4`}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2">
         <p className={h2}>Was kostet der Stillstand?</p>
+        <p className="text-sm text-[var(--muted)]">Schätzung – zur internen Information</p>
       </div>
-      <p className="text-sm text-[var(--muted)]">Schätzung – zur internen Information</p>
-      <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
+      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
         {inputs.map(([id, text, value, setter, step]) => (
           <div key={id} className="flex flex-col justify-end">
             <label htmlFor={id} className="mb-1 text-sm leading-tight text-[var(--muted)]">{text}</label>
@@ -361,25 +360,23 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
               inputMode="decimal"
               min="0"
               step={step}
-              className={`${field} py-2 text-lg font-semibold`}
+              className={`${field} px-3 py-2 text-lg font-semibold`}
               value={value}
               onChange={(e) => setter(e.target.value)}
             />
           </div>
         ))}
       </div>
-      <div className="mt-3 rounded-lg bg-[var(--surface)] p-3" aria-live="polite">
+      <div className="mt-3 rounded-lg bg-[var(--surface)] px-3 py-2" aria-live="polite">
         {ok ? (
           <>
             <p className="text-sm text-[var(--muted)]">
-              {workers} Arbeitskräfte × {hours} h × {rate} €/h
+              {workers} Arbeitskräfte × {hours} h × {rate} €/h = {euro(perDay)} pro Tag
             </p>
-            <p className="text-2xl font-bold text-[var(--navy)]">{euro(perDay)} <span className="text-base font-semibold">pro Tag</span></p>
-            {Number.isFinite(total) && (
-              <p className="text-lg font-semibold text-[var(--navy)]">
-                bisher {days} {n(days) === 1 ? "Tag" : "Tage"}: {euro(total)}
-              </p>
-            )}
+            <p className="flex flex-wrap items-baseline gap-x-2 text-[var(--navy)]">
+              <span className="text-2xl font-bold">{euro(Number.isFinite(total) ? total : perDay)}</span>
+              <span className="font-semibold">{Number.isFinite(total) ? `bisher ${days} ${n(days) === 1 ? "Tag" : "Tage"}` : "pro Tag"}</span>
+            </p>
           </>
         ) : (
           <p className="font-semibold text-[var(--muted)]">Bitte fehlende Werte eintragen.</p>

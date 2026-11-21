@@ -1,0 +1,57 @@
+{
+  "id": "s05",
+  "expected": "behinderung",
+  "messy": true,
+  "input": "Frost, kein Betonieren möglich, Decke UG verschiebt sich",
+  "router": {
+    "intent": "letter",
+    "letter_type": "behinderung",
+    "outcome": "anzeige",
+    "facts": {
+      "ursache": "Frost",
+      "auswirkung": "kein Betonieren möglich",
+      "zusaetzlich": "Decke UG verschiebt sich"
+    },
+    "reason": "Frost verhindert das Betonieren und begründet eine Behinderungsanzeige; gewöhnliche Witterung begründet allerdings meist keinen Anspruch auf Mehrkosten. Die sich verschiebende Decke im UG sollte zusätzlich geprüft und gegebenenfalls separat als Bedenken gemeldet werden."
+  },
+  "ms": {
+    "router": 4407,
+    "gaps": 5369,
+    "letter": 5994
+  },
+  "gaps": {
+    "complete": false,
+    "questions": [
+      {
+        "field": "Datum Beginn",
+        "question": "Seit wann ist das Betonieren wegen des Frosts nicht möglich?",
+        "example": "18.11.2026"
+      },
+      {
+        "field": "Frist zur Abhilfe",
+        "question": "Bis wann soll der Auftraggeber die Ursache beseitigen?",
+        "example": "25.11.2026"
+      },
+      {
+        "field": "Verursacher/Verantwortungsbereich",
+        "question": "Liegt die Ursache beim Frost im Verantwortungsbereich des Auftraggebers oder bei uns?",
+        "example": "Witterungsbedingt, kein Verschulden einer Partei"
+      }
+    ]
+  },
+  "letter": {
+    "subject": "Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Betonierarbeiten wegen Frost\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "body": "hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind die Betonierarbeiten [betroffene Leistung/Bauteil einsetzen], insbesondere die Decke über dem Untergeschoss.\n\nUrsache ist Frost, der ein Betonieren derzeit nicht zulässt. Eine Zuordnung zum Verantwortungsbereich des Auftraggebers nehmen wir an dieser Stelle nicht vor; wir beschreiben den Sachverhalt neutral. [Angabe zum Verantwortungsbereich prüfen und ggf. ergänzen]\n\nDie Behinderung besteht seit dem [Datum des Beginns einsetzen].\n\nSolange der Frost anhält, ist ein Betonieren nicht möglich. Dadurch verschiebt sich die Herstellung der Decke über dem Untergeschoss und entsprechend die nachfolgenden Termine.\n\nWir bitten Sie, uns Möglichkeiten zur Abhilfe mitzuteilen, bis spätestens [Frist zur Abhilfe einsetzen].\n\nDie Verlängerung der Ausführungsfristen gem. § 6 Abs. 2 VOB/B sowie den Ersatz der uns entstehenden Mehrkosten gem. § 6 Abs. 6 VOB/B behalten wir uns vor. Die Kosten werden wir gesondert beziffern.\n\nDas Ende der Behinderung werden wir Ihnen gesondert anzeigen.",
+    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "legal_basis": "§ 6 Abs. 1 VOB/B (Behinderungsanzeige), § 6 Abs. 2 VOB/B (Fristverlängerung), § 6 Abs. 6 VOB/B (Mehrkosten) – bitte prüfen",
+    "deadline_hint": "Heute noch per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Die Anzeige sollte unverzüglich nach Beginn der Behinderung erfolgen.",
+    "missing": [
+      "Betroffene Leistung/Bauteil",
+      "Verantwortungsbereich (Frost als Ursache: Zuordnung zum Auftraggeber unklar)",
+      "Datum Beginn der Behinderung",
+      "Frist zur Abhilfe"
+    ]
+  }
+}

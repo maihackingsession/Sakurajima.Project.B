@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Header from "./components/Header";
 
 export const metadata: Metadata = {
   title: "Baufrist – Bauleiter-Assistent",
@@ -18,7 +17,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="de" className="h-full antialiased">
       <body className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
-        <Header />
         {children}
       </body>
     </html>
