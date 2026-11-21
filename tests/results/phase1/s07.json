@@ -20,7 +20,7 @@
       {
         "field": "Anordnung durch wen + wann",
         "question": "Wann und wie hat der Auftraggeber die Änderung angeordnet, und wer genau hat sie mitgeteilt?",
-        "example": "Mündlich am 19.11.2026 durch Frau Dr. Lindner bei der Baubesprechung"
+        "example": "Mündlich am 19.11.2026 durch Herrn Prof. Jagtap bei der Baubesprechung"
       },
       {
         "field": "Art der Zusatz-/Änderungsleistung",
@@ -41,8 +41,8 @@
   },
   "letter": {
     "subject": "Mehrkostenanzeige gemäß § 2 Abs. 5 und Abs. 6 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417 – ENTWURF zur Prüfung",
-    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
-    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrter Herr Prof. Jagtap,",
     "body": "[ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu ergänzen]\n\nhiermit zeigen wir Ihnen zum oben genannten Bauvorhaben an, dass sich aus einer Änderung bzw. Anordnung des Auftraggebers Mehrkosten ergeben werden. Wir melden unseren Anspruch auf geänderte bzw. besondere Vergütung gemäß § 2 Abs. 5 und Abs. 6 VOB/B hiermit ausdrücklich an.\n\nNach unserer Kenntnis hat der Auftraggeber [Name der anordnenden Person einsetzen] am [Datum der Anordnung einsetzen] angeordnet, dass andere Fenster vorgesehen werden und die Öffnungen in der Fassade Nord vergrößert werden sollen. Diese Änderung ist im bisherigen Vertragsumfang nicht enthalten.\n\nVon dieser Änderung ist insbesondere die Schalung im Bereich der Fassade Nord betroffen, die entsprechend geändert werden muss. [Genaue Bezeichnung der betroffenen Bauteile, Achsen und Geschosse einsetzen]\n\nDie Ausführung der geänderten Leistung ist ab [Beginn der Ausführung einsetzen] vorgesehen. Wir weisen darauf hin, dass wir die geänderte Leistung erst ausführen werden, wenn Sie die Änderung bestätigt haben und über die Vergütung Einvernehmen besteht, soweit dies mit dem Bauablauf vereinbar ist. [Vom Bauleiter zu prüfen]\n\nDie hierdurch entstehenden Mehrkosten werden wir gesondert beziffern; ein entsprechendes Nachtragsangebot werden wir Ihnen unverzüglich vorlegen. Etwaige Auswirkungen auf die Ausführungsfristen sowie auf den Bauablauf behalten wir uns ausdrücklich vor, gesondert geltend zu machen.\n\nWir bitten Sie, die Anordnung schriftlich zu bestätigen und uns mitzuteilen, ob die Änderung wie beschrieben ausgeführt werden soll.",
     "closing": "Mit freundlichen Grüßen",
     "legal_basis": "§ 2 Abs. 5 und Abs. 6 VOB/B",

@@ -31,10 +31,10 @@
   },
   "letter": {
     "subject": "Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Witterungsbedingte Behinderung der Betonarbeiten\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
-    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
-    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrter Herr Prof. Jagtap,",
     "body": "hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind die Betonarbeiten an der Decke über dem Untergeschoss ([genaues Bauteil bzw. Abschnitt einsetzen]).\n\nUrsache ist Frost, der ein Betonieren derzeit nicht zulässt.\n\nDie Behinderung besteht seit [Datum des Beginns einsetzen].\n\nSolange kein Betonieren möglich ist, verschiebt sich die Fertigstellung der Decke über dem Untergeschoss. Die nachfolgenden Termine verschieben sich entsprechend.\n\nDie Verlängerung der Ausführungsfristen gem. § 6 Abs. 2 VOB/B behalten wir uns vor. Die Witterung geht [bitte prüfen: außergewöhnliche Witterung?] über das bei Angebotsabgabe zu erwartende Maß hinaus.\n\nDas Ende der Behinderung werden wir Ihnen gesondert anzeigen.",
-    "closing": "Mit freundlichen Grüßen\n\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "closing": "Mit freundlichen Grüßen\n\nYuzhi Shao\nBauleiter\nMusterbau GmbH",
     "legal_basis": "§ 6 Abs. 1 VOB/B (Behinderungsanzeige), § 6 Abs. 2 Nr. 1 c und Nr. 2 VOB/B (Verlängerung der Ausführungsfristen bei Witterung) – bitte prüfen",
     "deadline_hint": "Heute noch per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Die Anzeige sollte unverzüglich nach Beginn der Behinderung erfolgen. Beginn der Behinderung und die Einordnung der Witterung (über dem bei Angebotsabgabe zu erwartenden Maß?) vor Versand ergänzen bzw. prüfen, z. B. mit Temperaturaufzeichnungen im Bautagebuch belegen.",
     "missing": [

@@ -17,7 +17,7 @@ Bewertung bitte in der letzten Spalte eintragen: **brauchbar / Nacharbeit / fals
 | s05 | Frost, kein Betonieren möglich, Decke UG verschiebt sich | Behinderungsanzeige | Behinderungsanzeige | Seit wann ist das Betonieren wegen des Frostes nicht möglich? |  |
 | s06 | In der Baubesprechung am 19.11.2026 hat Architekt Vogel angeordnet, im UG Achse B/3 zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen. Das ist nicht im LV. Wir wollen am 24.11. mit den Arbeiten anfangen. | Mehrkostenanzeige | Mehrkostenanzeige | – |  |
 | s07 | AG will jetzt doch andere Fenster, größere Öffnungen in der Fassade Nord, Schalung muss geändert werden | Mehrkostenanzeige | Mehrkostenanzeige | Wann hat der Auftraggeber die Änderung angeordnet?<br>Ab wann sollen die geänderten Fenster und Öffnungen in der Fassade Nord bzw. die Schalungsänderung ausgeführt werden? |  |
-| s08 | Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026. | Mehrkostenanzeige | Mehrkostenanzeige | – |  |
+| s08 | Der Bauherr Herr Prof. Jagtap hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026. | Mehrkostenanzeige | Mehrkostenanzeige | – |  |
 | s09 | zusätzlich noch leerrohre für ladesäulen in der bodenplatte, hat der elektroplaner vom bauherrn gestern so gesagt | Mehrkostenanzeige | Mehrkostenanzeige | Wann sollen die Leerrohre in der Bodenplatte verlegt werden bzw. wann hat die Ausführung begonnen? |  |
 | s10 | Laut Ausführungsplanung ist die Bodenplatte nur für Bodenfeuchte ausgelegt. Beim Aushub am 18.11.2026 haben wir in 3,2 m Tiefe Schichtenwasser festgestellt. Wir halten die geplante Abdichtung für nicht ausreichend, es drohen Wassereintritte im UG. | Bedenkenanzeige | Bedenkenanzeige | – |  |
 | s11 | Der vorgeschriebene Beton C25/30 passt nicht zur Expositionsklasse für die Tiefgarage, Planer sagt aber so lassen | Bedenkenanzeige | Bedenkenanzeige | Welche Folgen kann das haben, wenn der Beton so bleibt, z. B. für Haltbarkeit oder Bewehrung? |  |
@@ -49,11 +49,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist [betroffene Leistung/Bauteil einsetzen].
 
@@ -71,7 +71,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -97,11 +97,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist der Aushub im Bauabschnitt 2.
 
@@ -118,7 +118,7 @@ Die Verlängerung der Ausführungsfristen gem. § 6 Abs. 2 VOB/B sowie den Ersat
 Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -144,11 +144,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.
 
@@ -166,7 +166,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -193,11 +193,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind der Aushub und die Grundleitungen im Bereich BA 2.
 
@@ -215,7 +215,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -241,11 +241,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind die Betonarbeiten an der Decke über dem Untergeschoss ([genaues Bauteil bzw. Abschnitt einsetzen]).
 
@@ -261,7 +261,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -284,11 +284,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 in der Baubesprechung am 19.11.2026 hat Herr Vogel (Architekt) angeordnet, im Untergeschoss, Achse B/3, zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen.
 
@@ -323,11 +323,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 der Auftraggeber hat [Datum der Anordnung einsetzen] [Art der Anordnung und anordnende Person einsetzen, z. B. Baubesprechung, E-Mail] angeordnet, in der Fassade Nord andere Fenster einzubauen und die Öffnungen zu vergrößern. Dadurch muss die Schalung geändert werden.
 
@@ -348,7 +348,7 @@ Mit freundlichen Grüßen
 
 ### s08 – Mehrkostenanzeige
 
-**Eingabe:** Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.
+**Eingabe:** Der Bauherr Herr Prof. Jagtap hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.
 
 **Erkannt:** Mehrkostenanzeige – Der Auftraggeber hat schriftlich eine vertiefte Aushubausführung angeordnet, die nicht im Vertrag enthalten ist, daher ist eine Mehrkostenanzeige sinnvoll.
 
@@ -358,11 +358,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 mit Schreiben vom 16.11.2026 haben Sie uns wegen der geänderten Tiefgaragenplanung angewiesen, die Baugrube um 40 cm tiefer auszuheben. Betroffen sind der Aushub BA 1 und BA 2 sowie der Verbau.
 
@@ -374,7 +374,7 @@ Wir bitten Sie, die Anordnung vom 16.11.2026 schriftlich zu bestätigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -400,11 +400,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 am 20.11.2026 hat der Elektroplaner des Bauherrn [Name des Elektroplaners einsetzen] angeordnet, in der Bodenplatte zusätzlich Leerrohre für Ladesäulen herzustellen.
 
@@ -415,7 +415,7 @@ Die Ausführung ist ab dem [Datum des Ausführungsbeginns einsetzen] geplant. Di
 Wir bitten Sie, die Anordnung schriftlich zu bestätigen.
 
 Mit freundlichen Grüßen
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -438,11 +438,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgesehene Abdichtung der Bodenplatte und des Untergeschosses mit.
 
@@ -454,7 +454,7 @@ Wir bitten Sie, die Planung prüfen zu lassen und uns bis zum [Frist für Ihre E
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -480,11 +480,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgeschriebene Betongüte C25/30 für die Betonierarbeiten der Tiefgarage mit.
 
@@ -495,7 +495,7 @@ Bei Ausführung mit der vorgeschriebenen Betongüte besteht [mögliche Folgen ei
 Wir bitten Sie, die Vorgabe prüfen zu lassen und uns bis zum [Frist für Ihre Entscheidung einsetzen] schriftlich mitzuteilen, wie ausgeführt werden soll. Vorsorglich weisen wir auf § 13 Abs. 3 VOB/B hin.
 
 Mit freundlichen Grüßen
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -518,11 +518,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgesehene Betondeckung der Bewehrung der Kellerwände im Untergeschoss mit.
 
@@ -567,7 +567,7 @@ Nach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten du
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -609,7 +609,7 @@ Wir fordern Sie auf, den Mangel bis zum [Frist zur Beseitigung einsetzen] fachge
 Nach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen. Weitere Rechte behalten wir uns vor.
 
 Mit freundlichen Grüßen
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -652,7 +652,7 @@ Nach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten du
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -703,11 +703,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.
 
@@ -727,7 +727,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -766,7 +766,7 @@ Wir fordern Sie auf, den Mangel bis zum [Frist zur Beseitigung einsetzen] fachge
 Nach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen. Weitere Rechte behalten wir uns vor.
 
 Mit freundlichen Grüßen
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 

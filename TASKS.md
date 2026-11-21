@@ -193,7 +193,7 @@ Checked: no English/technical words in the UI (except the label „Beispielmodus
 - f) HANDOVER §3 cleanup: DONE (81f0a68) – rechecked in Phase 2
 
 ### Phase 1 — Content fixes: done
-- Signature once: prompts/letter.xml rule (body ends before the closing, never greeting/closing/signature); `stripSignoff()` (lib/text.ts) in /api/letter and in the Verlauf example. The Beispielmodus Mängelanzeige body ends with „Mit freundlichen Grüßen / Musterbau GmbH / Thomas Berger / Bauleiter“ – stripped, signature block shown once.
+- Signature once: prompts/letter.xml rule (body ends before the closing, never greeting/closing/signature); `stripSignoff()` (lib/text.ts) in /api/letter and in the Verlauf example. The Beispielmodus Mängelanzeige body ends with „Mit freundlichen Grüßen / Musterbau GmbH / Yuzhi Shao / Bauleiter“ – stripped, signature block shown once.
 - Prüfliste per type (app/lib/checks.ts, code only): Behinderung 8 points, Bedenken 6, Mehrkosten 5, Mängel 4. All four Beispielmodus letters: all ✓ (checked by script).
 - Bedenkenanzeige prompt: facts with evidence, risk, suggested alternative to check (drückendes Wasser / WU-Beton), deadline, no start before decision → Behinderung + cost reservation, last line „Anlagen: …“.
 - Names: added `architekt_ag` (Herr Vogel, already in the Protokoll sample, mock letters and the letter example) to data/project.json so every person in the demo data is in project.json. No other changes needed: client, Bauleiter, place (Garching, from project.json in the date line) and contract number BV-2026-0417 are identical everywhere.
@@ -236,7 +236,7 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - design-zeitung reviewed by the team and merged into main (fast-forward, 0bd692a). Checked locally in Demo-Modus without API key at 375/768/1280: no horizontal scroll, no radius/shadow, no text < 12 px, 0 console errors. Previous design: tag `freeze-final` (54f39a6).
 
 ## Version 2 (branch features-v2) — HANDOVER §3 items 14–24
-- [ ] 1. Names: Herr Prof. Jagtap (AG), Yuzhi Shao (Bauleiter) everywhere
+- [x] 1. Names: Herr Prof. Jagtap (AG), Yuzhi Shao (Bauleiter) everywhere
 - [ ] 2. Rückfragen complete, „Weiß ich nicht“, no [Klammern]; „Angabe fehlt“ safety net
 - [ ] 3. VoiceField in every text input
 - [ ] 4. „Heute“ start screen (save first, check in background)

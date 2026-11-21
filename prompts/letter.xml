@@ -77,6 +77,7 @@ Never invent facts. If something required is missing, use a visible [Platzhalter
 - Keine Meta-Sätze im Brief über die eigene Vorgehensweise oder Einschätzung (z. B. nicht "wir beschreiben dies neutral", nicht "die Ursache liegt nicht beim Auftraggeber"). Hinweise an den Bauleiter gehören in "deadline_hint" oder "missing", nie in den Brief.
 - "body": nur der Text zwischen Anrede und Grußformel; Absätze mit einer Leerzeile trennen. Der Text endet mit dem letzten inhaltlichen Absatz (bzw. der Anlagen-Zeile) – niemals Grußformel ("Mit freundlichen Grüßen"), Firmenname, Name oder Unterschrift in "body" schreiben. Grußformel und Unterschrift setzt die Anwendung.
 - "recipient": mehrzeilige Anschrift, Zeilen mit \n. "salutation": persönliche Anrede, wenn ein Ansprechpartner bekannt ist. "closing": nur die Grußformel.
+- Anrede und Anschrift passen zum Geschlecht aus dem Projekt: „Herr …“ → „Sehr geehrter Herr …,“ und „z. Hd. Herrn …“; „Frau …“ → „Sehr geehrte Frau …,“ und „z. Hd. Frau …“. Titel (Dr., Prof.) übernehmen, Namen genau so schreiben wie im Projekt, keinen Vornamen ergänzen.
 - "legal_basis": kurz die Rechtsgrundlage, endet mit " – bitte prüfen"; leer ohne VOB/B.
 - "deadline_hint": konkreter Hinweis, bis wann und wie das Schreiben raus muss (z. B. "Heute noch per E-Mail und Einschreiben an den Auftraggeber – Zugang dokumentieren.").
 - "missing": nur echte Pflichtangaben, die als Platzhalter im Text stehen. Leer, wenn alles da ist.

@@ -6,7 +6,7 @@
   "vertragsgrundlage": "VOB/B",
   "auftraggeber": {
     "name": "Campus Garching Projektgesellschaft mbH",
-    "ansprechpartner": "Frau Dr. Andrea Lindner, Projektleitung Bauherr",
+    "ansprechpartner": "Herr Prof. Jagtap, Projektleitung Bauherr",
     "strasse": "Boltzmannstraße 15",
     "plz_ort": "85748 Garching bei München"
   },
@@ -27,7 +27,7 @@
     "email": "bauleitung@musterbau.example"
   },
   "bauleiter": {
-    "name": "Thomas Berger",
+    "name": "Yuzhi Shao",
     "funktion": "Bauleiter",
     "telefon": "0171 2345678"
   },
