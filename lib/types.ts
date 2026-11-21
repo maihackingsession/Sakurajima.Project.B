@@ -66,3 +66,7 @@ export type SummaryResult = {
 
 /** Answer value for a Rückfrage marked „Weiß ich nicht“ (the letter prompt rephrases around it). */
 export const UNKNOWN = "Weiß ich nicht";
+
+/** Fields of a Bautagesbericht (route /api/daily-report, prompts/daily-report.xml). */
+export const DAILY_REPORT_KEYS = ["personal", "geraete", "arbeiten", "lieferungen", "anordnungen", "behinderungen", "sonstiges"] as const;
+export type DailyReportResult = Record<(typeof DAILY_REPORT_KEYS)[number], string>;

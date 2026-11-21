@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { LetterType } from "@/lib/types";
-import DeviationTab from "./components/DeviationTab";
+import BerichteTab from "./components/BerichteTab";
 import Header, { type Tab } from "./components/Header";
 import LetterFlow, { type DraftSource, type LetterFlowHandle } from "./components/LetterFlow";
 import SummaryTab from "./components/SummaryTab";
@@ -35,7 +35,7 @@ export default function Home() {
           <LetterFlow ref={letterFlow} onTab={go} onStartScreen={setOnStart} />
         </div>
         <div hidden={tab !== "berichte"}>
-          <DeviationTab onDraft={draft} />
+          <BerichteTab onDraft={draft} />
         </div>
         <div hidden={tab !== "verlauf"}>
           <VerlaufTab />

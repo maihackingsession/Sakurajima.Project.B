@@ -166,7 +166,9 @@ async function run() {
       await shot("01-hauptseite");
     });
     await step("tagesbericht", async () => {
-      await js(`__click("Tagesbericht")`);
+      await js(`__click("Tagesberichte")`);
+      await sleep(200);
+      await js(`__click("Fremden Bericht einfügen")`);
       await sleep(200);
       await shot("02-tagesbericht-leer");
       await js(`__click("Beispiel laden")`);
@@ -245,6 +247,24 @@ async function run() {
       await js(`__click("Schreiben entwerfen")`);
       await waitFor("Eine Angabe fehlt");
       await shot("08-heute-rueckfrage");
+    });
+    await step("tagesbericht-tag", async () => {
+      await js(`__click("Tagesberichte")`);
+      await sleep(300);
+      await shot("15-tagesberichte");
+      await js(`__click(new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" }))`);
+      await waitFor("Bericht aus Einträgen erstellen");
+      await js(`__click("Bericht aus Einträgen erstellen")`);
+      await waitFor("Behinderungen & Mängel");
+      await js(`window.scrollTo(0, 0)`);
+      await shot("16-tagesbericht-tag", true);
+      await js(`__click("Abzeichnen")`);
+      await sleep(150);
+      await js(`__click("Abzeichnen bestätigen")`);
+      await waitFor("Abgezeichnet ·");
+      await js(`__click("Mit Bauzeitenplan prüfen")`);
+      await waitFor("Anzeige entwerfen");
+      await shot("17-tagesbericht-plan", true);
     });
     await step("zusammenfassen", async () => {
       await open();

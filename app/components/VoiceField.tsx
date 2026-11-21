@@ -121,6 +121,8 @@ type Props = {
   dictation?: Dictation;
   /** Extra actions shown in the row with „● Sprechen“ (multiline only). */
   children?: ReactNode;
+  /** Show „● Sprechen“ only while the field has focus (pages with many fields). */
+  quiet?: boolean;
 };
 
 /**
@@ -128,7 +130,8 @@ type Props = {
  * Without speech recognition in the browser the button is hidden; typing always works.
  */
 export default function VoiceField(props: Props) {
-  const { id, value, onChange, label, multiline = false, placeholder, className = "line-field", disabled, autoFocus, rows, onEnter, fieldRef, children } = props;
+  const { id, value, onChange, label, multiline = false, placeholder, className = "line-field", disabled, autoFocus, rows, onEnter, fieldRef, children, quiet = false } = props;
+  const [focused, setFocused] = useState(false);
   const valueRef = useRef(value);
   useEffect(() => {
     valueRef.current = value;
@@ -139,8 +142,9 @@ export default function VoiceField(props: Props) {
   });
   const d = props.dictation ?? own;
 
-  const mic = d.supported && !disabled && (
-    <button type="button" className={recBtn} onClick={d.toggle} aria-pressed={d.recording} aria-controls={id}>
+  const mic = d.supported && !disabled && (!quiet || focused || d.recording) && (
+    // mouseDown keeps the focus in the field, so the button does not vanish under the click.
+    <button type="button" className={recBtn} onMouseDown={(e) => e.preventDefault()} onClick={d.toggle} aria-pressed={d.recording} aria-controls={id}>
       <RecDot /> {d.recording ? "Stopp" : "Sprechen"}
     </button>
   );
@@ -152,6 +156,8 @@ export default function VoiceField(props: Props) {
     placeholder,
     disabled,
     autoFocus,
+    onFocus: () => setFocused(true),
+    onBlur: () => setFocused(false),
   };
 
   return (

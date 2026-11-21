@@ -3,7 +3,7 @@
 import { getWeather, useWeatherSnapshot } from "../lib/store";
 
 /** Grey weather line of a day (filled automatically from step „Wetter“ on). Hidden while unknown. */
-export default function WeatherLine({ day }: { day: string }) {
+export default function WeatherLine({ day }: { day: string; editable?: boolean }) {
   useWeatherSnapshot(day);
   const w = getWeather(day);
   if (!w) return null;

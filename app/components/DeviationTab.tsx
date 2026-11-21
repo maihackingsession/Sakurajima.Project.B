@@ -19,13 +19,13 @@ type Props = {
 };
 
 /** Text handed to the letter flow: what happened, per the report and the plan. */
-function draftText(d: Deviation) {
+export function draftText(d: Deviation) {
   return [`${d.activity}: ${d.actual}`, `Geplant laut Bauzeitenplan: ${d.planned}`, d.explanation].filter(Boolean).join("\n");
 }
 
 const STEPS = ["Lese den Bericht", "Vergleiche mit dem Bauzeitenplan", "Bewerte Abweichungen"];
 
-export default function DeviationTab({ initialText = "", onDraft }: Props) {
+export default function DeviationTab({ initialText = "", onDraft, embedded = false }: Props & { embedded?: boolean }) {
   const [text, setText] = useState(initialText);
   const [result, setResult] = useState<DeviationResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -78,8 +78,12 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
     <div className="fade-in">
       {!result || showReport ? (
         <section>
-          <p className={kicker}>Abgleich mit dem Bauzeitenplan</p>
-          <h1 className={h1}>Tagesbericht prüfen</h1>
+          {!embedded && (
+            <>
+              <p className={kicker}>Abgleich mit dem Bauzeitenplan</p>
+              <h1 className={h1}>Tagesbericht prüfen</h1>
+            </>
+          )}
           <VoiceField
             id="report"
             label="Bautagesbericht"
@@ -126,7 +130,7 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
 }
 
 /** A deviation that needs a letter: urgent kicker, headline, key facts, the main button. */
-function Notice({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
+export function Notice({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
   const u = urgency(d.event_date);
   const type = shortType(LETTER_LABELS[d.suggested_letter as LetterType]);
   const status = d.actual.split(/[:.]/)[0].trim();
