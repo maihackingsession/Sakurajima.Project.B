@@ -192,7 +192,7 @@ Live: **https://sakurajima-project-b.vercel.app** (fallback: same URL with `?bei
 - [x] MVP flow working (text → letter → edit → export)
 - [x] Saturday scope built (see section 3), tagged `freeze-candidate`
 - [x] FINAL v3 Phase 1–2: signature once, Prüfliste per letter type, Bedenkenanzeige prompt, docs; yellow v2 design + Fristen & Verlauf live as fallback (tag `fallback-live`)
-- [ ] Design „Zeitung, mutiger“ on branch `design-mutig` (Vercel preview) → merge after team OK
+- [x] Design „Zeitung, mutiger“ merged and live (ade7c7f, tag `freeze-final`)
 - [ ] Mentor/Bauleiter rating column in tests/results/report.md
 - [ ] Backup video + pitch deck (from `freeze-candidate`)
 

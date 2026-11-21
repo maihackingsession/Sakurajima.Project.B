@@ -228,3 +228,6 @@ Top 10 problems in zeitung-1 (all fixed):
 9. Kicker had a double space before „· § 6 …“ → fixed.
 10. Saved letter (Verlauf) headline as large as the page title → same size as the Schreiben screen.
 Checked: no horizontal scroll, key content + main button above the fold at 1280×720 (Tagesbericht result, Schreiben), focus outline on every control, no text < 13 px, reduced motion, no radius/shadow/gradient, signature exactly once, no English/technical words (only „Word“, „PDF“).
+
+### Phase 5 — Merge: done (18:11)
+- design-mutig merged into main (fast-forward), live ade7c7f. Live click-through `?beispiel=1` at 1280×720 + 375×812: all flows ok, 0 design-check findings, 0 console errors, 9.280 € ok. Tag `freeze-final`.
