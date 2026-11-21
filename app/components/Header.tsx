@@ -1,29 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import project from "@/data/project.json";
-import { LETTER_LABELS } from "@/lib/types";
-import { countdown } from "../lib/verlauf";
-import { issueTitle, shortType } from "../lib/ui";
-import { urgentCount, useVerlaufEntries, withDeadlines } from "../lib/useVerlauf";
+import { isBeispiel } from "../lib/api";
 import { Logo } from "./Status";
 
 export type Tab = "situation" | "bericht" | "verlauf" | "zusammenfassen";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "situation", label: "Neuer Eintrag" },
-  { id: "bericht", label: "Tagesbericht" },
-  { id: "verlauf", label: "Fristen & Verlauf" },
-  { id: "zusammenfassen", label: "Zusammenfassen" },
+const TABS: { id: Tab; label: string; short: string }[] = [
+  { id: "situation", label: "Neuer Eintrag", short: "Eintrag" },
+  { id: "bericht", label: "Tagesbericht", short: "Tagesbericht" },
+  { id: "verlauf", label: "Fristen & Verlauf", short: "Fristen" },
+  { id: "zusammenfassen", label: "Zusammenfassen", short: "Zusammenfassen" },
 ];
 
-/** Navy masthead with the I-beam logo and the tabs, plus the yellow deadline band below it. */
-export default function Header({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
+const noop = () => () => {};
+const longDate = () => new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const shortDate = () => {
+  const d = new Date();
+  const wd = d.toLocaleDateString("de-DE", { weekday: "short" }).replace(".", "");
+  return `${wd}, ${d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`;
+};
+
+/**
+ * Newspaper masthead: 4px accent line, logo + date, centered nameplate, project, double-ruled nav.
+ * „Stillstand heute“ is not shown: the app has no app-wide standstill amount (only per draft).
+ */
+export default function Header({ tab, onTab, compact = false }: { tab: Tab; onTab: (t: Tab) => void; compact?: boolean }) {
   const [serverMock, setServerMock] = useState(false);
-  const { entries, beispiel } = useVerlaufEntries();
-  const urgent = urgentCount(entries);
-  const next = withDeadlines(entries)[0];
-  const c = next ? countdown(next.deadline) : null;
+  const beispiel = useSyncExternalStore(noop, isBeispiel, () => false);
+  const today = useSyncExternalStore(noop, longDate, () => "");
+  const todayShort = useSyncExternalStore(noop, shortDate, () => "");
 
   useEffect(() => {
     fetch("/api/health", { cache: "no-store" })
@@ -32,62 +39,46 @@ export default function Header({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => vo
       .catch(() => {});
   }, []);
 
+  const mode = (beispiel || serverMock) && <span className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)] uppercase">Beispielmodus</span>;
+
   return (
     <header>
-      <div className="on-dark bg-[var(--navy)] text-white">
-        <div className="wrap flex min-h-[76px] flex-col gap-x-8 gap-y-1 py-3 min-[600px]:flex-row min-[600px]:flex-wrap min-[600px]:items-center min-[600px]:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <Logo size={36} />
-            <div className="min-w-0">
-              <p className="flex flex-wrap items-baseline gap-x-3">
-                <span className="font-serif text-[26px] leading-none font-extrabold tracking-[-.03em] min-[600px]:text-[34px]">Baufrist</span>
-                {(beispiel || serverMock) && (
-                  <span className="font-sans text-[13px] font-bold tracking-[.06em] text-[var(--yellow)] uppercase">Beispielmodus</span>
-                )}
-              </p>
-              <p className="mt-1 truncate font-sans text-[13px] text-[var(--navy-muted)]">{project.bauvorhaben}</p>
-            </div>
+      <div aria-hidden className="h-1 bg-[var(--accent)]" />
+      <div className="mx-auto max-w-[1120px] px-[18px] pt-3 min-[600px]:px-6 min-[600px]:pt-[14px]">
+        <div className="flex min-h-[34px] items-center justify-between gap-4 font-sans text-[13px]">
+          <div className="flex items-center gap-3">
+            <span className="min-[600px]:hidden"><Logo size={28} /></span>
+            <span className="hidden min-[600px]:inline"><Logo size={34} /></span>
+            <span className="hidden font-semibold min-[600px]:inline">{today}</span>
           </div>
-          <nav aria-label="Bereiche" className="-mx-6 overflow-x-auto px-6 [scrollbar-width:none] min-[600px]:mx-0 min-[600px]:px-0 [&::-webkit-scrollbar]:hidden">
-            <ul className="flex gap-x-6 whitespace-nowrap">
-              {TABS.map((t) => {
-                const active = tab === t.id;
-                return (
-                  <li key={t.id}>
-                    <button
-                      onClick={() => onTab(t.id)}
-                      aria-current={active ? "page" : undefined}
-                      className={`inline-flex min-h-11 items-center gap-2 border-b-[3px] font-sans text-[15px] text-white ${active ? "border-[var(--yellow)] font-bold" : "border-transparent font-medium hover:border-white/40"}`}
-                    >
-                      {t.label}
-                      {t.id === "verlauf" && urgent > 0 && (
-                        <span className="inline-flex h-5 min-w-5 items-center justify-center bg-[var(--yellow)] px-1 text-[13px] font-extrabold text-[var(--ink)]" aria-label={`${urgent} dringende Fristen`}>
-                          {urgent}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+          {mode}
         </div>
+        <div className="mt-1 text-center">
+          <p className={`font-serif leading-none font-extrabold tracking-[-.03em] ${compact ? "text-[44px] min-[600px]:text-[clamp(44px,5.5vw,64px)]" : "text-[44px] min-[600px]:text-[clamp(52px,7vw,86px)]"}`}>Baufrist</p>
+          <p className="mt-[6px] truncate font-sans text-[12px] text-[var(--grey)] min-[600px]:mt-[10px] min-[600px]:text-[13px]">
+            <span className="min-[600px]:hidden">{todayShort} · </span>{project.bauvorhaben}
+          </p>
+        </div>
+        <nav aria-label="Bereiche" className="mt-3 border-t border-b-4 border-t-[var(--rule)] border-b-[var(--ink)] [border-bottom-style:double] py-[2px] min-[600px]:mt-[18px]">
+          <ul className="flex justify-between min-[600px]:flex-wrap min-[600px]:justify-center min-[600px]:gap-x-8">
+            {TABS.map((t) => {
+              const active = tab === t.id;
+              return (
+                <li key={t.id}>
+                  <button
+                    onClick={() => onTab(t.id)}
+                    aria-current={active ? "page" : undefined}
+                    className={`min-h-11 border-b-2 font-sans text-[13px] text-[var(--ink)] min-[600px]:text-[15px] ${active ? "border-[var(--accent)] font-bold" : "border-transparent font-medium hover:border-[var(--rule)]"}`}
+                  >
+                    <span className="min-[600px]:hidden">{t.short}</span>
+                    <span className="hidden min-[600px]:inline">{t.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
-
-      {next && c && (
-        <div className="border-b border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)]">
-          <div className="wrap flex min-h-10 items-center justify-between gap-x-4 py-1">
-            <p className="min-w-0 truncate font-sans text-[14px] font-bold">
-              <span className="uppercase">{c.text}</span>
-              <span aria-hidden className="mx-2 inline-block h-2.5 w-2.5 bg-[var(--ink)] align-middle" />
-              <span className="hidden min-[600px]:inline">{shortType(LETTER_LABELS[next.type])} · </span>{issueTitle(next.subject, next.deadline)}
-            </p>
-            <button className="inline-flex min-h-11 shrink-0 items-center font-sans text-[14px] font-semibold underline underline-offset-[3px]" onClick={() => onTab("verlauf")}>
-              Alle Fristen
-            </button>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

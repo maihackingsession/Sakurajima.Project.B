@@ -5,9 +5,10 @@ const company = project.auftragnehmer;
 export const senderLine = `${company.name} · ${company.strasse} · ${company.plz_ort}`;
 export const signature = [company.name, "", "", project.bauleiter.name, project.bauleiter.funktion];
 
-/** "Garching, 21.11.2026": place from project.json + the given date (dd.mm.yyyy). */
+/** "München, 21.11.2026": the sender's city (auftragnehmer in project.json) + the given date (dd.mm.yyyy). */
 export function dateLine(date: string) {
-  return `${project.ort}, ${date}`;
+  const city = company.plz_ort.replace(/^\d{5}\s*/, "");
+  return `${city}, ${date}`;
 }
 
 /** Evidence page for the export: what the draft is based on. */

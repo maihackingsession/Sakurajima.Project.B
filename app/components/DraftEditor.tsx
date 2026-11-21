@@ -17,8 +17,7 @@ import {
   type Appendix,
 } from "../lib/export";
 import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
-import { btnApprove, h1, issueTitle, kicker, linkBtn, linkOnDark, meta, TYPE_COLOR } from "../lib/ui";
-import { TypeSquare } from "./Status";
+import { btnPrimary, h1, issueTitle, kicker, linkBtn, meta } from "../lib/ui";
 
 /** Review status of a draft. Only the user changes it. Approvals are remembered in this browser only. */
 export type Approval = { status: "entwurf" } | { status: "freigegeben"; by: string; at: string };
@@ -182,142 +181,141 @@ export default function DraftEditor(props: Props) {
   }
 
   const editField = "w-full resize-none border-0 border-b border-dashed border-[var(--grey)] bg-[#FFFDF3] px-1 py-0.5 focus:border-solid focus:border-[var(--ink)] focus:outline-none [field-sizing:content]";
-  const color = TYPE_COLOR[letterType];
+  const [checksOpen, setChecksOpen] = useState(false);
   const basis = legalShort(draft.legal_basis);
-  const recipientName = draft.recipient.split("\n")[0].trim();
   const done = checks.filter((c) => c.ok).length;
   const holeList = [...new Set(placeholders(`${draft.recipient}\n${draft.subject}\n${draft.body}`))];
-  const statusText = isDraft
-    ? "Entwurf · vor Versand prüfen"
-    : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
+  const extraRows: { label: string; detail: string; missing?: boolean }[] = [
+    ...holeList.map((h) => ({ label: "Platzhalter", detail: h, missing: true })),
+    ...(draft.legal_basis ? [{ label: "Rechtsgrundlage", detail: draft.legal_basis }] : []),
+    ...(draft.deadline_hint ? [{ label: "Frist / Form", detail: draft.deadline_hint }] : []),
+  ];
+  const statusText = isDraft ? "Entwurf" : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
 
   return (
     <section className="fade-in">
       {/* Intro */}
-      <div className="wrap pt-10 pb-7">
-        <p className={`${kicker} flex items-center gap-2`}>
-          <TypeSquare color={color} />
-          <span>{title.split(" (")[0]}{basis && <span className="whitespace-nowrap"> · {basis}</span>}</span>
-        </p>
-        <h1 className={`${h1} mt-3 !text-[clamp(34px,4.4vw,56px)] !leading-[1.05]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
-        <p className={`${meta} mt-4`}>
-          {recipientName ? `An ${recipientName}` : ""}
-          {flow.aiSeconds !== null && flow.aiSeconds > 0 ? ` · in ${flow.aiSeconds} s entworfen` : ""}
-        </p>
-      </div>
+      <p className={kicker}>{title.split(" (")[0]}{basis ? ` · ${basis}` : ""}</p>
+      <h1 className={`${h1} !mb-[10px] !text-[clamp(32px,4.2vw,46px)]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
+      <p className={meta}>
+        {recipientOf(draft.recipient) ? `An ${recipientOf(draft.recipient)}` : ""}
+        {flow.aiSeconds !== null && flow.aiSeconds > 0 ? ` · in ${flow.aiSeconds} s entworfen` : ""}
+      </p>
 
-      {/* Status band: Entwurf (navy) → Freigegeben (green). */}
-      <div id="freigabe" className={`status-band on-dark scroll-mt-4 text-white ${isDraft ? "bg-[var(--navy)]" : "bg-[var(--green)]"}`}>
-        <div className="wrap flex flex-wrap items-center justify-between gap-x-8 gap-y-2 py-3">
-          <p role="status" className="font-sans text-[15px] font-bold">{statusText}</p>
-          {isDraft && asking ? (
-            <form onSubmit={approve} className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <label htmlFor="approver" className="font-sans text-[14px] text-[var(--navy-muted)]">Freigegeben von</label>
-              <input
-                id="approver"
-                className="min-h-11 w-52 border-0 border-b-2 border-white bg-transparent font-serif text-[18px] text-white focus:outline-none"
-                value={approver}
-                onChange={(e) => setApprover(e.target.value)}
-                autoComplete="name"
-                autoFocus
-                required
-              />
-              {open > 0 && <span className="font-sans text-[14px] font-bold text-[var(--yellow)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</span>}
-              <button type="submit" className={btnApprove} disabled={!approver.trim()}>Freigabe bestätigen</button>
-              <button type="button" className={linkOnDark} onClick={() => setAsking(false)}>Abbrechen</button>
-            </form>
-          ) : (
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
-              <button className={linkOnDark} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>{editing ? "Fertig" : "Bearbeiten"}</button>
-              <button className={linkOnDark} onClick={word} disabled={exporting}>{exporting ? "Word …" : "Word"}</button>
-              <button className={linkOnDark} onClick={printSheet}>PDF</button>
-              <button className={linkOnDark} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
-              {isDraft && <button className={`${btnApprove} ml-1`} onClick={() => setAsking(true)}>Freigeben</button>}
-            </div>
-          )}
+      {/* Status bar: no coloured band, just rules. */}
+      <div id="freigabe" className="mt-6 flex scroll-mt-4 flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-b border-t-[var(--ink)] border-b-[var(--rule)] py-3 font-sans">
+        <p role="status" className="text-[14px] font-bold">{statusText}</p>
+        {isDraft && asking ? (
+          <form onSubmit={approve} className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <label htmlFor="approver" className="text-[14px] text-[var(--grey)]">Freigegeben von</label>
+            <input
+              id="approver"
+              className="min-h-11 w-48 border-0 border-b border-[var(--ink)] bg-transparent font-serif text-[18px] focus:outline-none"
+              value={approver}
+              onChange={(e) => setApprover(e.target.value)}
+              autoComplete="name"
+              autoFocus
+              required
+            />
+            {open > 0 && <span className="text-[13px] font-bold text-[var(--urgent)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</span>}
+            <button type="submit" className={`${btnPrimary} min-h-[46px] px-[26px]`} disabled={!approver.trim()}>Freigabe bestätigen</button>
+            <button type="button" className={linkBtn} onClick={() => setAsking(false)}>Abbrechen</button>
+          </form>
+        ) : (
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+            <button className={linkBtn} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>{editing ? "Fertig" : "Bearbeiten"}</button>
+            <button className={linkBtn} onClick={word} disabled={exporting}>{exporting ? "Word …" : "Word"}</button>
+            <button className={linkBtn} onClick={printSheet}>PDF</button>
+            <button className={linkBtn} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
+            {isDraft && <button className={`${btnPrimary} min-h-[46px] px-[26px]`} onClick={() => setAsking(true)}>Freigeben</button>}
+          </div>
+        )}
+      </div>
+      {error && <p role="alert" className="mt-3 font-sans text-[14px] font-bold text-[var(--urgent)]">{error}</p>}
+
+      {/* The letter in a thin black box. */}
+      <article
+        className="relative mt-7 border border-[var(--ink)] p-[clamp(24px,5vw,52px)]"
+        aria-label="Schreiben"
+        onDoubleClick={() => !editing && setEditing(true)}
+      >
+        <div className="mb-[30px] text-center font-sans text-[14px]">
+          <p>{isDraft ? "Entwurf – vor Versand prüfen" : "Freigegeben"}</p>
+          <div aria-hidden className="mx-auto mt-[10px] h-[2px] w-16 bg-[var(--accent)]" />
         </div>
-      </div>
-      {error && <div className="wrap pt-4"><p role="alert" className="font-sans text-[15px] font-bold text-[var(--red)]">{error}</p></div>}
-
-      {/* Letter + margin notes */}
-      <div className="wrap flex flex-wrap items-start gap-x-16 gap-y-10 pt-9 pb-8">
-        <article
-          className="relative min-w-0 max-w-[680px] pt-7 text-[18px] leading-[1.65]"
-          style={{ flex: "999 1 560px", borderTop: `6px solid ${color}` }}
-          aria-label="Schreiben"
-          onDoubleClick={() => !editing && setEditing(true)}
-        >
-          <p className="border-b border-[var(--rule)] pb-1 font-sans text-[13px] text-[var(--grey)]">{senderLine}</p>
-          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:justify-between">
+        <div className="text-[17.5px] leading-[1.65]">
+          <p className="mb-[22px] border-b border-[var(--rule)] pb-2 font-sans text-[12px] text-[var(--grey)]">{senderLine}</p>
+          <div className="mb-7 flex flex-wrap justify-between gap-3">
             {editing ? (
               <textarea aria-label="Empfänger" rows={4} className={`${editField} sm:max-w-[60%]`} value={draft.recipient} onChange={set("recipient")} />
             ) : (
               <p className="whitespace-pre-line"><Highlighted text={draft.recipient} /></p>
             )}
-            <p className="shrink-0 whitespace-nowrap sm:pt-[4.95em] sm:text-right">{dateLine(letterDate)}</p>
+            <p className="self-end whitespace-nowrap">{dateLine(letterDate)}</p>
           </div>
-          <div className="mt-7 font-bold">
+          <div className="mb-5 font-bold">
             {editing ? (
               <textarea aria-label="Betreff" rows={2} className={`${editField} font-bold`} value={draft.subject} onChange={set("subject")} />
             ) : (
               <p className="whitespace-pre-line"><Highlighted text={draft.subject} /></p>
             )}
           </div>
-          <div className="mt-6">
+          <div className="mb-[14px]">
             {editing ? (
               <input aria-label="Anrede" className={editField} value={draft.salutation} onChange={set("salutation")} />
             ) : (
               <p>{draft.salutation}</p>
             )}
           </div>
-          <div className="mt-3">
-            {editing ? (
-              <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
-            ) : (
-              paragraphs(draft.body).map((p, i) => (
-                <p key={i} className="mt-4 whitespace-pre-line first:mt-0"><Highlighted text={p} /></p>
-              ))
-            )}
-          </div>
-          <div className="mt-6">
+          {editing ? (
+            <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
+          ) : (
+            paragraphs(draft.body).map((p, i) => (
+              <p key={i} className="mb-[14px] whitespace-pre-line"><Highlighted text={p} /></p>
+            ))
+          )}
+          <div className="mt-7">
             {editing ? (
               <input aria-label="Gruß" className={editField} value={draft.closing} onChange={set("closing")} />
             ) : (
               <p>{draft.closing}</p>
             )}
-            <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
+            <p className="whitespace-pre-line">{signature.join("\n")}</p>
           </div>
-          {!isDraft && (
-            <div ref={stampRef} className="stamp absolute top-[55%] right-[4%] border-[3px] border-[var(--green)] bg-white/75 px-[18px] pt-[10px] pb-2 text-center text-[var(--green)]" aria-hidden>
-              <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
-              <p className="mt-1 font-sans text-[13px] font-bold">{approvalTime(approval.at)} · {approval.by}</p>
-            </div>
-          )}
-        </article>
+        </div>
+        {!isDraft && (
+          <div ref={stampRef} role="img" aria-label={`Freigegeben am ${approvalTime(approval.at)} von ${approval.by}`} className="stamp absolute top-[52%] right-[8%] border-[3px] border-[var(--urgent)] bg-white/70 px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]">
+            <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
+            <p className="mt-[6px] font-sans text-[12px] font-bold whitespace-nowrap uppercase">{stampLine(approval.at, approval.by)}</p>
+          </div>
+        )}
+      </article>
 
-        {/* Margin notes: the Prüfliste per letter type, open placeholders, legal basis. */}
-        <aside className="min-w-0 pt-[22px]" style={{ flex: "1 1 260px", borderTop: "6px solid var(--navy)" }} aria-label="Randnotizen">
-          <p className={`${kicker} text-[var(--navy)]`}>Randnotizen · {done} von {checks.length} erfüllt</p>
-          <ul className="mt-2">
-            {checks.map((c, i) => (
-              <Note key={c.label} i={i} ok={c.ok} label={c.label} detail={c.ok ? c.note : c.note && c.label === "Unverzüglich" ? c.note : "fehlt"} />
+      {/* Prüfliste, collapsed by default. */}
+      <section className="mt-12 border-t-2 border-[var(--ink)]" aria-label="Prüfliste">
+        <button
+          onClick={() => setChecksOpen((v) => !v)}
+          aria-expanded={checksOpen}
+          className="flex min-h-[52px] w-full items-center justify-between gap-4 border-b border-[var(--rule)] text-left font-sans text-[13px] font-extrabold tracking-[.04em] uppercase"
+        >
+          <span>Prüfliste · {done} von {checks.length} erfüllt</span>
+          <span className="font-semibold tracking-normal text-[var(--accent)] normal-case">{checksOpen ? "Ausblenden" : "Anzeigen"}</span>
+        </button>
+        {checksOpen && (
+          <ul>
+            {[...checks.map((c) => ({ label: c.label, detail: c.ok ? c.note ?? "" : c.note && c.label === "Unverzüglich" ? c.note : "fehlt", missing: !c.ok })), ...extraRows].map((r, i) => (
+              <li key={`${r.label}-${i}`} className="row-in flex items-baseline justify-between gap-4 border-b border-[var(--rule)] py-[11px]" style={{ animationDelay: `${i * 50}ms` }}>
+                <span className={`text-[18px] ${r.missing ? "text-[var(--urgent)]" : ""}`}>{r.label}</span>
+                <span className="max-w-[62%] text-right text-[16px] text-[var(--grey)]">{r.detail}</span>
+              </li>
             ))}
-            {holeList.map((h, i) => (
-              <Note key={h} i={checks.length + i} ok={false} label="Platzhalter" detail={`${h} – bitte ergänzen („Bearbeiten“)`} />
-            ))}
-            {draft.legal_basis && <Note i={checks.length + holeList.length} label="§ Rechtsgrundlage" detail={draft.legal_basis} />}
-            {draft.deadline_hint && <Note i={checks.length + holeList.length + 1} label="Versand" detail={draft.deadline_hint} />}
           </ul>
-          {!isDraft && (
-            <p className="mt-4 text-[16px] italic text-[var(--grey)]">Gespeichert unter „Fristen & Verlauf“ (nur in diesem Browser). Wenn Sie den Text ändern, wird das Schreiben wieder zum Entwurf.</p>
-          )}
-          {isDraft && <p className="mt-4 text-[16px] italic text-[var(--grey)]">Word und PDF tragen das Wasserzeichen „ENTWURF“, bis Sie freigeben. PDF: im Druckdialog „Als PDF speichern“.</p>}
-        </aside>
-      </div>
+        )}
+      </section>
 
-      {letterType === "behinderung" && <CostBand facts={facts} />}
+      {letterType === "behinderung" && <CostSection facts={facts} />}
 
-      <div className="wrap flex flex-wrap gap-x-6 pt-6 pb-4">
+      <div className="mt-10 flex flex-wrap gap-x-6">
         <button className={linkBtn} onClick={onBack}>Zurück zu den Angaben</button>
         <button className={linkBtn} onClick={onRestart}>Neue Situation</button>
       </div>
@@ -334,14 +332,21 @@ function legalShort(basis: string) {
   return m ? m[0].replace(/\s+/g, " ") : "";
 }
 
-function Note({ i, ok, label, detail }: { i: number; ok?: boolean; label: string; detail?: string }) {
-  const mark = ok === undefined ? "" : ok ? "✓ " : "✗ ";
-  return (
-    <li className="note-in border-b border-[var(--rule)] py-2.5" style={{ animationDelay: `${i * 60}ms` }}>
-      <p className={`font-sans text-[14px] font-bold ${ok === false ? "text-[var(--red)]" : "text-[var(--ink)]"}`}>{mark}{label}</p>
-      {detail && <p className="text-[16px] leading-snug italic text-[var(--grey)]">{detail}</p>}
-    </li>
-  );
+/** Addressee for the metadata line: the „z. Hd.“ person if given, else the first address line. */
+function recipientOf(recipient: string) {
+  const lines = recipient.split("\n").map((l) => l.trim()).filter(Boolean);
+  const attn = lines.find((l) => /^z\.\s*Hd\.?/i.test(l));
+  return (attn ? attn.replace(/^z\.\s*Hd\.?\s*/i, "").replace(/^(Herrn|Herr)\s/, "Herr ") : lines[0] ?? "").split(",")[0];
+}
+
+/** „21.11.2026 · 16:12 · T. Berger“ for the stamp. */
+function stampLine(iso: string, by: string) {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const time = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  const parts = by.trim().split(/\s+/);
+  const name = parts.length > 1 ? `${parts[0][0]}. ${parts.slice(1).join(" ")}` : by;
+  return `${day} · ${time} · ${name}`;
 }
 
 /** Animated euro amount (0.9 s ease-out count-up; instant under reduced motion). */
@@ -372,7 +377,7 @@ function CountUp({ value }: { value: number }) {
 }
 
 /** Standstill cost estimate (Behinderung only). Pure arithmetic; unknown values stay empty. Never in the letter. */
-function CostBand({ facts }: { facts: Record<string, unknown> }) {
+function CostSection({ facts }: { facts: Record<string, unknown> }) {
   const [workers, setWorkers] = useState(numberFact(facts.arbeitskraefte_ohne_produktive_arbeit));
   const [hours, setHours] = useState(String(project.kosten.arbeitsstunden_pro_tag));
   const [rate, setRate] = useState(String(project.kosten.verrechnungssatz_eur_h));
@@ -382,26 +387,24 @@ function CostBand({ facts }: { facts: Record<string, unknown> }) {
   const total = perDay * n(days);
   const ok = Number.isFinite(perDay) && perDay >= 0;
   const amount = Number.isFinite(total) ? total : perDay;
-  const num = "w-[52px] border-0 border-b border-[var(--ink)] bg-transparent text-center font-serif text-[19px] font-bold focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none";
-  const input = (id: string, label: string, value: string, setter: (v: string) => void) => (
-    <input id={id} aria-label={label} type="number" inputMode="decimal" min="0" className={num} value={value} onChange={(e) => setter(e.target.value)} />
+  const num = "min-h-10 border-0 border-b border-[var(--ink)] bg-transparent text-center font-serif text-[19px] font-bold focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none";
+  const input = (id: string, label: string, value: string, setter: (v: string) => void, w: string) => (
+    <input id={id} aria-label={label} type="number" inputMode="decimal" min="0" className={`${num} ${w}`} value={value} onChange={(e) => setter(e.target.value)} />
   );
   return (
-    <div className="border-y border-[var(--ink)] bg-[var(--yellow)]">
-      <div className="wrap flex flex-wrap items-baseline gap-x-6 gap-y-2 py-[22px]" aria-live="polite">
-        <p className={kicker}>{Number.isFinite(total) ? "Stillstand bisher" : "Stillstand pro Tag"}</p>
-        <p className="font-serif text-[44px] leading-none font-bold tracking-[-.035em] whitespace-nowrap">
-          {ok ? <CountUp value={amount} /> : "– €"}
-        </p>
-        <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[18px]">
-          {input("cost-workers", "Arbeitskräfte", workers, setWorkers)} Leute ×
-          {input("cost-hours", "Stunden pro Tag", hours, setHours)} Std. ×
-          {input("cost-rate", "Euro pro Stunde", rate, setRate)} €/Std. ×
-          {input("cost-days", "Tage", days, setDays)} {n(days) === 1 ? "Tag" : "Tage"}
-        </p>
-        <p className="w-full font-sans text-[14px]">Schätzung zur internen Information. Nur Personal. Geräte und Baustellengemeinkosten kommen hinzu.</p>
-      </div>
-    </div>
+    <section className="mt-12 border-t-2 border-[var(--ink)] pt-[10px]" aria-labelledby="h-kosten" aria-live="polite">
+      <h2 id="h-kosten" className="font-sans text-[13px] font-extrabold tracking-[.04em] uppercase">Stillstand</h2>
+      <p className="mt-3 mb-[6px] font-serif text-[clamp(56px,8vw,88px)] leading-[1.05] font-bold tracking-[-.03em] whitespace-nowrap">
+        {ok ? <CountUp value={amount} /> : "– €"}
+      </p>
+      <p className="text-[19px] leading-[2.1]">
+        {input("cost-workers", "Arbeitskräfte", workers, setWorkers, "w-[52px]")} Leute ×{" "}
+        {input("cost-hours", "Stunden pro Tag", hours, setHours, "w-[44px]")} Std. ×{" "}
+        {input("cost-rate", "Euro pro Stunde", rate, setRate, "w-[52px]")} €/Std. ×{" "}
+        {input("cost-days", "Tage", days, setDays, "w-[40px]")} {n(days) === 1 ? "Tag" : "Tage"}
+      </p>
+      <p className="mt-2 font-sans text-[13px] text-[var(--grey)]">Nur Personal. Geräte und Baustellengemeinkosten kommen hinzu.</p>
+    </section>
   );
 }
 

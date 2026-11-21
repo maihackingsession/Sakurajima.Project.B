@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type Props = { label: string; steps?: string[] };
 
-/** Full-bleed navy loader band with the crane. Shown instead of the content while the app waits for the AI. */
+/** Loader band (white, hairlines) with the crane. Shown instead of the content while the app waits for the AI. */
 export default function CraneLoader({ label, steps = [] }: Props) {
   const [step, setStep] = useState(0);
   useEffect(() => {

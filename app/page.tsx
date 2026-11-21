@@ -10,6 +10,8 @@ import VerlaufTab from "./components/VerlaufTab";
 
 export default function Home() {
   const [tab, setTab] = useState<Tab>("situation");
+  // Start screen uses the big nameplate; every other screen the smaller one.
+  const [onStart, setOnStart] = useState(true);
   const letterFlow = useRef<LetterFlowHandle>(null);
   // Text handed over from the router; the key remounts the target tab with it.
   const [incoming, setIncoming] = useState<{ tab: Tab; text: string; id: number } | null>(null);
@@ -33,12 +35,12 @@ export default function Home() {
 
   return (
     <>
-      <Header tab={tab} onTab={go} />
+      <Header tab={tab} onTab={go} compact={tab !== "situation" || !onStart} />
 
-      <main className="w-full flex-1 pb-10">
+      <main className="mx-auto box-border w-full max-w-[720px] px-6 pt-10 pb-14 min-[600px]:pt-12">
         {/* Tabs stay mounted (hidden) so switching does not lose input. */}
         <div hidden={tab !== "situation"}>
-          <LetterFlow ref={letterFlow} onRedirect={redirect} onTab={go} />
+          <LetterFlow ref={letterFlow} onRedirect={redirect} onTab={go} onStartScreen={setOnStart} />
         </div>
         <div hidden={tab !== "bericht"}>
           <DeviationTab key={handed("bericht")?.id ?? "bericht"} initialText={handed("bericht")?.text} onDraft={draftFromDeviation} />
@@ -49,11 +51,11 @@ export default function Home() {
         <div hidden={tab !== "zusammenfassen"}>
           <SummaryTab key={handed("zusammenfassen")?.id ?? "zusammenfassen"} initialText={handed("zusammenfassen")?.text} />
         </div>
-      </main>
 
-      <footer className="wrap border-t border-[var(--rule)] py-5">
-        <p className="font-sans text-[13px] text-[var(--grey)]">Es wird nichts automatisch versendet.</p>
-      </footer>
+        <footer className="mt-12 border-t border-[var(--ink)] pt-3 text-center font-sans text-[13px] text-[var(--grey)]">
+          Es wird nichts automatisch versendet.
+        </footer>
+      </main>
     </>
   );
 }

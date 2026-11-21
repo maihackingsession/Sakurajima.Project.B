@@ -123,7 +123,7 @@ async function run() {
       if (only && !only.includes(name)) return;
       // Let fade/slide-in animations finish (loader shots stay quick).
       await sleep(name.includes("laden") ? 250 : 900);
-      // Design checks: no horizontal scroll, no text under 13 px, no rounded corners / shadows (except .dot).
+      // Design checks: no horizontal scroll, no text under 12 px (Zeitung kickers are 12 px), no rounded corners / shadows (except .dot).
       const issues = await js(`(() => {
         const out = [];
         if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push("horizontal scroll " + document.documentElement.scrollWidth + "px");
@@ -131,7 +131,7 @@ async function run() {
           if (el.closest(".print-sheet, svg") || !el.offsetParent) continue;
           const cs = getComputedStyle(el);
           const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-          if (own && parseFloat(cs.fontSize) < 13) out.push("text " + cs.fontSize + ": " + el.textContent.trim().slice(0, 30));
+          if (own && parseFloat(cs.fontSize) < 12) out.push("text " + cs.fontSize + ": " + el.textContent.trim().slice(0, 30));
           if (!el.classList.contains("dot") && cs.borderRadius !== "0px") out.push("radius " + el.tagName);
           if (cs.boxShadow !== "none") out.push("shadow " + el.tagName);
         }
@@ -191,7 +191,7 @@ async function run() {
       if (await js(`!!document.querySelector("input[id=q0]")`)) await js(`__type("input[id=q0]", document.querySelector("input[id=q0]").placeholder.replace(/^z. B. /, ""))`);
       await js(`__click("Schreiben erstellen")`);
       t = Date.now();
-      await waitFor("Randnotizen");
+      await waitFor("Prüfliste");
       timings.push(["Schreiben erstellen → Entwurf", Date.now() - t]);
       await js(`window.scrollTo(0, 0)`);
       await shot("06-entwurf");
@@ -225,7 +225,7 @@ async function run() {
       await sleep(150);
       await shot("13-verlauf-loeschen");
       await js(`__click("Ja, löschen")`);
-      await waitFor(live ? "Noch keine freigegebenen" : "zwei Beispiele");
+      await waitFor(live ? "Noch keine freigegebenen" : "Beispiele aus der Demo");
       await shot("14-verlauf-leer");
     });
     if (live) continue;

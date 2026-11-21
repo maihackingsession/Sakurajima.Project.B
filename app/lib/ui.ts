@@ -1,30 +1,25 @@
-// Shared class strings for the „Zeitung, mutiger“ design (tokens in globals.css).
-// Square corners, hairlines, serif headlines, sans labels. Touch targets ≥ 44 px, text ≥ 13 px.
-import type { LetterType } from "@/lib/types";
+// Shared class strings for the „Zeitung“ design (tokens in globals.css).
+// One centered 720px column, hairlines, square corners. Touch targets ≥ 44 px.
 
-export const kicker = "font-sans text-[13px] font-extrabold uppercase tracking-[.06em]";
-export const meta = "font-sans text-[13px] font-semibold uppercase tracking-[.04em] text-[var(--grey)]";
-export const h1 = "font-serif text-[clamp(44px,6.4vw,84px)] font-bold leading-none tracking-[-.03em] max-w-[900px] [text-wrap:balance]";
-export const itemHead = "font-serif text-[26px] font-semibold leading-[1.2]";
-/** Section start: 2px ink line above a kicker. */
-export const section = "border-t-2 border-[var(--ink)] pt-3";
+export const kicker = "font-sans text-[12px] font-bold uppercase tracking-[.06em] text-[var(--accent)]";
+export const kickerUrgent = kicker.replace("text-[var(--accent)]", "text-[var(--urgent)]");
+export const meta = "font-sans text-[12px] font-semibold uppercase tracking-[.04em] text-[var(--grey)]";
+export const h1 = "mt-2 mb-5 font-serif text-[clamp(34px,4.4vw,48px)] font-bold leading-[1.08] tracking-[-.015em] [text-wrap:balance]";
+/** Section label with a 2px ink line above. */
+export const sectionLabel = "border-t-2 border-[var(--ink)] pt-[10px] font-sans text-[13px] font-extrabold uppercase tracking-[.04em]";
+export const listHead = "font-serif text-[21px] font-semibold leading-[1.25]";
+export const listHeadFirst = "font-serif text-[24px] font-semibold leading-[1.2]";
 
 export const btnPrimary =
-  "inline-flex min-h-[52px] items-center justify-center gap-2 bg-[var(--navy)] px-8 font-sans text-[16px] font-bold text-white hover:bg-[#15294a] disabled:cursor-not-allowed disabled:opacity-50";
-export const btnApprove =
-  "inline-flex min-h-[48px] items-center justify-center bg-[var(--yellow)] px-7 font-sans text-[16px] font-extrabold text-[var(--ink)] hover:bg-[#ffc81f] disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex min-h-12 items-center justify-center border border-[var(--ink)] bg-[var(--ink)] px-7 font-sans text-[15px] font-bold text-white hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:border-[var(--line)] disabled:bg-white disabled:text-[var(--muted)]";
+export const btnOutline =
+  "inline-flex min-h-[46px] items-center justify-center border border-[var(--ink)] bg-white px-5 font-sans text-[15px] font-bold text-[var(--ink)] disabled:cursor-not-allowed disabled:text-[var(--muted)]";
 /** Small actions: underlined text links. */
 export const linkBtn =
-  "inline-flex min-h-11 items-center font-sans text-[15px] font-semibold text-[var(--ink)] underline underline-offset-[3px] decoration-1 hover:decoration-2 disabled:cursor-not-allowed disabled:opacity-50";
-export const linkOnDark = linkBtn.replace("text-[var(--ink)]", "text-white");
-export const greyLink = linkBtn.replace("text-[15px] font-semibold text-[var(--ink)]", "text-[14px] font-medium text-[var(--grey)]");
-
-export const TYPE_COLOR: Record<LetterType, string> = {
-  behinderung: "var(--red)",
-  mehrkosten: "var(--yellow)",
-  bedenken: "var(--navy)",
-  maengel: "var(--green)",
-};
+  "inline-flex min-h-11 items-center font-sans text-[14px] text-[var(--ink)] underline underline-offset-[3px] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:text-[var(--muted)]";
+export const greyLink = linkBtn.replace("text-[var(--ink)]", "text-[var(--grey)]");
+/** „● Sprechen“ text button with the red record dot. */
+export const recBtn = "inline-flex min-h-11 items-center gap-2 whitespace-nowrap font-sans text-[14px] font-bold text-[var(--ink)]";
 
 /** Short type name without „(an Nachunternehmer)“. */
 export function shortType(label: string) {

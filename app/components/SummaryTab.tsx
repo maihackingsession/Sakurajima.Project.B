@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { SummaryResult } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, greyLink, h1, kicker } from "../lib/ui";
+import { btnPrimary, greyLink, h1, kicker, sectionLabel } from "../lib/ui";
 import CraneLoader, { atLeast } from "./CraneLoader";
 import { ErrorBox } from "./Status";
 
@@ -12,8 +12,8 @@ const STEPS = ["Lese die Einträge", "Finde offene Punkte", "Schreibe die Zusamm
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border-t-2 border-[var(--ink)] pt-3">
-      <h2 className={kicker}>{title}</h2>
+    <div>
+      <h2 className={sectionLabel}>{title}</h2>
       <div className="mt-1">{children}</div>
     </div>
   );
@@ -55,20 +55,20 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
 
   return (
     <div className="fade-in">
-      <section className="wrap pt-16 pb-10">
-        <p className={`${kicker} text-[var(--navy)]`}>Protokoll · Bautagebuch · E-Mails</p>
-        <h1 className={`${h1} mt-3 mb-8`}>Zusammenfassen</h1>
-        <div className="max-w-[760px]">
+      <section>
+        <p className={kicker}>Protokoll · Bautagebuch · E-Mails</p>
+        <h1 className={h1}>Zusammenfassen</h1>
+        <div>
           <textarea
             id="docs"
             aria-label="Text zum Zusammenfassen"
-            className={`line-field overflow-y-auto font-serif text-[18px] leading-[1.6] ${result ? "min-h-28 max-h-40" : "min-h-56 max-h-[45vh]"}`}
-            placeholder="Text hier einfügen – mehrere Einträge oder E-Mails sind möglich …"
+            className={`line-field overflow-y-auto ${result ? "min-h-28 max-h-40" : "min-h-40 max-h-[45vh]"}`}
+            placeholder="Text hier einfügen …"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <button className={btnPrimary} onClick={summarise} disabled={!text.trim()}>Zusammenfassen</button>
+            {text.trim() && <button className={`${btnPrimary} open-in`} onClick={summarise}>Zusammenfassen</button>}
             <button className={greyLink} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
             <button className={greyLink} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
           </div>
@@ -77,14 +77,14 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
       </section>
 
       {result && (
-        <section className="wrap fade-in flex max-w-[1180px] flex-col gap-10 pb-10">
-          <div className="flex max-w-[860px] flex-col gap-10">
+        <section className="fade-in mt-14">
+          <div className="flex flex-col gap-12">
             {result.deadlines.length > 0 && (
               <Section title="Fristen und Termine">
                 <ul>
                   {result.deadlines.map((d, i) => (
                     <li key={i} className={`${row} flex flex-col gap-x-6 sm:flex-row sm:items-baseline`}>
-                      <span className="shrink-0 font-serif text-[20px] font-bold whitespace-nowrap text-[var(--red)] sm:w-36">{d.date}</span>
+                      <span className="shrink-0 font-serif text-[20px] font-bold whitespace-nowrap text-[var(--urgent)] sm:w-36">{d.date}</span>
                       <span>{d.what}</span>
                     </li>
                   ))}

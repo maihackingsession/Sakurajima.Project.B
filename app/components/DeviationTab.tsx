@@ -8,9 +8,9 @@ import type { DraftSource } from "./LetterFlow";
 import { errorText, postJson } from "../lib/api";
 import { euro, numberFact } from "../lib/checks";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, greyLink, h1, itemHead, kicker, meta, shortType } from "../lib/ui";
+import { btnPrimary, greyLink, h1, kicker, kickerUrgent, listHead, meta, shortType } from "../lib/ui";
 import CraneLoader, { atLeast } from "./CraneLoader";
-import { ErrorBox, TypeSquare } from "./Status";
+import { ErrorBox } from "./Status";
 
 type Props = {
   initialText?: string;
@@ -75,130 +75,93 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
 
   return (
     <div className="fade-in">
-      {result && notices.map((d, i) => (
-        <NoticeBand key={i} d={d} onDraft={() => onDraft(draftText(d), d.suggested_letter as LetterType, { facts: d.facts, eventDate: d.event_date, report: text })} />
-      ))}
-
       {!result || showReport ? (
-        <section className="wrap pt-14 pb-10">
-          <p className={`${kicker} text-[var(--navy)]`}>Abgleich mit dem Bauzeitenplan</p>
-          <h1 className={`${h1} mt-3 mb-8`}>Tagesbericht prüfen</h1>
-          <div className="max-w-[760px]">
-            <textarea
-              id="report"
-              aria-label="Bautagesbericht"
-              className="line-field max-h-[45vh] min-h-56 overflow-y-auto font-serif text-[18px] leading-[1.6]"
-              placeholder="Bautagesbericht hier einfügen …"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-              <button className={btnPrimary} onClick={check} disabled={!text.trim()}>Bericht prüfen</button>
-              <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>
-            </div>
-            {error && <div className="mt-6"><ErrorBox message={error} onRetry={check} /></div>}
+        <section>
+          <p className={kicker}>Abgleich mit dem Bauzeitenplan</p>
+          <h1 className={h1}>Tagesbericht prüfen</h1>
+          <textarea
+            id="report"
+            aria-label="Bautagesbericht"
+            className="line-field max-h-[45vh] min-h-[120px] overflow-y-auto"
+            placeholder="Bautagesbericht hier einfügen …"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+            {text.trim() && <button className={`${btnPrimary} open-in`} onClick={check}>Bericht prüfen</button>}
+            <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>
           </div>
+          {error && <div className="mt-8"><ErrorBox message={error} onRetry={check} /></div>}
         </section>
       ) : (
-        <section className="wrap pt-6">
-          <p className="flex flex-wrap items-center gap-x-4">
-            <span className={meta}>{reportTitle} · mit dem Bauzeitenplan abgeglichen</span>
-            <button className={greyLink} onClick={() => setShowReport(true)}>Bericht anzeigen</button>
-          </p>
-        </section>
+        <p className="flex flex-wrap items-center gap-x-4">
+          <span className={meta}>{reportTitle} · abgeglichen</span>
+          <button className={greyLink} onClick={() => setShowReport(true)}>Bericht anzeigen</button>
+        </p>
       )}
 
       {result && (
-        <section className="wrap pt-6 pb-12">
+        <div className={showReport ? "mt-14" : "mt-5"}>
+          {notices.map((d, i) => (
+            <Notice key={i} d={d} onDraft={() => onDraft(draftText(d), d.suggested_letter as LetterType, { facts: d.facts, eventDate: d.event_date, report: text })} />
+          ))}
           {deviations.length === 0 && (
-            <div className="border-t-2 border-[var(--ink)] pt-3">
-              <p className={`${kicker} text-[var(--green)]`}>Keine Abweichung</p>
-              <p className={`${itemHead} mt-2`}>Keine Abweichung vom Bauzeitenplan gefunden.</p>
-            </div>
+            <article className="border-t-2 border-[var(--ink)] pt-3">
+              <p className={kicker}>Keine Abweichung</p>
+              <p className={`${listHead} mt-1`}>Keine Abweichung vom Bauzeitenplan gefunden.</p>
+            </article>
           )}
-          {others.length > 0 && (
-            <div className="border-t-2 border-[var(--ink)] pt-3">
-              {others.map((d, i) => (
-                <article key={i} className="border-b border-[var(--rule)] py-4">
-                  <p className={`${kicker} flex items-center gap-2 text-[var(--navy)]`}>
-                    <TypeSquare color="var(--navy)" size={10} /> Im Blick · keine Anzeige nötig
-                  </p>
-                  <h3 className={`${itemHead} mt-1`}>{d.activity}</h3>
-                  <p className="mt-1">{d.actual}</p>
-                  {d.explanation && <p className="mt-1 italic text-[var(--grey)]">{d.explanation}</p>}
-                </article>
-              ))}
-            </div>
-          )}
-          {result.summary && <p className="mt-6 max-w-[760px] italic text-[var(--grey)]">{result.summary}</p>}
-        </section>
+          {others.map((d, i) => (
+            <article key={i} className="fade-in mt-7 border-t-2 border-[var(--ink)] pt-3" style={{ animationDelay: "150ms" }}>
+              <p className={kicker}>Im Blick</p>
+              <p className={`${listHead} mt-1`}>{d.activity}</p>
+            </article>
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
-/** A deviation that needs a letter: full-bleed red band, crew blocks, key facts, the main button. */
-function NoticeBand({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
+/** A deviation that needs a letter: urgent kicker, headline, key facts, the main button. */
+function Notice({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
   const u = urgency(d.event_date);
   const type = shortType(LETTER_LABELS[d.suggested_letter as LetterType]);
   const status = d.actual.split(/[:.]/)[0].trim();
   const headline = status && status.length < 60 ? `${d.activity}: ${status}` : d.activity;
   const idle = numberFact(d.facts?.arbeitskraefte_ohne_produktive_arbeit);
-  const moved = numberFact(d.facts?.arbeitskraefte_umgesetzt);
+  const planned = numberFact(d.facts?.arbeitskraefte_geplant);
   const perDay = idle ? Number(idle) * project.kosten.arbeitsstunden_pro_tag * project.kosten.verrechnungssatz_eur_h : NaN;
   const ursache = typeof d.facts?.ursache === "string" ? d.facts.ursache : d.reason;
   const gefaehrdet = typeof d.facts?.auswirkung === "string" ? d.facts.auswirkung : "";
-  const rows: [string, string][] = [
-    ["Ursache", ursache],
-    ["Gefährdet", gefaehrdet],
-    ["Pro Tag", Number.isFinite(perDay) ? `${euro(perDay)} Personal (Schätzung)` : ""],
-  ].filter(([, v]) => v) as [string, string][];
-  const crew = idle || moved ? [...Array(Number(idle || 0)).fill("idle"), ...Array(Number(moved || 0)).fill("moved")] : [];
-  const crewText = [idle && `${idle} ohne Arbeit`, moved && `${moved} umgesetzt`].filter(Boolean).join(" · ");
+  const rows: [string, string][] = (
+    [
+      ["Ursache", ursache],
+      ["Ohne Arbeit", idle ? (planned ? `${idle} von ${planned} Leuten` : `${idle} Leute`) : ""],
+      ["Gefährdet", gefaehrdet],
+    ] as [string, string][]
+  ).filter(([, v]) => v);
+  const when = u.late ? `seit ${u.days} Tagen – sofort anzeigen` : "heute anzeigen";
 
   return (
-    <article>
-      <div className="on-dark bg-[var(--red)] text-white">
-        <div className="wrap py-9">
-          <p className={kicker}>Abweichung · Bautagesbericht {d.event_date}</p>
-          <h2 className="mt-3 max-w-[900px] font-serif text-[clamp(31px,4.6vw,48px)] font-bold leading-[1.05] tracking-[-.02em] [text-wrap:balance]">{headline}</h2>
-          <p className="mt-3 font-sans text-[15px] font-bold">{type} empfohlen · {u.text}</p>
-        </div>
-      </div>
-      {/* Phones: the main button right under the band. */}
-      <div className="wrap pt-5 sm:hidden">
-        <button className={`${btnPrimary} w-full`} onClick={onDraft}>Anzeige entwerfen</button>
-      </div>
-      <div className="wrap flex flex-wrap items-end gap-x-14 gap-y-6 pt-7">
-        {crew.length > 0 && crew.length <= 24 && (
-          <div>
-            <div role="img" aria-label={crewText} className="flex gap-2">
-              {crew.map((k, i) => (
-                <span
-                  key={i}
-                  className={`pop block h-11 min-w-0 flex-1 sm:h-14 sm:w-10 sm:flex-none ${k === "idle" ? "bg-[var(--red)]" : "border-2 border-[var(--ink)]"}`}
-                  style={{ animationDelay: `${i * 80}ms` }}
-                />
-              ))}
-            </div>
-            <p className="mt-2 font-sans text-[14px] font-semibold">{crewText}</p>
+    <article className="fade-in mb-2">
+      <p className={kickerUrgent} title={type}>Abweichung · {when}</p>
+      <h2 className="mt-[6px] mb-[14px] font-serif text-[29px] leading-[1.1] font-bold tracking-[-.01em] min-[600px]:text-[30px]">{headline}</h2>
+      <dl className="border-t border-[var(--ink)]">
+        {rows.map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-3 border-b border-[var(--rule)] py-[10px]">
+            <dt className="shrink-0 font-sans text-[13px] text-[var(--grey)]">{k}</dt>
+            <dd className="text-right">{v}</dd>
+          </div>
+        ))}
+        {Number.isFinite(perDay) && (
+          <div className="flex items-baseline justify-between gap-3 border-b border-[var(--rule)] py-[10px]">
+            <dt className="font-sans text-[13px] text-[var(--grey)]">Pro Tag</dt>
+            <dd className="text-[24px] font-bold whitespace-nowrap">{euro(perDay)}</dd>
           </div>
         )}
-        {rows.length > 0 && (
-          <dl className="min-w-[280px] flex-1 border-t border-[var(--rule)]">
-            {rows.map(([k, v]) => (
-              <div key={k} className="flex items-baseline justify-between gap-6 border-b border-[var(--rule)] py-2">
-                <dt className="shrink-0 font-sans text-[14px] text-[var(--grey)]">{k}</dt>
-                <dd className="text-right text-[17px] leading-snug">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-      </div>
-      <div className="wrap pt-6">
-        <button className={`${btnPrimary} hidden sm:inline-flex`} onClick={onDraft}>Anzeige entwerfen</button>
-        {d.explanation && <p className="mt-3 max-w-[760px] text-[16px] italic text-[var(--grey)]">{d.explanation}</p>}
-      </div>
+      </dl>
+      <button className={`${btnPrimary} mt-[18px] min-h-[52px] w-full text-[16px] min-[600px]:w-auto`} onClick={onDraft}>Anzeige entwerfen</button>
     </article>
   );
 }
