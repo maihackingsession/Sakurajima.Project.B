@@ -15,7 +15,9 @@ function guess(text: string): Pick<RouterResult, "intent" | "letter_type"> & { o
   if (/mangel|mängel|riss|undicht|nacharbeit|beseitigung|falsch verlegt|nicht ordentlich|nicht bestanden|hinterfüllt|fehlerhaft/.test(t)) return { intent: "letter", letter_type: "maengel" };
   if (/bedenken|ungeeignet|nicht ausreichend|zu gering|zu wenig|passt nicht|nicht geeignet|zweifel/.test(t)) return { intent: "letter", letter_type: "bedenken" };
   if (/zusätzlich|mehrkosten|nachtrag|angeordnet|angewiesen|änderung|will jetzt|andere|nicht im lv/.test(t)) return { intent: "letter", letter_type: "mehrkosten" };
-  return { intent: "letter", letter_type: "behinderung" };
+  if (/fehl|wart|steh(?:t|en) still|stillstand|gesperrt|verzög|nicht geliefert|kann nicht|können nicht|behindert|nicht beginnen|nicht anfangen/.test(t)) return { intent: "letter", letter_type: "behinderung" };
+  // Everyday entries (deliveries done, work done, visitors): nothing to notify.
+  return { intent: "letter", letter_type: null, outcome: "keine_anzeige", reason: "Normaler Baufortschritt – keine Anzeige nötig." };
 }
 
 export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {

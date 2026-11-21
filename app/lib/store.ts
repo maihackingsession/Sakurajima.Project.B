@@ -1,0 +1,240 @@
+// All browser storage of Baufrist in ONE place: localStorage (photos: IndexedDB).
+// There is no database. To switch to one later, only this file changes.
+"use client";
+
+import { useSyncExternalStore } from "react";
+import type { LetterType } from "@/lib/types";
+
+const CHANGED = "baufrist:store";
+
+/** Reads a JSON value; blocked storage (private mode) gives the fallback. */
+export function readJSON<T>(key: string, fallback: T): T {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? (JSON.parse(v) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Writes a JSON value (null removes it) and tells every subscriber. */
+export function writeJSON(key: string, value: unknown) {
+  try {
+    if (value === null || (Array.isArray(value) && value.length === 0)) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Private mode / blocked storage: the app still works for this session view.
+  }
+  window.dispatchEvent(new CustomEvent(CHANGED, { detail: key }));
+}
+
+function subscribe(onChange: () => void) {
+  window.addEventListener(CHANGED, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(CHANGED, onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+/** A list in localStorage with a stable snapshot for useSyncExternalStore. */
+function collection<T>(key: string) {
+  const empty: T[] = [];
+  let raw: string | null | undefined;
+  let cached: T[] = empty;
+  const get = (): T[] => {
+    let now: string | null = null;
+    try {
+      now = localStorage.getItem(key);
+    } catch {
+      now = null;
+    }
+    if (now !== raw) {
+      raw = now;
+      try {
+        const parsed = now ? JSON.parse(now) : [];
+        cached = Array.isArray(parsed) ? parsed : empty;
+      } catch {
+        cached = empty;
+      }
+    }
+    return cached;
+  };
+  return {
+    key,
+    get,
+    set: (list: T[]) => writeJSON(key, list),
+    use: () => useSyncExternalStore(subscribe, get, () => empty),
+  };
+}
+
+// ---------- Dates (local time) ----------
+
+const pad = (n: number) => String(n).padStart(2, "0");
+/** „2026-11-21“ in local time. */
+export function isoDay(d = new Date()) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+/** „16:12“ in local time. */
+export function clock(d = new Date()) {
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+export function dayDate(day: string) {
+  const [y, m, d] = day.split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+export function shiftDay(day: string, days: number) {
+  const d = dayDate(day);
+  d.setDate(d.getDate() + days);
+  return isoDay(d);
+}
+
+// ---------- Entries and events (one source: Heute, Tagesberichte, Fristen & Verlauf) ----------
+
+export type EntryKind = "eintrag" | "notiz" | "anordnung" | "lieferung" | "behinderung" | "mangel" | "frist" | "zusammenfassung";
+export const KIND_LABEL: Record<EntryKind, string> = {
+  eintrag: "Eintrag",
+  notiz: "Notiz",
+  anordnung: "Anordnung",
+  lieferung: "Lieferung",
+  behinderung: "Behinderung",
+  mangel: "Mangel",
+  frist: "Frist",
+  zusammenfassung: "Zusammenfassung",
+};
+/** Kinds the user can pick for „Neues Ereignis“. */
+export const EVENT_KINDS: EntryKind[] = ["notiz", "anordnung", "lieferung", "behinderung", "mangel", "frist"];
+
+/** Background check by the existing router: is a notice needed? */
+export type EntryCheck =
+  | { status: "pending" }
+  | { status: "error" }
+  | { status: "done"; letterType: LetterType | null; reason: string; facts: Record<string, unknown> };
+
+export type Entry = {
+  id: string;
+  kind: EntryKind;
+  /** Day the entry belongs to (YYYY-MM-DD) and time (HH:MM). */
+  date: string;
+  time: string;
+  title?: string;
+  text: string;
+  /** Kind „Frist“: due day (YYYY-MM-DD). */
+  due?: string;
+  check?: EntryCheck;
+  /** Photo in IndexedDB (see savePhoto). */
+  photoId?: string;
+  /** Loaded with „Beispieldaten laden“. */
+  example?: boolean;
+};
+
+const entryStore = collection<Entry>("baufrist:eintraege");
+export const useEntries = entryStore.use;
+export const getEntries = entryStore.get;
+
+const byTime = (a: Entry, b: Entry) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`);
+
+export function entriesOfDay(list: Entry[], day: string) {
+  return list.filter((e) => e.date === day).sort(byTime);
+}
+
+export function addEntry(e: Omit<Entry, "id">): Entry {
+  const entry: Entry = { ...e, id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}` };
+  entryStore.set([...entryStore.get(), entry]);
+  unsign(entry.date);
+  return entry;
+}
+
+export function updateEntry(id: string, patch: Partial<Entry>) {
+  const old = entryStore.get().find((e) => e.id === id);
+  if (!old) return;
+  entryStore.set(entryStore.get().map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  // Content changes make the day's report a draft again (a background check does not).
+  if (patch.text !== undefined || patch.date !== undefined || patch.time !== undefined || patch.title !== undefined) {
+    unsign(old.date);
+    if (patch.date) unsign(patch.date);
+  }
+}
+
+export function removeEntry(id: string) {
+  const old = entryStore.get().find((e) => e.id === id);
+  entryStore.set(entryStore.get().filter((e) => e.id !== id));
+  if (old) unsign(old.date);
+}
+
+// ---------- Daily reports (Tagesberichte) ----------
+
+export const REPORT_FIELDS = [
+  ["personal", "Personal"],
+  ["geraete", "Geräte"],
+  ["arbeiten", "Ausgeführte Arbeiten"],
+  ["lieferungen", "Lieferungen"],
+  ["anordnungen", "Anordnungen & Besucher"],
+  ["behinderungen", "Behinderungen & Mängel"],
+  ["sonstiges", "Sonstiges"],
+] as const;
+export type ReportField = (typeof REPORT_FIELDS)[number][0];
+
+export type DailyReport = {
+  date: string;
+  fields: Partial<Record<ReportField, string>>;
+  createdAt: string;
+  signed?: { by: string; at: string };
+  /** Number of notices found by „Mit Bauzeitenplan prüfen“. */
+  notices?: number;
+  example?: boolean;
+};
+
+const reportStore = collection<DailyReport>("baufrist:berichte");
+export const useReports = reportStore.use;
+
+export function saveReport(r: DailyReport) {
+  reportStore.set([r, ...reportStore.get().filter((x) => x.date !== r.date)]);
+}
+
+export function updateReport(day: string, patch: Partial<DailyReport>) {
+  const old = reportStore.get().find((r) => r.date === day);
+  if (old) saveReport({ ...old, ...patch });
+}
+
+function unsign(day: string) {
+  const r = reportStore.get().find((x) => x.date === day);
+  if (r?.signed) saveReport({ ...r, signed: undefined });
+}
+
+// ---------- Weather per day ----------
+
+export type Weather = { text: string; source: "open-meteo" | "manuell" };
+const weatherKey = (day: string) => `baufrist:wetter:${day}`;
+export function getWeather(day: string): Weather | null {
+  return readJSON<Weather | null>(weatherKey(day), null);
+}
+export function setWeather(day: string, w: Weather) {
+  writeJSON(weatherKey(day), w);
+}
+export function useWeatherSnapshot(day: string) {
+  return useSyncExternalStore(
+    subscribe,
+    () => {
+      try {
+        return localStorage.getItem(weatherKey(day));
+      } catch {
+        return null;
+      }
+    },
+    () => null,
+  );
+}
+
+// ---------- Small settings ----------
+
+export const prefs = {
+  approver: (fallback: string) => readJSON("baufrist:freigeber", fallback),
+  setApprover: (name: string) => writeJSON("baufrist:freigeber", name),
+};
+
+// ---------- Approved letters (Fristen & Verlauf) ----------
+
+export function letterCollection<T>() {
+  return collection<T>("baufrist:verlauf");
+}

@@ -5,11 +5,11 @@ import project from "@/data/project.json";
 import { isBeispiel } from "../lib/api";
 import { Logo } from "./Status";
 
-export type Tab = "situation" | "bericht" | "verlauf" | "zusammenfassen";
+export type Tab = "heute" | "berichte" | "verlauf" | "zusammenfassen";
 
 const TABS: { id: Tab; label: string; short: string }[] = [
-  { id: "situation", label: "Neuer Eintrag", short: "Eintrag" },
-  { id: "bericht", label: "Tagesbericht", short: "Tagesbericht" },
+  { id: "heute", label: "Heute", short: "Heute" },
+  { id: "berichte", label: "Tagesberichte", short: "Berichte" },
   { id: "verlauf", label: "Fristen & Verlauf", short: "Fristen" },
   { id: "zusammenfassen", label: "Zusammenfassen", short: "Zusammenfassen" },
 ];

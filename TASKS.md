@@ -239,7 +239,7 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - [x] 1. Names: Herr Prof. Jagtap (AG), Yuzhi Shao (Bauleiter) everywhere
 - [x] 2. Rückfragen complete, „Weiß ich nicht“, no [Klammern]; „Angabe fehlt“ safety net
 - [x] 3. VoiceField in every text input
-- [ ] 4. „Heute“ start screen (save first, check in background)
+- [x] 4. „Heute“ start screen (save first, check in background)
 - [ ] 5. Tagesberichte (list, day view, /api/daily-report, plan check, PDF, Abzeichnen)
 - [ ] 6. Wetter via Open-Meteo (/api/weather), cached, manual fallback
 - [ ] 7. Fristen & Verlauf: „Neues Ereignis“, timeline by day, shared store

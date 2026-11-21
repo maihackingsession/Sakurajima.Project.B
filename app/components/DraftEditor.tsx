@@ -17,6 +17,7 @@ import {
   type Appendix,
 } from "../lib/export";
 import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
+import { prefs } from "../lib/store";
 import { btnPrimary, h1, issueTitle, kicker, linkBtn, meta } from "../lib/ui";
 import VoiceField from "./VoiceField";
 
@@ -30,22 +31,6 @@ export type FlowInfo = Appendix & { aiSeconds: number | null };
 export function approvalTime(iso: string) {
   const d = new Date(iso);
   return `${d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}, ${d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr`;
-}
-
-function remember(key: string, value: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Private mode / blocked storage: approval still works for this session.
-  }
-}
-function recall<T>(key: string, fallback: T): T {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? (JSON.parse(v) as T) : fallback;
-  } catch {
-    return fallback;
-  }
 }
 
 /** Prints the open draft (not a letter opened from the Verlauf; see globals.css). */
@@ -116,7 +101,7 @@ export default function DraftEditor(props: Props) {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [asking, setAsking] = useState(false);
-  const [approver, setApprover] = useState(() => recall("baufrist:freigeber", project.bauleiter.name));
+  const [approver, setApprover] = useState(() => prefs.approver(project.bauleiter.name));
 
   const isDraft = approval.status !== "freigegeben";
   const stampRef = useRef<HTMLDivElement>(null);
@@ -142,7 +127,7 @@ export default function DraftEditor(props: Props) {
     const at = new Date().toISOString();
     onChange({ ...draft, subject: stripDraftLines(draft.subject), body: stripDraftLines(draft.body) });
     onApprovalChange({ status: "freigegeben", by: name, at });
-    remember("baufrist:freigeber", name);
+    prefs.setApprover(name);
     // Fristen & Verlauf: only type, recipient, subject, approval, deadline and the letter text (this browser only).
     const body = stripDraftLines(draft.body);
     saveToVerlauf({

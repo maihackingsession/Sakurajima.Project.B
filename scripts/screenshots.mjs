@@ -229,14 +229,22 @@ async function run() {
       await shot("14-verlauf-leer");
     });
     if (live) continue;
-    await step("keine-anzeige", async () => {
+    await step("heute", async () => {
       await open();
       await js(`__write()`);
       await sleep(100);
-      await js(`__type("#situation", "Kran heute 2 Stunden ausgefallen, keine Auswirkung auf den Bauablauf, Puffer reicht.")`);
-      await js(`__click("Analysieren")`);
-      await waitFor("Trotzdem Entwurf erstellen");
-      await shot("08-keine-anzeige");
+      await js(`__type("#situation", "Beton für die Fundamente Achse A geliefert, 8 m³, eingebaut.")`);
+      await js(`__click("Speichern")`);
+      await waitFor("Im Tagesbericht gespeichert");
+      await js(`__write()`);
+      await sleep(100);
+      await js(`__type("#situation", "Bewehrung Bodenplatte kann nicht anfangen, Pläne vom Tragwerksplaner des AG fehlen seit heute früh. 4 von 6 Leuten ohne Arbeit.")`);
+      await js(`__click("Speichern")`);
+      await waitFor("empfohlen");
+      await shot("08-heute");
+      await js(`__click("Schreiben entwerfen")`);
+      await waitFor("Eine Angabe fehlt");
+      await shot("08-heute-rueckfrage");
     });
     await step("zusammenfassen", async () => {
       await open();
@@ -255,8 +263,8 @@ async function run() {
       await js(`__write()`);
       await sleep(100);
       await js(`__type("#situation", "Bewehrungspläne fehlen")`);
-      await js(`__click("Analysieren")`);
-      await waitFor("Erneut versuchen");
+      await js(`__click("Speichern")`);
+      await waitFor("Erneut prüfen");
       await shot("10-fehler");
     });
   }
