@@ -1,7 +1,0 @@
-{
-  "id": "s09",
-  "expected": "mehrkosten",
-  "messy": true,
-  "input": "zusätzlich noch leerrohre für ladesäulen in der bodenplatte, hat der elektroplaner vom bauherrn gestern so gesagt",
-  "error": "/api/route: API-Schlüssel ungültig."
-}

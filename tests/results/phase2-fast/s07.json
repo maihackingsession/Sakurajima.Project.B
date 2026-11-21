@@ -1,7 +1,0 @@
-{
-  "id": "s07",
-  "expected": "mehrkosten",
-  "messy": true,
-  "input": "AG will jetzt doch andere Fenster, größere Öffnungen in der Fassade Nord, Schalung muss geändert werden",
-  "error": "/api/route: API-Schlüssel ungültig."
-}

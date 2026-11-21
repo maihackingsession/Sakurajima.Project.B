@@ -21,7 +21,12 @@ const LABELS = {
   mehrkosten: "Mehrkostenanzeige",
   bedenken: "Bedenkenanzeige",
   maengel: "Mängelanzeige",
+  keine_anzeige: "Keine Anzeige nötig",
+  eigener_bereich: "Eigener Bereich – prüfen",
 };
+
+/** What the router detected: the outcome if it is not a notice, else the letter type. */
+export const detected = (r) => (r?.outcome && r.outcome !== "anzeige" ? r.outcome : r?.letter_type);
 
 async function post(route, body) {
   const started = Date.now();
@@ -65,14 +70,22 @@ async function main() {
     try {
       const router = await post("/api/route", { input: s.text });
       result.router = router.data;
-      const type = router.data.letter_type || s.expected;
+      result.ms = { router: router.ms };
+      // Router says "no notice" / "own area" and that was expected: the UI stops there (button "Trotzdem Entwurf erstellen").
+      if (detected(router.data) === s.expected && !LABELS[s.expected]?.includes("anzeige") && ["keine_anzeige", "eigener_bereich"].includes(s.expected)) {
+        console.log("ok");
+        await writeFile(path.join(outDir, `${s.id}.json`), JSON.stringify(result, null, 2));
+        rows.push(result);
+        continue;
+      }
+      const type = router.data.letter_type || (["behinderung", "mehrkosten", "bedenken", "maengel"].includes(s.expected) ? s.expected : "behinderung");
       const gaps = await post("/api/gaps", { letter_type: type, input: s.text, facts: router.data.facts });
       result.gaps = gaps.data;
       // Letter without answers: shows how the draft handles missing facts (placeholders + "missing").
       const letter = await post("/api/letter", { letter_type: type, input: s.text, facts: router.data.facts, answers: {} });
       result.letter = letter.data;
       result.ms = { router: router.ms, gaps: gaps.ms, letter: letter.ms };
-      console.log(router.data.letter_type === s.expected ? "ok" : `Typ ${router.data.letter_type} ≠ ${s.expected}`);
+      console.log(detected(router.data) === s.expected ? "ok" : `Typ ${detected(router.data)} ≠ ${s.expected}`);
     } catch (e) {
       result.error = e.message;
       console.log(`FEHLER: ${e.message}`);
@@ -81,7 +94,7 @@ async function main() {
     rows.push(result);
   }
 
-  const correct = rows.filter((r) => r.router?.letter_type === r.expected).length;
+  const correct = rows.filter((r) => detected(r.router) === r.expected).length;
   const asked = rows.filter((r) => r.gaps?.questions?.length > 0).length;
   const messy = rows.filter((r) => r.messy);
   const messyAsked = messy.filter((r) => r.gaps?.questions?.length > 0).length;
@@ -96,7 +109,7 @@ async function main() {
   md += `| ID | Situation | Erwartet | Erkannt | Rückfragen | Bewertung |\n|---|---|---|---|---|---|\n`;
   for (const r of rows) {
     const q = r.gaps?.questions?.map((x) => x.question).join("<br>") || "–";
-    md += `| ${r.id} | ${cell(r.input)} | ${LABELS[r.expected]} | ${r.error ? "FEHLER" : LABELS[r.router?.letter_type] ?? "–"} | ${cell(q)} |  |\n`;
+    md += `| ${r.id} | ${cell(r.input)} | ${LABELS[r.expected]} | ${r.error ? "FEHLER" : LABELS[detected(r.router)] ?? "–"} | ${cell(q)} |  |\n`;
   }
   md += `\n## Schreiben im Detail\n`;
   for (const r of rows) {
@@ -106,7 +119,8 @@ async function main() {
       md += `**Fehler:** ${r.error}\n`;
       continue;
     }
-    md += `**Erkannt:** ${LABELS[r.router.letter_type] ?? "–"} – ${r.router.reason}\n\n`;
+    md += `**Erkannt:** ${LABELS[detected(r.router)] ?? "–"} – ${r.router.reason}\n\n`;
+    if (!r.letter) continue;
     if (r.gaps.questions.length) md += `**Rückfragen:**\n${r.gaps.questions.map((x) => `- ${x.question}`).join("\n")}\n\n`;
     const l = r.letter;
     md += `**Betreff:** ${l.subject}\n\n**Empfänger:**\n\n${l.recipient.split("\n").map((x) => `> ${x}`).join("\n")}\n\n`;
