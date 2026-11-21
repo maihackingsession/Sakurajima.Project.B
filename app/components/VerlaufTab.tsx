@@ -1,126 +1,118 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { parseGermanDate } from "@/lib/dates";
 import { LETTER_LABELS } from "@/lib/types";
-import { isBeispiel } from "../lib/api";
 import { dateLine, exportDocx, paragraphs, senderLine, signature } from "../lib/export";
-import { btnBase, btnPrimary, btnSecondary, card, h1, h2, hint, linkBtn } from "../lib/ui";
-import {
-  DEADLINE_LABEL,
-  clearVerlauf,
-  countdown,
-  exampleEntries,
-  getVerlauf,
-  getVerlaufServer,
-  letterDateOf,
-  letterOf,
-  subscribeVerlauf,
-  type VerlaufEntry,
-} from "../lib/verlauf";
+import { h1, issueTitle, itemHead, kicker, linkBtn, linkOnDark, meta, shortType, TYPE_COLOR } from "../lib/ui";
+import { useVerlaufEntries, withDeadlines } from "../lib/useVerlauf";
+import { DEADLINE_LABEL, clearVerlauf, countdown, letterDateOf, letterOf, type VerlaufEntry } from "../lib/verlauf";
 import { approvalTime, PrintSheet } from "./DraftEditor";
+import { TypeSquare } from "./Status";
 
-const noop = () => () => {};
-const TONE = {
-  ok: "bg-[var(--success-bg)] text-[var(--success-text)] border-[var(--success-border)]",
-  soon: "bg-[var(--warning-bg)] text-[var(--warning-text)] border-[var(--warning-border)]",
-  late: "bg-[var(--error-bg)] text-[var(--error-text)] border-[var(--error-border)]",
-};
-
-const time = (d: string) => parseGermanDate(d)?.getTime() ?? 0;
 const firstLine = (s: string) => s.split("\n")[0].trim();
 
-function Countdown({ deadline }: { deadline: string }) {
+function Status({ deadline }: { deadline: string }) {
   const c = countdown(deadline);
   if (!c) return null;
-  return <span className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm font-bold ${TONE[c.tone]}`}>{c.text}</span>;
+  return <span className={`shrink-0 font-sans text-[13px] font-bold uppercase ${c.tone === "ok" ? "text-[var(--grey)]" : "text-[var(--red)]"}`}>{c.text}</span>;
+}
+
+function TypeKicker({ e }: { e: VerlaufEntry }) {
+  return (
+    <span className={`${kicker} flex items-center gap-2`}>
+      <TypeSquare color={TYPE_COLOR[e.type]} size={10} /> {shortType(LETTER_LABELS[e.type])}{e.example ? " · Beispiel" : ""}
+    </span>
+  );
 }
 
 export default function VerlaufTab() {
-  const saved = useSyncExternalStore(subscribeVerlauf, getVerlauf, getVerlaufServer);
-  const beispiel = useSyncExternalStore(noop, isBeispiel, () => false);
+  const { saved, showExamples, entries } = useVerlaufEntries();
   const [openId, setOpenId] = useState("");
   const [confirming, setConfirming] = useState(false);
 
-  const showExamples = saved.length === 0 && beispiel;
-  const entries = showExamples ? exampleEntries() : saved;
   const open = entries.find((e) => e.id === openId);
-  const upcoming = entries.filter((e) => e.deadline).sort((a, b) => time(a.deadline) - time(b.deadline));
+  const upcoming = withDeadlines(entries);
   const history = [...entries].sort((a, b) => b.approvedAt.localeCompare(a.approvedAt));
 
   if (open) return <SavedLetter entry={open} onBack={() => setOpenId("")} />;
 
+  const row = "flex w-full flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-[var(--rule)] py-4 text-left hover:bg-[#FAFAFA]";
+
   return (
-    <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
-      <div>
-        <h1 className={h1}>Fristen & Verlauf</h1>
-        <p className={`${hint} mt-1`}>Gespeichert nur in diesem Browser auf diesem Gerät – nichts wird an uns übertragen.</p>
-      </div>
+    <div className="fade-in">
+      <section className="wrap pt-16 pb-8">
+        <p className={`${kicker} text-[var(--navy)]`}>Freigegebene Schreiben</p>
+        <h1 className={`${h1} mt-3`}>Fristen & Verlauf</h1>
+        <p className="mt-5 max-w-[760px] italic text-[var(--grey)]">Gespeichert nur in diesem Browser auf diesem Gerät – nichts wird an uns übertragen.</p>
+      </section>
 
-      {entries.length === 0 && (
-        <div className={card}>
-          <p>Noch keine freigegebenen Schreiben – sobald Sie ein Schreiben freigeben, erscheint es hier mit seiner Frist.</p>
-        </div>
-      )}
-      {showExamples && (
-        <p className="rounded-xl border border-[var(--warning-border)] bg-[var(--warning-bg)] px-4 py-2 text-[15px] text-[var(--warning-text)]">
-          Noch nichts gespeichert. Zwei <strong>Beispiele</strong> aus der Demo-Geschichte:
-        </p>
-      )}
+      <section className="wrap flex flex-col gap-12 pb-10">
+        {entries.length === 0 && (
+          <div className="max-w-[760px] border-t-2 border-[var(--ink)] pt-3">
+            <p className={kicker}>Noch leer</p>
+            <p className={`${itemHead} mt-1`}>Noch keine freigegebenen Schreiben – sobald Sie ein Schreiben freigeben, erscheint es hier mit seiner Frist.</p>
+          </div>
+        )}
+        {showExamples && <p className={`${kicker} text-[var(--grey)]`}>Noch nichts gespeichert · zwei Beispiele aus der Demo-Geschichte</p>}
 
-      {upcoming.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h2 className={h2}>Anstehende Fristen</h2>
-          {upcoming.map((e) => (
-            <button key={e.id} onClick={() => setOpenId(e.id)} className={`${card} flex flex-col gap-1.5 py-4 text-left hover:border-[var(--ink)]`}>
-              <span className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-lg font-bold">{e.deadline}</span>
-                <Countdown deadline={e.deadline} />
-              </span>
-              <span className="font-semibold">{DEADLINE_LABEL[e.type]} · {LETTER_LABELS[e.type].split(" (")[0]}</span>
-              <span className="text-[15px] text-[var(--muted)]">An {firstLine(e.recipient)}</span>
-            </button>
-          ))}
-        </div>
-      )}
+        {upcoming.length > 0 && (
+          <div>
+            <h2 className={`${kicker} border-t-2 border-[var(--ink)] pt-3`}>Anstehende Fristen</h2>
+            <ul>
+              {upcoming.map((e) => (
+                <li key={e.id}>
+                  <button onClick={() => setOpenId(e.id)} className={row}>
+                    <span className="min-w-0">
+                      <TypeKicker e={e} />
+                      <span className={`${itemHead} mt-1 block`}>{issueTitle(e.subject, shortType(LETTER_LABELS[e.type]))}</span>
+                      <span className={`${meta} mt-1 block`}>{DEADLINE_LABEL[e.type]}: {e.deadline} · An {firstLine(e.recipient)}</span>
+                    </span>
+                    <Status deadline={e.deadline} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {history.length > 0 && (
-        <div className="mt-2 flex flex-col gap-2">
-          <h2 className={h2}>Freigegebene Schreiben</h2>
-          <ul className="overflow-hidden rounded-xl border border-[var(--border)] bg-white">
-            {history.map((e) => (
-              <li key={e.id} className="border-b border-[var(--border)] last:border-b-0">
-                <button onClick={() => setOpenId(e.id)} className="flex w-full flex-col gap-0.5 px-5 py-3 text-left hover:bg-[var(--surface)]">
-                  <span className="flex flex-wrap items-baseline justify-between gap-x-3">
-                    <span className="font-bold">{LETTER_LABELS[e.type].split(" (")[0]}{e.example ? " (Beispiel)" : ""}</span>
-                    <span className="text-sm text-[var(--muted)]">{approvalTime(e.approvedAt)}</span>
-                  </span>
-                  <span className="line-clamp-2 text-[15px]">{firstLine(e.subject)}</span>
-                  <span className="text-sm text-[var(--muted)]">An {firstLine(e.recipient)} · freigegeben von {e.approvedBy}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        {history.length > 0 && (
+          <div>
+            <h2 className={`${kicker} border-t-2 border-[var(--ink)] pt-3`}>Verlauf</h2>
+            <ul>
+              {history.map((e) => (
+                <li key={e.id}>
+                  <button onClick={() => setOpenId(e.id)} className={row}>
+                    <span className="min-w-0 flex-1">
+                      <TypeKicker e={e} />
+                      <span className="mt-1 block text-[19px] leading-snug">{firstLine(e.subject)}</span>
+                      <span className={`${meta} mt-1 block`}>An {firstLine(e.recipient)} · freigegeben von {e.approvedBy}</span>
+                    </span>
+                    <span className="shrink-0 font-sans text-[13px] font-semibold text-[var(--grey)]">{approvalTime(e.approvedAt)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {saved.length > 0 && (
-        <div className="mt-2">
-          {confirming ? (
-            <div role="group" aria-label="Verlauf löschen" className="flex flex-col gap-3 rounded-xl border border-[var(--error-border)] bg-[var(--error-bg)] p-4 sm:flex-row sm:items-center">
-              <p className="font-semibold text-[var(--error-text)] sm:flex-1">
-                {saved.length === 1 ? "Den gespeicherten Eintrag" : `Alle ${saved.length} Einträge`} aus diesem Browser löschen?
-              </p>
-              <button className={`${btnBase} border-2 border-[var(--error-text)] bg-white text-base text-[var(--error-text)] hover:bg-[var(--error-bg)]`} onClick={() => { clearVerlauf(); setConfirming(false); }}>Ja, löschen</button>
-              <button className={btnSecondary} onClick={() => setConfirming(false)} autoFocus>Abbrechen</button>
-            </div>
-          ) : (
-            <button className={linkBtn} onClick={() => setConfirming(true)}>Verlauf löschen</button>
-          )}
-        </div>
-      )}
-    </section>
+        {saved.length > 0 && (
+          <div>
+            {confirming ? (
+              <div role="group" aria-label="Verlauf löschen" className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t-2 border-[var(--red)] pt-3">
+                <p className="font-serif text-[19px] font-semibold text-[var(--red)]">
+                  {saved.length === 1 ? "Den gespeicherten Eintrag" : `Alle ${saved.length} Einträge`} aus diesem Browser löschen?
+                </p>
+                <button className={`${linkBtn} text-[var(--red)]`} onClick={() => { clearVerlauf(); setConfirming(false); }}>Ja, löschen</button>
+                <button className={linkBtn} onClick={() => setConfirming(false)} autoFocus>Abbrechen</button>
+              </div>
+            ) : (
+              <button className={linkBtn} onClick={() => setConfirming(true)}>Verlauf löschen</button>
+            )}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -156,42 +148,56 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-[860px] flex-col gap-4">
-      <div>
+    <div className="fade-in">
+      <section className="wrap pt-8 pb-9">
         <button className={linkBtn} onClick={onBack}>← Zurück zu Fristen & Verlauf</button>
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className={h1}>{title}{entry.example ? " (Beispiel)" : ""}</h1>
-        {entry.deadline && <Countdown deadline={entry.deadline} />}
-      </div>
-      <div className="grid grid-cols-2 gap-2 sm:flex">
-        <button className={btnPrimary} onClick={word}>Word</button>
-        <button className={btnSecondary} onClick={pdf}>PDF</button>
-      </div>
-      {error && <p role="alert" className="font-semibold text-[var(--error-text)]">{error}</p>}
+        <p className="mt-6"><TypeKicker e={entry} /></p>
+        <h1 className={`${h1} mt-3 !text-[clamp(40px,6vw,76px)]`}>{issueTitle(entry.subject, shortType(title))}</h1>
+        <p className={`${meta} mt-4 flex flex-wrap gap-x-4`}>
+          <span>An {firstLine(entry.recipient)}</span>
+          {entry.deadline && <span>{DEADLINE_LABEL[entry.type]}: {entry.deadline}</span>}
+          {entry.deadline && <Status deadline={entry.deadline} />}
+        </p>
+      </section>
 
-      <div className="overflow-hidden rounded-lg border border-[var(--border)] shadow-[0_1px_3px_rgba(26,26,26,0.08)]">
-        <div className="border-b border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2 text-center text-base font-bold text-[var(--success-text)]">
-          Freigegeben von {entry.approvedBy} am {approvalTime(entry.approvedAt)}
-        </div>
-        <article aria-label="Schreiben (nur lesen)" className="bg-white px-5 py-6 text-[16px] leading-relaxed text-[#111827] sm:px-12 sm:py-8">
-          <p className="border-b border-[var(--border)] pb-1 text-xs text-[var(--muted)]">{senderLine}</p>
-          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:justify-between">
-            <p className="whitespace-pre-line">{letter.recipient}</p>
-            <p className="shrink-0 sm:pt-[4.5em] sm:text-right">{dateLine(date)}</p>
+      <div className="on-dark bg-[var(--green)] text-white">
+        <div className="wrap flex flex-wrap items-center justify-between gap-x-8 gap-y-1 py-3">
+          <p className="font-sans text-[15px] font-bold">Freigegeben · {entry.approvedBy}, {approvalTime(entry.approvedAt)}</p>
+          <div className="flex gap-x-5">
+            <button className={linkOnDark} onClick={word}>Word</button>
+            <button className={linkOnDark} onClick={pdf}>PDF</button>
           </div>
-          <p className="mt-6 font-bold whitespace-pre-line">{letter.subject}</p>
-          <p className="mt-5">{letter.salutation}</p>
-          {paragraphs(letter.body).map((p, i) => (
-            <p key={i} className="mt-3 whitespace-pre-line">{p}</p>
-          ))}
-          <p className="mt-5">{letter.closing}</p>
-          <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
-        </article>
+        </div>
       </div>
-      <p className={hint}>Nur lesen. PDF: im Druckdialog „Als PDF speichern“ wählen.</p>
+      {error && <div className="wrap pt-4"><p role="alert" className="font-sans text-[15px] font-bold text-[var(--red)]">{error}</p></div>}
+
+      <div className="wrap pt-12 pb-6">
+        <article
+          aria-label="Schreiben (nur lesen)"
+          className="relative max-w-[680px] pt-7 text-[18px] leading-[1.65]"
+          style={{ borderTop: `6px solid ${TYPE_COLOR[entry.type]}` }}
+        >
+          <p className="border-b border-[var(--rule)] pb-1 font-sans text-[13px] text-[var(--grey)]">{senderLine}</p>
+          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:justify-between">
+            <p className="whitespace-pre-line">{letter.recipient}</p>
+            <p className="shrink-0 whitespace-nowrap sm:pt-[4.95em] sm:text-right">{dateLine(date)}</p>
+          </div>
+          <p className="mt-7 font-bold whitespace-pre-line">{letter.subject}</p>
+          <p className="mt-6">{letter.salutation}</p>
+          {paragraphs(letter.body).map((p, i) => (
+            <p key={i} className="mt-4 whitespace-pre-line">{p}</p>
+          ))}
+          <p className="mt-6">{letter.closing}</p>
+          <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
+          <div className="stamp absolute top-[55%] right-[4%] border-[3px] border-[var(--green)] bg-white/75 px-[18px] pt-[10px] pb-2 text-center text-[var(--green)]" aria-hidden>
+            <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
+            <p className="mt-1 font-sans text-[13px] font-bold">{approvalTime(entry.approvedAt)} · {entry.approvedBy}</p>
+          </div>
+        </article>
+        <p className="mt-6 italic text-[var(--grey)]">Nur lesen. PDF: im Druckdialog „Als PDF speichern“ wählen.</p>
+      </div>
 
       {createPortal(<PrintSheet draft={letter} isDraft={false} date={date} sheet="verlauf" />, document.body)}
-    </section>
+    </div>
   );
 }

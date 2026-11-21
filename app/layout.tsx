@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Libre_Franklin, Newsreader } from "next/font/google";
 import "./globals.css";
+
+// Self-hosted at build time: works without venue Wi-Fi.
+const serif = Newsreader({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], style: ["normal", "italic"], variable: "--font-newsreader" });
+const sans = Libre_Franklin({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-franklin" });
 
 export const metadata: Metadata = {
   title: "Baufrist – Bauleiter-Assistent",
@@ -10,15 +15,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffb000",
+  themeColor: "#1D3557",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de" className="h-full antialiased">
-      <body className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
-        {children}
-      </body>
+    <html lang="de" className={`${serif.variable} ${sans.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

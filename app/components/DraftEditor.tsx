@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import project from "@/data/project.json";
 import { LETTER_LABELS, type Letter, type LetterType } from "@/lib/types";
@@ -17,8 +17,8 @@ import {
   type Appendix,
 } from "../lib/export";
 import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
-import { btnPrimary, btnSecondary, card, field, h2, hint, label, linkBtn } from "../lib/ui";
-import Chip from "./Chip";
+import { btnApprove, h1, issueTitle, kicker, linkBtn, linkOnDark, meta, TYPE_COLOR } from "../lib/ui";
+import { TypeSquare } from "./Status";
 
 /** Review status of a draft. Only the user changes it. Approvals are remembered in this browser only. */
 export type Approval = { status: "entwurf" } | { status: "freigegeben"; by: string; at: string };
@@ -81,7 +81,7 @@ function Highlighted({ text }: { text: string }) {
     <>
       {parts.map((p, i) =>
         /^\[[^\]]+\]$/.test(p) ? (
-          <mark key={i} className="rounded bg-[#ffe3b3] px-1 text-[var(--warning-text)] ring-1 ring-[var(--warning-border)]">{p}</mark>
+          <mark key={i} className="bg-[#FCEFC0] px-0.5 text-[var(--ink)]">{p}</mark>
         ) : (
           <Fragment key={i}>{p}</Fragment>
         ),
@@ -121,7 +121,6 @@ export default function DraftEditor(props: Props) {
   const isDraft = approval.status !== "freigegeben";
   const checks = checklist(letterType, draft, facts, eventDate, !!flow.report);
   const open = checks.filter((c) => !c.ok).length;
-  const holes = placeholders(`${draft.recipient}\n${draft.subject}\n${draft.body}`).length;
   const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };
 
   const set = (key: EditKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -177,170 +176,143 @@ export default function DraftEditor(props: Props) {
     }
   }
 
-  const editField = "w-full resize-none rounded-md border border-dashed border-[var(--border)] bg-[#fffdf7] px-2 py-1 focus:border-[var(--ink)] focus:outline-none [field-sizing:content]";
+  const editField = "w-full resize-none border-0 border-b border-dashed border-[var(--grey)] bg-[#FFFDF3] px-1 py-0.5 focus:border-solid focus:border-[var(--ink)] focus:outline-none [field-sizing:content]";
+  const color = TYPE_COLOR[letterType];
+  const basis = legalShort(draft.legal_basis);
+  const recipientName = draft.recipient.split("\n")[0].trim();
+  const done = checks.filter((c) => c.ok).length;
+  const holeList = [...new Set(placeholders(`${draft.recipient}\n${draft.subject}\n${draft.body}`))];
+  const statusText = isDraft
+    ? "Entwurf · vor Versand prüfen"
+    : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_460px]">
-        {/* Left: the letter as a sheet of paper, with the status strip as its top edge. */}
-        <div className="flex min-w-0 flex-col gap-3">
-          <div className="-mt-2 flex flex-wrap items-center justify-between gap-x-3">
-            <h2 className="text-xl font-semibold text-[var(--ink)]">{title}</h2>
-            <a href="#freigabe" className={`${linkBtn} lg:hidden`}>{isDraft ? "Zur Freigabe ↓" : "Status & Export ↓"}</a>
-            <button className={`${linkBtn} shrink-0`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
-              {editing ? "Fertig" : "Text bearbeiten"}
-            </button>
-          </div>
-          <div className="overflow-hidden rounded-lg border border-[var(--border)] shadow-[0_1px_3px_rgba(26,26,26,0.08)]">
-          {isDraft ? (
-            <div className="border-b border-[var(--warning-border)] bg-[#ffe9a8] px-4 py-2 text-center text-base font-bold uppercase tracking-wide text-[#5a3d00]">
-              Entwurf – vor Versand prüfen
-            </div>
+    <section className="fade-in">
+      {/* Intro */}
+      <div className="wrap pt-14 pb-9">
+        <p className={`${kicker} flex items-center gap-2`}>
+          <TypeSquare color={color} />
+          {title.split(" (")[0]}{basis ? ` · ${basis}` : ""}
+        </p>
+        <h1 className={`${h1} mt-3 !text-[clamp(40px,6vw,76px)]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
+        <p className={`${meta} mt-4`}>
+          {recipientName ? `An ${recipientName}` : ""}
+          {flow.aiSeconds !== null && flow.aiSeconds > 0 ? ` · in ${flow.aiSeconds} s entworfen` : ""}
+        </p>
+      </div>
+
+      {/* Status band: Entwurf (navy) → Freigegeben (green). */}
+      <div id="freigabe" className={`status-band on-dark scroll-mt-4 text-white ${isDraft ? "bg-[var(--navy)]" : "bg-[var(--green)]"}`}>
+        <div className="wrap flex flex-wrap items-center justify-between gap-x-8 gap-y-2 py-3">
+          <p role="status" className="font-sans text-[15px] font-bold">{statusText}</p>
+          {isDraft && asking ? (
+            <form onSubmit={approve} className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <label htmlFor="approver" className="font-sans text-[14px] text-[var(--navy-muted)]">Freigegeben von</label>
+              <input
+                id="approver"
+                className="min-h-11 w-52 border-0 border-b-2 border-white bg-transparent font-serif text-[18px] text-white focus:outline-none"
+                value={approver}
+                onChange={(e) => setApprover(e.target.value)}
+                autoComplete="name"
+                autoFocus
+                required
+              />
+              {open > 0 && <span className="font-sans text-[14px] font-bold text-[var(--yellow)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</span>}
+              <button type="submit" className={btnApprove} disabled={!approver.trim()}>Freigabe bestätigen</button>
+              <button type="button" className={linkOnDark} onClick={() => setAsking(false)}>Abbrechen</button>
+            </form>
           ) : (
-            <div role="status" className="border-b border-[var(--success-border)] bg-[var(--success-bg)] px-4 py-2 text-center text-base font-bold text-[var(--success-text)]">
-              Freigegeben von {approval.by} am {approvalTime(approval.at)}
-            </div>
-          )}
-          <article
-            className="relative bg-white px-5 py-6 text-[16px] leading-relaxed text-[#111827] sm:px-12 sm:py-8 lg:text-[17px]"
-            aria-label="Schreiben"
-            onDoubleClick={() => !editing && setEditing(true)}
-          >
-            <p className="border-b border-[var(--border)] pb-1 text-xs text-[var(--muted)]">{senderLine}</p>
-            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:justify-between">
-              {editing ? (
-                <textarea aria-label="Empfänger" rows={4} className={`${editField} sm:max-w-[60%]`} value={draft.recipient} onChange={set("recipient")} />
-              ) : (
-                <p className="whitespace-pre-line"><Highlighted text={draft.recipient} /></p>
-              )}
-              <p className="shrink-0 sm:pt-[4.5em] sm:text-right">{dateLine(letterDate)}</p>
-            </div>
-            <div className="mt-6 font-bold">
-              {editing ? (
-                <textarea aria-label="Betreff" rows={2} className={`${editField} font-bold`} value={draft.subject} onChange={set("subject")} />
-              ) : (
-                <p className="whitespace-pre-line"><Highlighted text={draft.subject} /></p>
-              )}
-            </div>
-            <div className="mt-5">
-              {editing ? (
-                <input aria-label="Anrede" className={editField} value={draft.salutation} onChange={set("salutation")} />
-              ) : (
-                <p>{draft.salutation}</p>
-              )}
-            </div>
-            <div className="mt-3">
-              {editing ? (
-                <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
-              ) : (
-                paragraphs(draft.body).map((p, i) => (
-                  <p key={i} className="mt-3 whitespace-pre-line first:mt-0"><Highlighted text={p} /></p>
-                ))
-              )}
-            </div>
-            <div className="mt-5">
-              {editing ? (
-                <input aria-label="Gruß" className={editField} value={draft.closing} onChange={set("closing")} />
-              ) : (
-                <p>{draft.closing}</p>
-              )}
-              <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
-            </div>
-          </article>
-          </div>
-          {holes > 0 && (
-            <p className="text-sm font-semibold text-[var(--warning-text)]">
-              {holes === 1 ? "1 Platzhalter" : `${holes} Platzhalter`} [ … ] im Text – bitte ergänzen („Text bearbeiten“).
-            </p>
-          )}
-          {(draft.legal_basis || draft.deadline_hint) && (
-            <div className={`${card} bg-[var(--surface)] text-[15px]`}>
-              {draft.legal_basis && <p><span className="font-semibold">Rechtsgrundlage:</span> {draft.legal_basis}</p>}
-              {draft.deadline_hint && <p className="mt-1"><span className="font-semibold">Frist / Form:</span> {draft.deadline_hint}</p>}
-            </div>
-          )}
-          {draft.missing.length > 0 && (
-            <div className={`${card} text-[15px]`}>
-              <p className="font-semibold">Noch offen:</p>
-              <ul className="mt-1 list-disc pl-5">{draft.missing.map((m, i) => <li key={i}>{m}</li>)}</ul>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+              <button className={linkOnDark} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>{editing ? "Fertig" : "Bearbeiten"}</button>
+              <button className={linkOnDark} onClick={word} disabled={exporting}>{exporting ? "Word …" : "Word"}</button>
+              <button className={linkOnDark} onClick={printSheet}>PDF</button>
+              <button className={linkOnDark} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
+              {isDraft && <button className={`${btnApprove} ml-1`} onClick={() => setAsking(true)}>Freigeben</button>}
             </div>
           )}
         </div>
+      </div>
+      {error && <div className="wrap pt-4"><p role="alert" className="font-sans text-[15px] font-bold text-[var(--red)]">{error}</p></div>}
 
-        {/* Right: status, Prüfliste, cost, export. */}
-        <aside id="freigabe" className="flex scroll-mt-4 flex-col gap-4 lg:sticky lg:top-4">
-          <div className={`${card} py-4`}>
-            <div className="flex flex-wrap items-center gap-3">
-              <p className={h2}>Status</p>
-              <Chip kind={isDraft ? "entwurf" : "freigegeben"} />
-              {isDraft && !asking && (
-                <button className={`${btnPrimary} sm:ml-auto sm:w-auto sm:flex-1`} onClick={() => setAsking(true)}>Freigeben</button>
-              )}
+      {/* Letter + margin notes */}
+      <div className="wrap flex flex-wrap items-start gap-x-16 gap-y-10 pt-12 pb-8">
+        <article
+          className="relative min-w-0 max-w-[680px] pt-7 text-[18px] leading-[1.65]"
+          style={{ flex: "999 1 560px", borderTop: `6px solid ${color}` }}
+          aria-label="Schreiben"
+          onDoubleClick={() => !editing && setEditing(true)}
+        >
+          <p className="border-b border-[var(--rule)] pb-1 font-sans text-[13px] text-[var(--grey)]">{senderLine}</p>
+          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:justify-between">
+            {editing ? (
+              <textarea aria-label="Empfänger" rows={4} className={`${editField} sm:max-w-[60%]`} value={draft.recipient} onChange={set("recipient")} />
+            ) : (
+              <p className="whitespace-pre-line"><Highlighted text={draft.recipient} /></p>
+            )}
+            <p className="shrink-0 whitespace-nowrap sm:pt-[4.95em] sm:text-right">{dateLine(letterDate)}</p>
+          </div>
+          <div className="mt-7 font-bold">
+            {editing ? (
+              <textarea aria-label="Betreff" rows={2} className={`${editField} font-bold`} value={draft.subject} onChange={set("subject")} />
+            ) : (
+              <p className="whitespace-pre-line"><Highlighted text={draft.subject} /></p>
+            )}
+          </div>
+          <div className="mt-6">
+            {editing ? (
+              <input aria-label="Anrede" className={editField} value={draft.salutation} onChange={set("salutation")} />
+            ) : (
+              <p>{draft.salutation}</p>
+            )}
+          </div>
+          <div className="mt-3">
+            {editing ? (
+              <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
+            ) : (
+              paragraphs(draft.body).map((p, i) => (
+                <p key={i} className="mt-4 whitespace-pre-line first:mt-0"><Highlighted text={p} /></p>
+              ))
+            )}
+          </div>
+          <div className="mt-6">
+            {editing ? (
+              <input aria-label="Gruß" className={editField} value={draft.closing} onChange={set("closing")} />
+            ) : (
+              <p>{draft.closing}</p>
+            )}
+            <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
+          </div>
+          {!isDraft && (
+            <div className="stamp absolute top-[55%] right-[4%] border-[3px] border-[var(--green)] bg-white/75 px-[18px] pt-[10px] pb-2 text-center text-[var(--green)]" aria-hidden>
+              <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
+              <p className="mt-1 font-sans text-[13px] font-bold">{approvalTime(approval.at)} · {approval.by}</p>
             </div>
-            {isDraft && !asking && (
-              <div className="mt-2">
-                <p className="text-sm leading-snug text-[var(--muted)]">
-                  {open > 0 ? <span className="font-semibold text-[var(--warning-text)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste. </span> : null}
-                  Nur Sie geben frei. Es wird nichts automatisch versendet.
-                </p>
-              </div>
-            )}
-            {isDraft && asking && (
-              <form onSubmit={approve} className="mt-3 flex flex-col gap-2">
-                <label htmlFor="approver" className={label}>Freigegeben von</label>
-                <input id="approver" className={field} value={approver} onChange={(e) => setApprover(e.target.value)} autoComplete="name" autoFocus required />
-                {open > 0 && <p className="text-sm font-semibold text-[var(--warning-text)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</p>}
-                <div className="flex gap-2">
-                  <button type="submit" className={`${btnPrimary} flex-1`} disabled={!approver.trim()}>Freigabe bestätigen</button>
-                  <button type="button" className={`${btnSecondary} flex-1`} onClick={() => setAsking(false)}>Abbrechen</button>
-                </div>
-              </form>
-            )}
-            {!isDraft && (
-              <p className={`${hint} mt-3`}>Gespeichert unter „Fristen & Verlauf“ (nur in diesem Browser). Wenn Sie den Text ändern, wird das Schreiben wieder zum Entwurf.</p>
-            )}
-            {flow.aiSeconds !== null && flow.aiSeconds > 0 && (
-              <p className={`${hint} mt-2`}>Entwurf in {flow.aiSeconds} s erstellt</p>
-            )}
-          </div>
+          )}
+        </article>
 
-          <div className={`${card} py-4`}>
-            <p className={h2}>Prüfliste vor Versand</p>
-            <ul className="mt-1 grid gap-x-5 sm:grid-cols-2">
-              {checks.map((c) => (
-                <li key={c.label} className={`flex items-baseline justify-between gap-2 border-b border-[var(--border)] py-1.5 text-[15px] leading-snug ${c.label === "Unverzüglich" && !c.ok ? "sm:col-span-2" : ""}`}>
-                  <span>{c.label}</span>
-                  {c.ok ? (
-                    <span className="shrink-0 font-semibold text-[var(--success-text)]">✓ {c.note && c.label === "Unverzüglich" ? c.note : ""}</span>
-                  ) : (
-                    <span className="shrink-0 text-right font-semibold text-[var(--accent-strong)]">{c.note && c.label === "Unverzüglich" ? c.note : "fehlt"}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {letterType === "behinderung" && <CostCard facts={facts} />}
-
-          <div className={card}>
-            <p className={h2}>Export</p>
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-3">
-              <button className={`${isDraft ? btnSecondary : btnPrimary} sm:w-full`} onClick={word} disabled={exporting}>
-                {exporting ? "…" : "Word"}
-              </button>
-              <button className={`${btnSecondary} sm:w-full`} onClick={printSheet}>PDF</button>
-              <button className={`${btnSecondary} sm:w-full`} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
-            </div>
-            <p className={`${hint} mt-2`}>
-              {isDraft ? "Word und PDF tragen das Wasserzeichen „ENTWURF“, bis Sie freigeben. " : ""}
-              Mit Anlage „Dokumentation“. PDF: im Druckdialog „Als PDF speichern“ wählen.
-            </p>
-            {error && <p role="alert" className="mt-2 font-semibold text-[var(--error-text)]">{error}</p>}
-          </div>
+        {/* Margin notes: the Prüfliste per letter type, open placeholders, legal basis. */}
+        <aside className="min-w-0 pt-[22px]" style={{ flex: "1 1 260px", borderTop: "6px solid var(--navy)" }} aria-label="Randnotizen">
+          <p className={`${kicker} text-[var(--navy)]`}>Randnotizen · {done} von {checks.length} erfüllt</p>
+          <ul className="mt-2">
+            {checks.map((c, i) => (
+              <Note key={c.label} i={i} ok={c.ok} label={c.label} detail={c.ok ? c.note : c.note && c.label === "Unverzüglich" ? c.note : "fehlt"} />
+            ))}
+            {holeList.map((h, i) => (
+              <Note key={h} i={checks.length + i} ok={false} label="Platzhalter" detail={`${h} – bitte ergänzen („Bearbeiten“)`} />
+            ))}
+            {draft.legal_basis && <Note i={checks.length + holeList.length} label="§ Rechtsgrundlage" detail={draft.legal_basis} />}
+            {draft.deadline_hint && <Note i={checks.length + holeList.length + 1} label="Versand" detail={draft.deadline_hint} />}
+          </ul>
+          {!isDraft && (
+            <p className="mt-4 text-[16px] italic text-[var(--grey)]">Gespeichert unter „Fristen & Verlauf“ (nur in diesem Browser). Wenn Sie den Text ändern, wird das Schreiben wieder zum Entwurf.</p>
+          )}
+          {isDraft && <p className="mt-4 text-[16px] italic text-[var(--grey)]">Word und PDF tragen das Wasserzeichen „ENTWURF“, bis Sie freigeben. PDF: im Druckdialog „Als PDF speichern“.</p>}
         </aside>
       </div>
 
-      <div className="flex flex-wrap gap-x-6">
+      {letterType === "behinderung" && <CostBand facts={facts} />}
+
+      <div className="wrap flex flex-wrap gap-x-6 pt-6 pb-4">
         <button className={linkBtn} onClick={onBack}>Zurück zu den Angaben</button>
         <button className={linkBtn} onClick={onRestart}>Neue Situation</button>
       </div>
@@ -351,8 +323,51 @@ export default function DraftEditor(props: Props) {
   );
 }
 
-/** Standstill cost estimate. Pure arithmetic; unknown values stay empty instead of being guessed. */
-function CostCard({ facts }: { facts: Record<string, unknown> }) {
+/** „§ 6 Abs. 1 VOB/B“ from the legal basis, if it cites the VOB/B. */
+function legalShort(basis: string) {
+  const m = /§\s*\d+(?:\s*Abs\.\s*\d+)?\s*VOB\/B/.exec(basis);
+  return m ? m[0].replace(/\s+/g, " ") : "";
+}
+
+function Note({ i, ok, label, detail }: { i: number; ok?: boolean; label: string; detail?: string }) {
+  const mark = ok === undefined ? "" : ok ? "✓ " : "✗ ";
+  return (
+    <li className="note-in border-b border-[var(--rule)] py-2.5" style={{ animationDelay: `${i * 60}ms` }}>
+      <p className={`font-sans text-[14px] font-bold ${ok === false ? "text-[var(--red)]" : "text-[var(--ink)]"}`}>{mark}{label}</p>
+      {detail && <p className="text-[16px] leading-snug italic text-[var(--grey)]">{detail}</p>}
+    </li>
+  );
+}
+
+/** Animated euro amount (0.9 s ease-out count-up; instant under reduced motion). */
+function CountUp({ value }: { value: number }) {
+  const [shown, setShown] = useState(0);
+  const from = useRef(0);
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const start = from.current;
+    if (reduce || start === value) {
+      from.current = value;
+      const t = setTimeout(() => setShown(value), 0);
+      return () => clearTimeout(t);
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / 900);
+      const v = start + (value - start) * (1 - Math.pow(1 - p, 3));
+      setShown(v);
+      from.current = v;
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <>{euro(Math.round(shown))}</>;
+}
+
+/** Standstill cost estimate (Behinderung only). Pure arithmetic; unknown values stay empty. Never in the letter. */
+function CostBand({ facts }: { facts: Record<string, unknown> }) {
   const [workers, setWorkers] = useState(numberFact(facts.arbeitskraefte_ohne_produktive_arbeit));
   const [hours, setHours] = useState(String(project.kosten.arbeitsstunden_pro_tag));
   const [rate, setRate] = useState(String(project.kosten.verrechnungssatz_eur_h));
@@ -361,51 +376,26 @@ function CostCard({ facts }: { facts: Record<string, unknown> }) {
   const perDay = n(workers) * n(hours) * n(rate);
   const total = perDay * n(days);
   const ok = Number.isFinite(perDay) && perDay >= 0;
-  const inputs: [string, string, string, (v: string) => void, string][] = [
-    ["cost-workers", "Arbeitskräfte", workers, setWorkers, "1"],
-    ["cost-hours", "Std. pro Tag", hours, setHours, "0.5"],
-    ["cost-rate", "€ pro Std.", rate, setRate, "1"],
-    ["cost-days", "Tage", days, setDays, "1"],
-  ];
+  const amount = Number.isFinite(total) ? total : perDay;
+  const num = "w-[52px] border-0 border-b border-[var(--ink)] bg-transparent text-center font-serif text-[19px] font-bold focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none";
+  const input = (id: string, label: string, value: string, setter: (v: string) => void) => (
+    <input id={id} aria-label={label} type="number" inputMode="decimal" min="0" className={num} value={value} onChange={(e) => setter(e.target.value)} />
+  );
   return (
-    <div className={`${card} py-4`}>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <p className={h2}>Was kostet der Stillstand?</p>
-        <p className="text-sm font-semibold text-[var(--muted)]">Schätzung – zur internen Information</p>
+    <div className="border-y border-[var(--ink)] bg-[var(--yellow)]">
+      <div className="wrap flex flex-wrap items-baseline gap-x-6 gap-y-2 py-[22px]" aria-live="polite">
+        <p className={kicker}>{Number.isFinite(total) ? "Stillstand bisher" : "Stillstand pro Tag"}</p>
+        <p className="font-serif text-[44px] leading-none font-bold tracking-[-.035em] whitespace-nowrap">
+          {ok ? <CountUp value={amount} /> : "– €"}
+        </p>
+        <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[18px]">
+          {input("cost-workers", "Arbeitskräfte", workers, setWorkers)} Leute ×
+          {input("cost-hours", "Stunden pro Tag", hours, setHours)} Std. ×
+          {input("cost-rate", "Euro pro Stunde", rate, setRate)} €/Std. ×
+          {input("cost-days", "Tage", days, setDays)} {n(days) === 1 ? "Tag" : "Tage"}
+        </p>
+        <p className="w-full font-sans text-[14px]">Schätzung zur internen Information. Nur Personal. Geräte und Baustellengemeinkosten kommen hinzu.</p>
       </div>
-      <div className="mt-2 rounded-lg bg-[var(--surface)] px-3 py-2" aria-live="polite">
-        {ok ? (
-          <>
-            <p className="flex flex-wrap items-baseline gap-x-2 text-[var(--ink)]">
-              <span className="text-[26px] leading-tight font-bold">{euro(Number.isFinite(total) ? total : perDay)}</span>
-              <span className="font-semibold">{Number.isFinite(total) ? `bisher ${days} ${n(days) === 1 ? "Tag" : "Tage"}` : "pro Tag"}</span>
-            </p>
-            <p className="text-sm text-[var(--muted)]">
-              {workers} Arbeitskräfte × {hours} h × {rate} €/h = {euro(perDay)} pro Tag
-            </p>
-          </>
-        ) : (
-          <p className="font-semibold text-[var(--muted)]">Bitte fehlende Werte eintragen.</p>
-        )}
-      </div>
-      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
-        {inputs.map(([id, text, value, setter, step]) => (
-          <div key={id} className="flex flex-col justify-end">
-            <label htmlFor={id} className="mb-1 text-sm font-semibold leading-tight text-[var(--ink)]">{text}</label>
-            <input
-              id={id}
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step={step}
-              className={`${field} px-3 py-2 text-lg font-semibold`}
-              value={value}
-              onChange={(e) => setter(e.target.value)}
-            />
-          </div>
-        ))}
-      </div>
-      <p className="mt-2 text-sm text-[var(--muted)]">Nur Personal. Geräte (z. B. Kran) und Baustellengemeinkosten kommen hinzu.</p>
     </div>
   );
 }

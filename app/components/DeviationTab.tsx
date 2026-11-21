@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import project from "@/data/project.json";
 import { urgency } from "@/lib/dates";
 import { LETTER_LABELS, type Deviation, type DeviationResult, type LetterType } from "@/lib/types";
 import type { DraftSource } from "./LetterFlow";
 import { errorText, postJson } from "../lib/api";
+import { euro, numberFact } from "../lib/checks";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, btnSecondary, card, field, h1, h2, hint, linkBtn } from "../lib/ui";
-import Chip from "./Chip";
-import { ErrorBox, Loading } from "./Status";
+import { btnPrimary, greyLink, h1, itemHead, kicker, meta, shortType } from "../lib/ui";
+import CraneLoader, { atLeast } from "./CraneLoader";
+import { ErrorBox, TypeSquare } from "./Status";
 
 type Props = {
   initialText?: string;
@@ -19,6 +21,8 @@ type Props = {
 function draftText(d: Deviation) {
   return [`${d.activity}: ${d.actual}`, `Geplant laut Bauzeitenplan: ${d.planned}`, d.explanation].filter(Boolean).join("\n");
 }
+
+const STEPS = ["Lese den Bericht", "Vergleiche mit dem Bauzeitenplan", "Bewerte Abweichungen"];
 
 export default function DeviationTab({ initialText = "", onDraft }: Props) {
   const [text, setText] = useState(initialText);
@@ -48,8 +52,9 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
     setError("");
     setResult(null);
     try {
-      setResult(await postJson<DeviationResult>("/api/deviation", { input: text }));
+      setResult(await atLeast(900, postJson<DeviationResult>("/api/deviation", { input: text })));
       setShowReport(false);
+      window.scrollTo({ top: 0 });
     } catch (e) {
       setError(errorText(e));
     } finally {
@@ -62,97 +67,134 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
   const deviations = [...(result?.deviations ?? [])].sort(
     (a, b) => Number(!a.suggested_letter) - Number(!b.suggested_letter) || rank[a.severity] - rank[b.severity],
   );
-  const hasNotice = deviations.some((d) => d.suggested_letter);
+  const notices = deviations.filter((d) => d.suggested_letter);
+  const others = deviations.filter((d) => !d.suggested_letter);
+  const reportTitle = text.split("\n").find((l) => l.trim())?.trim() || "Bericht";
+
+  if (busy) return <CraneLoader label="Tagesbericht wird geprüft" steps={STEPS} />;
 
   return (
-    <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
-      <label htmlFor="report" className={h1}>Tagesbericht prüfen</label>
-      {showReport ? (
-        <p className="-mt-2 text-[var(--muted)]">Bautagesbericht einfügen – Baufrist gleicht ihn mit dem Bauzeitenplan ab und erkennt, wann eine Anzeige nötig ist.</p>
+    <div className="fade-in">
+      {result && notices.map((d, i) => (
+        <NoticeBand key={i} d={d} onDraft={() => onDraft(draftText(d), d.suggested_letter as LetterType, { facts: d.facts, eventDate: d.event_date, report: text })} />
+      ))}
+
+      {!result || showReport ? (
+        <section className="wrap pt-14 pb-10">
+          <p className={`${kicker} text-[var(--navy)]`}>Abgleich mit dem Bauzeitenplan</p>
+          <h1 className={`${h1} mt-3 mb-8`}>Tagesbericht prüfen</h1>
+          <div className="max-w-[760px]">
+            <textarea
+              id="report"
+              aria-label="Bautagesbericht"
+              className="line-field min-h-56 font-serif text-[18px] leading-[1.6]"
+              placeholder="Bautagesbericht hier einfügen …"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+              <button className={btnPrimary} onClick={check} disabled={!text.trim()}>Bericht prüfen</button>
+              <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>
+            </div>
+            {error && <div className="mt-6"><ErrorBox message={error} onRetry={check} /></div>}
+          </div>
+        </section>
       ) : (
-        <div className="-mt-2 flex flex-wrap items-center gap-x-4">
-          <p className="text-[var(--muted)]">{text.split("\n").find((l) => l.trim())?.trim() || "Bericht"} – mit dem Bauzeitenplan abgeglichen.</p>
-          <button className={linkBtn} onClick={() => setShowReport(true)}>Bericht anzeigen</button>
-        </div>
+        <section className="wrap pt-6">
+          <p className="flex flex-wrap items-center gap-x-4">
+            <span className={meta}>{reportTitle} · mit dem Bauzeitenplan abgeglichen</span>
+            <button className={greyLink} onClick={() => setShowReport(true)}>Bericht anzeigen</button>
+          </p>
+        </section>
       )}
-      {!text.trim() && !result && (
-        <div className={`${card} flex flex-col items-start gap-1 bg-[var(--surface)] sm:flex-row sm:items-center sm:justify-between`}>
-          <p>Noch kein Bericht eingefügt.</p>
-          <button className={linkBtn} onClick={loadExample}>Beispiel laden</button>
-        </div>
-      )}
-      {showReport && (<>
-      <textarea
-        id="report"
-        className={`${field} min-h-64 font-mono text-[15px]`}
-        placeholder="Bautagesbericht hier einfügen …"
-        value={text}
-        disabled={busy}
-        onChange={(e) => setText(e.target.value)}
-      />
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <button className={result && hasNotice ? btnSecondary : btnPrimary} onClick={check} disabled={busy || !text.trim()}>
-          Bericht prüfen
-        </button>
-        {text.trim() && <button className={linkBtn} onClick={loadExample} disabled={busy}>Anderes Beispiel laden</button>}
-      </div>
-      </>)}
-      {busy && <Loading text="Tagesbericht wird geprüft …" />}
-      {error && <ErrorBox message={error} onRetry={check} />}
 
       {result && (
-        <div className="flex flex-col gap-4">
+        <section className="wrap pt-6 pb-12">
           {deviations.length === 0 && (
-            <div className={`${card} bg-[var(--surface)]`}>
-              <Chip kind="keine" />
-              <p className={`${h2} mt-2`}>Keine Abweichung vom Bauzeitenplan gefunden.</p>
-              {result.summary && <p className="mt-1 text-[var(--muted)]">{result.summary}</p>}
+            <div className="border-t-2 border-[var(--ink)] pt-3">
+              <p className={`${kicker} text-[var(--green)]`}>Keine Abweichung</p>
+              <p className={`${itemHead} mt-2`}>Keine Abweichung vom Bauzeitenplan gefunden.</p>
             </div>
           )}
-          {deviations.map((d, i) =>
-            d.suggested_letter ? (
-              <NoticeCard key={i} d={d} onDraft={() => onDraft(draftText(d), d.suggested_letter as LetterType, { facts: d.facts, eventDate: d.event_date, report: text })} />
-            ) : (
-              <article key={i} className={card}>
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className={`${h2} min-w-0 break-words`}>{d.activity}</h3>
-                  <Chip kind="keine" />
-                </div>
-                <p className="mt-1">{d.actual}</p>
-                {d.explanation && <p className={`${hint} mt-1`}>{d.explanation}</p>}
-              </article>
-            ),
+          {others.length > 0 && (
+            <div className="border-t-2 border-[var(--ink)] pt-3">
+              {others.map((d, i) => (
+                <article key={i} className="border-b border-[var(--rule)] py-4">
+                  <p className={`${kicker} flex items-center gap-2 text-[var(--navy)]`}>
+                    <TypeSquare color="var(--navy)" size={10} /> Im Blick · keine Anzeige nötig
+                  </p>
+                  <h3 className={`${itemHead} mt-1`}>{d.activity}</h3>
+                  <p className="mt-1">{d.actual}</p>
+                  {d.explanation && <p className="mt-1 italic text-[var(--grey)]">{d.explanation}</p>}
+                </article>
+              ))}
+            </div>
           )}
-          {deviations.length > 0 && result.summary && <p className={hint}>{result.summary}</p>}
-        </div>
+          {result.summary && <p className="mt-6 max-w-[760px] italic text-[var(--grey)]">{result.summary}</p>}
+        </section>
       )}
-    </section>
+    </div>
   );
 }
 
-/** The most prominent element: a deviation that needs a formal notice. */
-function NoticeCard({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
+/** A deviation that needs a letter: full-bleed red band, crew blocks, key facts, the main button. */
+function NoticeBand({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
   const u = urgency(d.event_date);
-  const kind = LETTER_LABELS[d.suggested_letter as LetterType];
+  const type = shortType(LETTER_LABELS[d.suggested_letter as LetterType]);
+  const status = d.actual.split(/[:.]/)[0].trim();
+  const headline = status && status.length < 60 ? `${d.activity}: ${status}` : d.activity;
+  const idle = numberFact(d.facts?.arbeitskraefte_ohne_produktive_arbeit);
+  const moved = numberFact(d.facts?.arbeitskraefte_umgesetzt);
+  const perDay = idle ? Number(idle) * project.kosten.arbeitsstunden_pro_tag * project.kosten.verrechnungssatz_eur_h : NaN;
+  const ursache = typeof d.facts?.ursache === "string" ? d.facts.ursache : d.reason;
+  const gefaehrdet = typeof d.facts?.auswirkung === "string" ? d.facts.auswirkung : "";
+  const rows: [string, string][] = [
+    ["Ursache", ursache],
+    ["Gefährdet", gefaehrdet],
+    ["Pro Tag", Number.isFinite(perDay) ? `${euro(perDay)} Personal (Schätzung)` : ""],
+  ].filter(([, v]) => v) as [string, string][];
+  const crew = idle || moved ? [...Array(Number(idle || 0)).fill("idle"), ...Array(Number(moved || 0)).fill("moved")] : [];
+  const crewText = [idle && `${idle} ohne Arbeit`, moved && `${moved} umgesetzt`].filter(Boolean).join(" · ");
+
   return (
-    <article className="rounded-xl border-2 border-[var(--accent)] bg-white p-5 shadow-[0_2px_10px_rgba(255,176,0,0.12)]">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <Chip kind="pruefung">{kind.split(" (")[0]} empfohlen</Chip>
-        <span className={`text-base font-bold ${u.late ? "text-[var(--error-text)]" : "text-[var(--accent-strong)]"}`}>
-          ⏱ {u.text}
-        </span>
+    <article>
+      <div className="on-dark bg-[var(--red)] text-white">
+        <div className="wrap py-9">
+          <p className={kicker}>Abweichung · Bautagesbericht {d.event_date}</p>
+          <h2 className="mt-3 max-w-[900px] font-serif text-[clamp(31px,4.6vw,48px)] font-bold leading-[1.05] tracking-[-.02em] [text-wrap:balance]">{headline}</h2>
+          <p className="mt-3 font-sans text-[15px] font-bold">{type} empfohlen · {u.text}</p>
+        </div>
       </div>
-      <h3 className="mt-3 text-2xl font-semibold text-[var(--ink)]">{d.activity}</h3>
-      {d.reason && <p className="mt-1 text-lg font-semibold text-[var(--ink)]">{d.reason}</p>}
-      <button className={`${btnPrimary} mt-4 sm:hidden`} onClick={onDraft}>Anzeige entwerfen</button>
-      <dl className="mt-3 grid gap-1 text-[15px] sm:grid-cols-[110px_1fr]">
-        <dt className="font-semibold text-[var(--muted)]">Geplant</dt>
-        <dd>{d.planned}</dd>
-        <dt className="font-semibold text-[var(--muted)]">Tatsächlich</dt>
-        <dd>{d.actual}</dd>
-      </dl>
-      {d.explanation && <p className={`${hint} mt-2`}>{d.explanation}</p>}
-      <button className={`${btnPrimary} mt-4 hidden sm:inline-flex`} onClick={onDraft}>Anzeige entwerfen</button>
+      <div className="wrap flex flex-wrap items-end gap-x-14 gap-y-6 pt-7">
+        {crew.length > 0 && crew.length <= 24 && (
+          <div>
+            <div role="img" aria-label={crewText} className="flex gap-2">
+              {crew.map((k, i) => (
+                <span
+                  key={i}
+                  className={`pop block h-11 min-w-0 flex-1 sm:h-14 sm:w-10 sm:flex-none ${k === "idle" ? "bg-[var(--red)]" : "border-2 border-[var(--ink)]"}`}
+                  style={{ animationDelay: `${i * 80}ms` }}
+                />
+              ))}
+            </div>
+            <p className="mt-2 font-sans text-[14px] font-semibold">{crewText}</p>
+          </div>
+        )}
+        {rows.length > 0 && (
+          <dl className="min-w-[280px] flex-1 border-t border-[var(--rule)]">
+            {rows.map(([k, v]) => (
+              <div key={k} className="flex items-baseline justify-between gap-6 border-b border-[var(--rule)] py-2">
+                <dt className="shrink-0 font-sans text-[14px] text-[var(--grey)]">{k}</dt>
+                <dd className="text-right text-[17px] leading-snug">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
+      <div className="wrap pt-6">
+        <button className={`${btnPrimary} w-full sm:w-auto`} onClick={onDraft}>Anzeige entwerfen</button>
+        {d.explanation && <p className="mt-3 max-w-[760px] text-[16px] italic text-[var(--grey)]">{d.explanation}</p>}
+      </div>
     </article>
   );
 }

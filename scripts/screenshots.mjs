@@ -77,7 +77,9 @@ window.__type = (sel, value) => {
   el.dispatchEvent(new Event("input", { bubbles: true }));
   return true;
 };
-window.__has = (text) => document.body.innerText.includes(text);
+window.__has = (text) => document.body.innerText.toLowerCase().includes(text.toLowerCase());
+// The situation box opens on click („Hier schreiben …“).
+window.__write = (value) => { if (!document.querySelector("#situation")) __click("Hier schreiben"); return true; };
 `;
 
 async function run() {
@@ -101,7 +103,7 @@ async function run() {
   };
   const waitFor = async (text, ms = live ? 90000 : 8000) => {
     for (let t = 0; t < ms; t += 150) {
-      if (await js(`document.body.innerText.includes(${JSON.stringify(text)}) || [...document.querySelectorAll("textarea")].some((t) => t.value.includes(${JSON.stringify(text)}))`)) return;
+      if (await js(`document.body.innerText.toLowerCase().includes(${JSON.stringify(text.toLowerCase())}) || [...document.querySelectorAll("textarea")].some((t) => t.value.includes(${JSON.stringify(text)}))`)) return;
       await sleep(150);
     }
     throw new Error(`timeout waiting for "${text}"`);
@@ -172,7 +174,7 @@ async function run() {
       if (await js(`!!document.querySelector("input[id=q0]")`)) await js(`__type("input[id=q0]", document.querySelector("input[id=q0]").placeholder.replace(/^z. B. /, ""))`);
       await js(`__click("Schreiben erstellen")`);
       t = Date.now();
-      await waitFor("Prüfliste vor Versand");
+      await waitFor("Randnotizen");
       timings.push(["Schreiben erstellen → Entwurf", Date.now() - t]);
       await js(`window.scrollTo(0, 0)`);
       await shot("06-entwurf");
@@ -180,7 +182,7 @@ async function run() {
     });
     await step("kosten", async () => {
       await js(`__type("#cost-days", "5")`);
-      await sleep(100);
+      await sleep(1300); // amount counts up for 0.9 s
       if (!(await js(`__has("9.280 €")`))) throw new Error("5 Tage ergeben nicht 9.280 €");
       await js(`__type("#cost-days", "1")`);
     });
@@ -188,7 +190,7 @@ async function run() {
       await js(`__click("Freigeben")`);
       await sleep(150);
       await js(`__click("Freigabe bestätigen")`);
-      await waitFor("Freigegeben von");
+      await waitFor("Freigegeben · ");
       await js(`window.scrollTo(0, 0)`);
       await shot("07-freigegeben");
     });
@@ -206,12 +208,14 @@ async function run() {
       await sleep(150);
       await shot("13-verlauf-loeschen");
       await js(`__click("Ja, löschen")`);
-      await waitFor(live ? "Noch keine freigegebenen" : "Zwei Beispiele");
+      await waitFor(live ? "Noch keine freigegebenen" : "zwei Beispiele");
       await shot("14-verlauf-leer");
     });
     if (live) continue;
     await step("keine-anzeige", async () => {
       await open();
+      await js(`__write()`);
+      await sleep(100);
       await js(`__type("#situation", "Kran heute 2 Stunden ausgefallen, keine Auswirkung auf den Bauablauf, Puffer reicht.")`);
       await js(`__click("Analysieren")`);
       await waitFor("Trotzdem Entwurf erstellen");
@@ -231,6 +235,8 @@ async function run() {
     await step("fehler", async () => {
       await open();
       await js(`window.fetch = () => Promise.reject(new TypeError("offline")); true`);
+      await js(`__write()`);
+      await sleep(100);
       await js(`__type("#situation", "Bewehrungspläne fehlen")`);
       await js(`__click("Analysieren")`);
       await waitFor("Erneut versuchen");

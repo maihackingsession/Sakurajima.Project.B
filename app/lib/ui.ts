@@ -1,19 +1,40 @@
-// Shared Tailwind class strings (Baufrist design system v2, tokens in globals.css).
-// Mobile-first: min 48 px touch targets, full-width buttons on mobile.
-export const field =
-  "w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-base text-[var(--ink)] placeholder:text-[#6f6656] focus:border-[var(--ink)] focus:outline-none focus:ring-2 focus:ring-[var(--ink)]/15 disabled:bg-[var(--surface)]";
-export const label = "mb-1.5 block text-sm font-semibold text-[var(--ink)]";
-export const hint = "text-sm text-[var(--muted)]";
-export const btnBase =
-  "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto";
-/** Amber with BLACK text (10:1): only for THE primary action of a screen. */
-export const btnPrimary = `${btnBase} border border-[#e09a00] bg-[var(--accent)] text-[19px] font-bold text-[var(--accent-text)] hover:bg-[var(--accent-hover)]`;
-/** White with black border. */
-export const btnSecondary = `${btnBase} border-2 border-[var(--ink)] bg-white text-base text-[var(--ink)] hover:bg-[var(--surface)]`;
+// Shared class strings for the „Zeitung, mutiger“ design (tokens in globals.css).
+// Square corners, hairlines, serif headlines, sans labels. Touch targets ≥ 44 px, text ≥ 13 px.
+import type { LetterType } from "@/lib/types";
+
+export const kicker = "font-sans text-[13px] font-extrabold uppercase tracking-[.06em]";
+export const meta = "font-sans text-[13px] font-semibold uppercase tracking-[.04em] text-[var(--grey)]";
+export const h1 = "font-serif text-[clamp(44px,6.4vw,84px)] font-bold leading-none tracking-[-.03em] max-w-[900px] [text-wrap:balance]";
+export const itemHead = "font-serif text-[26px] font-semibold leading-[1.2]";
+/** Section start: 2px ink line above a kicker. */
+export const section = "border-t-2 border-[var(--ink)] pt-3";
+
+export const btnPrimary =
+  "inline-flex min-h-[52px] items-center justify-center gap-2 bg-[var(--navy)] px-8 font-sans text-[16px] font-bold text-white hover:bg-[#15294a] disabled:cursor-not-allowed disabled:opacity-50";
+export const btnApprove =
+  "inline-flex min-h-[48px] items-center justify-center bg-[var(--yellow)] px-7 font-sans text-[16px] font-extrabold text-[var(--ink)] hover:bg-[#ffc81f] disabled:cursor-not-allowed disabled:opacity-50";
+/** Small actions: underlined text links. */
 export const linkBtn =
-  "inline-flex min-h-12 items-center px-1 text-base font-medium text-[var(--ink)] underline decoration-[var(--accent)] decoration-2 underline-offset-4 hover:decoration-[var(--ink)]";
-export const card = "rounded-xl border border-[var(--border)] bg-white p-5";
-export const h1 = "text-2xl font-bold text-[var(--ink)]";
-export const h2 = "text-lg font-semibold text-[var(--ink)]";
-/** Same button, full width on every screen size. */
-export const wide = (cls: string) => cls.replace(" sm:w-auto", "");
+  "inline-flex min-h-11 items-center font-sans text-[15px] font-semibold text-[var(--ink)] underline underline-offset-[3px] decoration-1 hover:decoration-2 disabled:cursor-not-allowed disabled:opacity-50";
+export const linkOnDark = linkBtn.replace("text-[var(--ink)]", "text-white");
+export const greyLink = linkBtn.replace("text-[15px] font-semibold text-[var(--ink)]", "text-[14px] font-medium text-[var(--grey)]");
+
+export const TYPE_COLOR: Record<LetterType, string> = {
+  behinderung: "var(--red)",
+  mehrkosten: "var(--yellow)",
+  bedenken: "var(--navy)",
+  maengel: "var(--green)",
+};
+
+/** Short type name without „(an Nachunternehmer)“. */
+export function shortType(label: string) {
+  return label.split(" (")[0];
+}
+
+/** Short issue title from a subject: the part after the last „ – “ of its first line. */
+export function issueTitle(subject: string, fallback: string) {
+  const first = subject.split("\n")[0].trim();
+  const parts = first.split(/\s+[–-]\s+/);
+  const t = parts.length > 1 ? parts[parts.length - 1].trim() : "";
+  return t && t.length <= 90 ? t : fallback;
+}

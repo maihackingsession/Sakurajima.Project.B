@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { btnBase, btnPrimary, btnSecondary, wide } from "../lib/ui";
 
-// Minimal Web Speech API typings (not part of TypeScript's DOM lib).
+// Browser dictation (Web Speech API). Minimal typings (not part of TypeScript's DOM lib).
 type SpeechResult = { isFinal: boolean; 0: { transcript: string } };
 type SpeechEvent = { resultIndex: number; results: ArrayLike<SpeechResult> };
 type Recognition = {
@@ -39,8 +38,8 @@ const ERRORS: Record<string, string> = {
   "audio-capture": "Kein Mikrofon gefunden.",
 };
 
-/** Full-width "● Aufnahme" (browser dictation). Amber only while it is the primary action (empty text box). */
-export default function MicButton({ onText, primary = false }: { onText: (text: string) => void; primary?: boolean }) {
+/** Dictation state: final text goes to onText, the live (interim) text is shown while listening. */
+export function useDictation(onText: (text: string) => void) {
   const supported = useSpeechSupported();
   const [recording, setRecording] = useState(false);
   const [interim, setInterim] = useState("");
@@ -53,11 +52,6 @@ export default function MicButton({ onText, primary = false }: { onText: (text: 
   }, [onText]);
 
   useEffect(() => () => rec.current?.abort(), []);
-
-  if (supported === null) return null;
-  if (!supported) {
-    return null;
-  }
 
   function start() {
     const Ctor = getCtor();
@@ -101,27 +95,5 @@ export default function MicButton({ onText, primary = false }: { onText: (text: 
     rec.current?.stop();
   }
 
-  return (
-    <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={recording ? stop : start}
-        aria-pressed={recording}
-        className={recording ? `${wide(btnBase)} border-2 border-[var(--error-text)] bg-[var(--error-bg)] text-base text-[var(--error-text)]` : wide(primary ? btnPrimary : btnSecondary)}
-      >
-        {recording ? (
-          <span aria-hidden className="inline-block h-3.5 w-3.5 rounded-sm bg-[var(--error-text)]" />
-        ) : (
-          <span aria-hidden className="inline-block h-3.5 w-3.5 rounded-full bg-[#c0261f] ring-2 ring-white" />
-        )}
-        {recording ? "Aufnahme beenden" : "Aufnahme"}
-      </button>
-      {recording && (
-        <p className="rounded-lg bg-[var(--error-bg)] p-2 text-sm text-[var(--error-text)]" aria-live="polite">
-          {interim || "Ich höre zu … bitte sprechen."}
-        </p>
-      )}
-      {error && <p role="alert" className="text-sm text-[var(--error-text)]">{error}</p>}
-    </div>
-  );
+  return { supported: !!supported, recording, interim, error, start, stop, toggle: () => (recording ? stop() : start()) };
 }

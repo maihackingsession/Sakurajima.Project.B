@@ -1,35 +1,33 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { btnSecondary } from "../lib/ui";
-import { Crane } from "./Crane";
+import { kicker, linkBtn } from "../lib/ui";
 
-/** Loading state: the Baufrist crane lifting a block + step text. Static for prefers-reduced-motion (globals.css). */
-export function Loading({ text }: { text: string }) {
-  // On phones the loader can start below the fold: bring it into view.
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, []);
+/** Error as a red kicker + one sentence + „Erneut versuchen“. No coloured box. */
+export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div ref={ref} role="status" aria-live="polite" className="flex flex-col items-center gap-2 py-6 text-center">
-      <Crane size={84} loading />
-      <p className="text-base font-semibold text-[var(--ink)]">{text}</p>
+    <div role="alert" className="fade-in border-t-2 border-[var(--red)] pt-3">
+      <p className={`${kicker} text-[var(--red)]`}>Das hat leider nicht geklappt</p>
+      <p className="mt-1 font-serif text-[20px] leading-snug">{message}</p>
+      {onRetry && (
+        <button className={linkBtn} onClick={onRetry}>Erneut versuchen</button>
+      )}
     </div>
   );
 }
 
-/** Friendly German error + "Erneut versuchen". Never a blank screen. */
-export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
+/** Small square in the letter-type colour (decorative). */
+export function TypeSquare({ color, size = 12 }: { color: string; size?: number }) {
+  return <span aria-hidden className="inline-block shrink-0" style={{ width: size, height: size, background: color }} />;
+}
+
+/** The I-beam mark. `light` = white beam (on navy), else ink. */
+export function Logo({ size = 36, light = true }: { size?: number; light?: boolean }) {
+  const c = light ? "#FFFFFF" : "#121212";
   return (
-    <div role="alert" className="rounded-xl border border-[var(--error-border)] bg-[var(--error-bg)] p-4 text-[var(--error-text)]">
-      <p className="font-semibold">Das hat leider nicht geklappt.</p>
-      <p className="mt-1">{message}</p>
-      {onRetry && (
-        <button className={`${btnSecondary} mt-3 sm:w-auto`} onClick={onRetry}>
-          Erneut versuchen
-        </button>
-      )}
-    </div>
+    <svg width={size} height={size} viewBox="0 0 32 32" role="img" aria-label="Baufrist" className="shrink-0">
+      <rect x="4" y="4" width="24" height="5" fill={c} />
+      <rect x="13.5" y="9" width="5" height="14" fill={c} />
+      <rect x="4" y="23" width="24" height="5" fill="#F2B705" />
+    </svg>
   );
 }

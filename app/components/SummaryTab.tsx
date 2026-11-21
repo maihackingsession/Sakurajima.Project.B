@@ -4,8 +4,20 @@ import { useState } from "react";
 import type { SummaryResult } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, btnSecondary, card, field, h1, h2, linkBtn } from "../lib/ui";
-import { ErrorBox, Loading } from "./Status";
+import { btnPrimary, greyLink, h1, kicker } from "../lib/ui";
+import CraneLoader, { atLeast } from "./CraneLoader";
+import { ErrorBox } from "./Status";
+
+const STEPS = ["Lese die Einträge", "Finde offene Punkte", "Schreibe die Zusammenfassung"];
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="border-t-2 border-[var(--ink)] pt-3">
+      <h2 className={kicker}>{title}</h2>
+      <div className="mt-1">{children}</div>
+    </div>
+  );
+}
 
 export default function SummaryTab({ initialText = "" }: { initialText?: string }) {
   const [text, setText] = useState(initialText);
@@ -29,7 +41,7 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
     setBusy(true);
     setError("");
     try {
-      setResult(await postJson<SummaryResult>("/api/summary", { input: text }));
+      setResult(await atLeast(900, postJson<SummaryResult>("/api/summary", { input: text })));
     } catch (e) {
       setError(errorText(e));
     } finally {
@@ -37,100 +49,79 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
     }
   }
 
+  if (busy) return <CraneLoader label="Wird zusammengefasst" steps={STEPS} />;
+
+  const row = "border-b border-[var(--rule)] py-3";
+
   return (
-    <section className="mx-auto flex w-full max-w-[760px] flex-col gap-4">
-      <label htmlFor="docs" className={h1}>Zusammenfassen</label>
-      <p className="-mt-2 text-[var(--muted)]">Bautagebuch, Protokoll oder E-Mails einfügen – Sie erhalten Fristen, Entscheidungen, offene Punkte und Risiken.</p>
-      {!text.trim() && !result && (
-        <div className={`${card} bg-[var(--surface)]`}>
-          <p>Noch kein Text eingefügt. Laden Sie ein Beispiel:</p>
-          <div className="flex flex-wrap gap-x-6">
-            <button className={linkBtn} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
-            <button className={linkBtn} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
+    <div className="fade-in">
+      <section className="wrap pt-16 pb-10">
+        <p className={`${kicker} text-[var(--navy)]`}>Protokoll · Bautagebuch · E-Mails</p>
+        <h1 className={`${h1} mt-3 mb-8`}>Zusammenfassen</h1>
+        <div className="max-w-[760px]">
+          <textarea
+            id="docs"
+            aria-label="Text zum Zusammenfassen"
+            className={`line-field font-serif text-[18px] leading-[1.6] ${result ? "min-h-28" : "min-h-56"}`}
+            placeholder="Text hier einfügen – mehrere Einträge oder E-Mails sind möglich …"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <button className={btnPrimary} onClick={summarise} disabled={!text.trim()}>Zusammenfassen</button>
+            <button className={greyLink} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
+            <button className={greyLink} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
           </div>
+          {error && <div className="mt-8"><ErrorBox message={error} onRetry={summarise} /></div>}
         </div>
-      )}
-      <textarea
-        id="docs"
-        className={`${field} ${result ? "min-h-28" : "min-h-56"}`}
-        placeholder="Text hier einfügen – mehrere Einträge oder E-Mails sind möglich …"
-        value={text}
-        disabled={busy}
-        onChange={(e) => setText(e.target.value)}
-      />
-      <div>
-        <button className={result ? btnSecondary : btnPrimary} onClick={summarise} disabled={busy || !text.trim()}>Zusammenfassen</button>
-      </div>
-      {busy && <Loading text="Text wird zusammengefasst …" />}
-      {error && <ErrorBox message={error} onRetry={summarise} />}
+      </section>
 
       {result && (
-        <div className="mt-2 flex flex-col gap-4">
-          {result.deadlines.length > 0 && (
-            <div className={`${card} border-[var(--warning-border)]`}>
-              <h3 className={h2}>Fristen und Termine</h3>
-              <ul className="mt-2 flex flex-col gap-2">
-                {result.deadlines.map((d, i) => (
-                  <li key={i} className="flex flex-col sm:flex-row sm:gap-3">
-                    <span className="shrink-0 rounded-md bg-[var(--warning-bg)] px-2 font-bold text-[var(--warning-text)]">{d.date}</span>
-                    <span>{d.what}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className={card}>
-            <h3 className={h2}>Zusammenfassung</h3>
-            <p className="mt-1">{result.summary}</p>
-          </div>
-
-          {result.decisions.length > 0 && (
-            <div className={card}>
-              <h3 className={h2}>Entscheidungen</h3>
-              <ul className="mt-1 list-disc pl-5">
-                {result.decisions.map((d, i) => <li key={i}>{d}</li>)}
-              </ul>
-            </div>
-          )}
-
-          {result.open_items.length > 0 && (
-            <div className={card}>
-              <h3 className={h2}>Offene Punkte</h3>
-              <table className="mt-2 w-full table-fixed text-left text-sm">
-                <thead>
-                  <tr className="border-b border-[var(--border)] text-[var(--muted)]">
-                    <th className="py-2 pr-2">Aufgabe</th>
-                    <th className="w-[40%] py-2">Wer / bis wann</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.open_items.map((o, i) => (
-                    <tr key={i} className="border-b border-[var(--border)] align-top last:border-0">
-                      <td className="break-words py-2 pr-2">{o.task}</td>
-                      <td className="break-words py-2">
-                        <span className="block">{o.owner || "offen"}</span>
-                        <span className={`block font-semibold ${o.due && o.due !== "offen" ? "text-[var(--warning-text)]" : "text-[var(--muted)]"}`}>
-                          {o.due || "offen"}
-                        </span>
-                      </td>
-                    </tr>
+        <section className="wrap fade-in flex max-w-[1180px] flex-col gap-10 pb-10">
+          <div className="flex max-w-[860px] flex-col gap-10">
+            {result.deadlines.length > 0 && (
+              <Section title="Fristen und Termine">
+                <ul>
+                  {result.deadlines.map((d, i) => (
+                    <li key={i} className={`${row} flex flex-col gap-x-6 sm:flex-row sm:items-baseline`}>
+                      <span className="shrink-0 font-serif text-[20px] font-bold whitespace-nowrap text-[var(--red)] sm:w-36">{d.date}</span>
+                      <span>{d.what}</span>
+                    </li>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {result.risks.length > 0 && (
-            <div className={card}>
-              <h3 className={h2}>Risiken</h3>
-              <ul className="mt-1 list-disc pl-5">
-                {result.risks.map((r, i) => <li key={i}>{r}</li>)}
-              </ul>
-            </div>
-          )}
-        </div>
+                </ul>
+              </Section>
+            )}
+            <Section title="Zusammenfassung">
+              <p className="text-[20px] leading-[1.55]">{result.summary}</p>
+            </Section>
+            {result.decisions.length > 0 && (
+              <Section title="Entscheidungen">
+                <ul>{result.decisions.map((d, i) => <li key={i} className={row}>{d}</li>)}</ul>
+              </Section>
+            )}
+            {result.open_items.length > 0 && (
+              <Section title="Offene Punkte">
+                <ul>
+                  {result.open_items.map((o, i) => (
+                    <li key={i} className={`${row} flex flex-wrap items-baseline justify-between gap-x-6`}>
+                      <span className="min-w-0 flex-1">{o.task}</span>
+                      <span className="text-right font-sans text-[14px]">
+                        <span className="block text-[var(--grey)]">{o.owner || "offen"}</span>
+                        <span className={`block font-bold ${o.due && o.due !== "offen" ? "text-[var(--ink)]" : "text-[var(--grey)]"}`}>{o.due || "offen"}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </Section>
+            )}
+            {result.risks.length > 0 && (
+              <Section title="Risiken">
+                <ul>{result.risks.map((r, i) => <li key={i} className={row}>{r}</li>)}</ul>
+              </Section>
+            )}
+          </div>
+        </section>
       )}
-    </section>
+    </div>
   );
 }
