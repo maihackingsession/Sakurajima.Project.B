@@ -49,6 +49,22 @@ Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to to
 12. **Test set:** 21 situations, `npm run test:letters`, report in tests/results/report.md (20/21 correct, 0 invented facts).
 13. Models: router + Rückfragen on claude-haiku-5-5 (ANTHROPIC_FAST_MODEL); letters, report check and summary on claude-sonnet-5-5.
 
+### Version 2 (branch features-v2, in progress)
+Goal: the Bauleiter is never overwhelmed – one main action per screen, everything else folded away.
+Tabs: **Heute · Tagesberichte · Fristen & Verlauf · Zusammenfassen**.
+
+14. **Names:** client contact Herr Prof. Jagtap (no first name), Bauleiter Yuzhi Shao (stamp „Y. SHAO“).
+15. **Rückfragen without [Klammern]:** gaps asks every missing fact for a send-ready letter (max. 6, project facts never asked); each answer has „Weiß ich nicht“; „Schreiben erstellen“ only when all are answered or marked; the letter prompt never outputs placeholders. Safety net in code: leftover `[…]` → „Angabe fehlt: …“ field above the letter that replaces the bracket in place (no AI call); Freigeben locked while one is left.
+16. **VoiceField:** one text field component with „● Sprechen“ (existing browser dictation), used for every text input; hidden button without speech support.
+17. **Heute (start screen):** one field → „Speichern“ stores the entry at once (no AI), then the existing router checks it in the background („wird geprüft …“) → „… EMPFOHLEN · Schreiben entwerfen →“ or „Im Tagesbericht gespeichert“. „Heute festgehalten“ (today's entries) and „Fällig“ (max. 3 deadlines).
+18. **Tagesberichte:** list of days (entries, weather, status Entwurf / Abgezeichnet / Anzeige); day view with entries (edit, change date/time), „Bericht aus Einträgen erstellen“ (`/api/daily-report`, new prompt, sorts entries into Personal, Geräte, Arbeiten, Lieferungen, Anordnungen & Besucher, Behinderungen & Mängel, Sonstiges – nothing invented), „Mit Bauzeitenplan prüfen“ (existing deviation check), PDF, „Abzeichnen“. „Fremden Bericht einfügen“ = the old Tagesbericht check, folded.
+19. **Wetter:** `/api/weather?date=` via Open-Meteo (free, no key) with the project coordinates; cached per date in the browser; on failure „Wetter eintragen“ by hand; never invented.
+20. **Fristen & Verlauf:** „Neues Ereignis“ inline (Notiz, Anordnung, Lieferung, Behinderung, Mangel, Frist; date/time changeable); one timeline grouped by day; events and entries share one store and show up in the Tagesbericht of their date.
+21. **Zusammenfassen → „Als Tagesbericht speichern“** at a chosen date.
+22. **Demo data** for all of the above without API („Beispieldaten laden“ on empty lists).
+23. Optional: photo per entry (IndexedDB, resized in the browser, never sent to the AI; letter lists it as Anlage).
+24. Storage: browser only (localStorage, photos in IndexedDB), all access in `app/lib/store.ts`.
+
 ### Pitch only / next steps
 - Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
 - „Dokumente prüfen“ (PDF upload)
