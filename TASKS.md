@@ -231,3 +231,6 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 
 ### Phase 5 — Merge: done (18:11)
 - design-mutig merged into main (fast-forward), live ade7c7f. Live click-through `?beispiel=1` at 1280×720 + 375×812: all flows ok, 0 design-check findings, 0 console errors, 9.280 € ok. Tag `freeze-final`.
+
+### Design Zeitung (Richtung 2) — merged (18:54)
+- design-zeitung reviewed by the team and merged into main (fast-forward, 0bd692a). Checked locally in Demo-Modus without API key at 375/768/1280: no horizontal scroll, no radius/shadow, no text < 12 px, 0 console errors. Previous design: tag `freeze-final` (54f39a6).
