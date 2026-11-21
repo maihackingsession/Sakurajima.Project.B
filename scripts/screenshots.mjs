@@ -301,6 +301,12 @@ async function run() {
       await waitFor("Fristen und Termine");
       await js(`window.scrollTo(0, 0)`);
       await shot("09-zusammenfassen");
+      await js(`__click("Als Tagesbericht speichern")`);
+      await waitFor("Im Tagesbericht vom");
+      await shot("09-zusammenfassen-gespeichert", true);
+      await js(`__click("Zum Tagesbericht")`);
+      await waitFor("Zusammenfassung");
+      await shot("09-zusammenfassen-tagesbericht");
     });
     await step("fehler", async () => {
       await open();

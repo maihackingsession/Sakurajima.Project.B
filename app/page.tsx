@@ -48,7 +48,7 @@ export default function Home() {
           <VerlaufTab onOpenDay={showDay} />
         </div>
         <div hidden={tab !== "zusammenfassen"}>
-          <SummaryTab />
+          <SummaryTab onOpenDay={showDay} />
         </div>
 
         <footer className="mt-12 border-t border-[var(--ink)] pt-3 text-center font-sans text-[13px] text-[var(--grey)]">
