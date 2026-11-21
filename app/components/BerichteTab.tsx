@@ -32,7 +32,7 @@ import type { DraftSource } from "./LetterFlow";
 import { EntryText } from "./HeuteView";
 import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
-import WeatherLine from "./WeatherLine";
+import WeatherLine, { loadWeather } from "./WeatherLine";
 
 type Props = { onDraft: (text: string, letterType: LetterType, source: DraftSource) => void; openDay?: string | null };
 
@@ -90,8 +90,11 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
 
 function DayRow({ day, count, report, onOpen }: { day: string; count: number; report?: DailyReport; onOpen: () => void }) {
   useWeatherSnapshot(day);
+  useEffect(() => {
+    if (!getWeather(day)) void loadWeather(day);
+  }, [day]);
   const w = getWeather(day);
-  const sub = [count === 1 ? "1 Eintrag" : `${count} Einträge`, w?.text].filter(Boolean).join(" · ");
+  const sub = [count === 1 ? "1 Eintrag" : `${count} Einträge`, w?.text.split(" · ").slice(0, 2).join(", ")].filter(Boolean).join(" · ");
   return (
     <li>
       <button onClick={onOpen} className="flex w-full items-baseline justify-between gap-4 border-b border-[var(--rule)] py-4 text-left hover:text-[var(--accent)]">

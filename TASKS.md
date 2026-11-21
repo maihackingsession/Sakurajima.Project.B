@@ -241,7 +241,7 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - [x] 3. VoiceField in every text input
 - [x] 4. „Heute“ start screen (save first, check in background)
 - [x] 5. Tagesberichte (list, day view, /api/daily-report, plan check, PDF, Abzeichnen)
-- [ ] 6. Wetter via Open-Meteo (/api/weather), cached, manual fallback
+- [x] 6. Wetter via Open-Meteo (/api/weather), cached, manual fallback
 - [ ] 7. Fristen & Verlauf: „Neues Ereignis“, timeline by day, shared store
 - [ ] 8. Zusammenfassen → „Als Tagesbericht speichern“
 - [ ] 9. Demo data without API
