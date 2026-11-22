@@ -319,3 +319,4 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 ## 22.11. (branch teil-final)
 - baufrist-fokus-einstellungen-prompt.md: erneut nicht im Ordner (auch nicht in Desktop/Downloads) → weiterhin weggelassen.
 - [x] Rückfragen in der Sprache der Eingabe repariert: Mit echter KI kamen polnische Eingaben vorher als deutsche Fragen zurück. Jetzt geht die vom Router erkannte Sprache (`language`) über Entry → LetterFlow → /api/gaps, steht als `{input_language}` oben in gaps.xml und direkt nach der Eingabe; ohne Router-Sprache: polnische Buchstaben → pl, sonst erkennt die KI selbst. Sicherheitsnetz: language "de" trotz anderer Eingabesprache → 1 Wiederholung. Echter Test (1 Aufruf, keine Wiederholung): 3 Fragen auf Polnisch, intro und „Nie wiem“ polnisch, `field` deutsch.
+- [x] Router-Tests neu (echte KI, 22.11.): 16 Fälle + #17 Mengenänderung → **17/17, 0 Leakage**, keine Wiederholung (17 Aufrufe). tests/results/router-22-11.md

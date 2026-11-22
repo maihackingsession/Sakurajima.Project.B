@@ -1,4 +1,4 @@
-// Router test (FIX_PROMPT_ROUTER Schritt 3): runs tests/router-cases.json once each through POST /api/route
+// Router test (FIX_PROMPT_ROUTER Schritt 3, + case 17 Mengenänderung): runs tests/router-cases.json once each through POST /api/route
 // (the same server function the app uses) and writes a Markdown table.
 //
 // Usage:  npm run test:router                        (default http://localhost:3000, needs the real key)
@@ -56,7 +56,7 @@ const leaks = rows.filter((r) => r.leaked.length).length;
 const md = [
   `# Router-Test – ${new Date().toLocaleString("de-DE")}`,
   "",
-  `Server: ${base} (Version ${health.version}) · Router: prompts/router.xml v3 · echte KI`,
+  `Server: ${base} (Version ${health.version}) · Router: prompts/router.xml v3 (+ Mengenänderung) · echte KI`,
   "",
   `**Bestanden: ${passed}/${rows.length}** · Leakage: ${leaks}`,
   "",
