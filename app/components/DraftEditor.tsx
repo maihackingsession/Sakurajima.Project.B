@@ -336,10 +336,10 @@ function legalShort(basis: string) {
 function recipientOf(recipient: string) {
   const lines = recipient.split("\n").map((l) => l.trim()).filter(Boolean);
   const attn = lines.find((l) => /^z\.\s*Hd\.?/i.test(l));
-  return (attn ? attn.replace(/^z\.\s*Hd\.?\s*/i, "").replace(/^(Herrn|Herr)\s/, "Herr ") : lines[0] ?? "").split(",")[0];
+  return (attn ? attn.replace(/^z\.\s*Hd\.?\s*/i, "").replace(/^Herr\s/, "Herrn ") : lines[0] ?? "").split(",")[0];
 }
 
-/** „21.11.2026 · 16:12 · T. Berger“ for the stamp. */
+/** „21.11.2026 · 16:12 · Y. Shao“ for the stamp. */
 function stampLine(iso: string, by: string) {
   const d = new Date(iso);
   const day = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });

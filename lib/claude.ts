@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fillDates, formatDate, today } from "./dates";
 
-// One helper for every specialist prompt (HANDOVER §4: plain functions, no frameworks).
+// One helper for every specialist prompt (docs/process/HANDOVER.md §4: plain functions, no frameworks).
 // Without ANTHROPIC_API_KEY it returns mocks from data/mocks/ (Demo-Modus).
 
 const ROOT = process.cwd();

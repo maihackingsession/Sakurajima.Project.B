@@ -1,6 +1,7 @@
 {
-  "name": "bauleiter-assistent",
+  "name": "baufrist",
   "version": "0.1.0",
+  "description": "Baufrist – KI-Assistent für Bauleiter: erkennt im Tagesbericht, wann eine Anzeige nach VOB/B nötig ist, und entwirft das Schreiben zur Freigabe.",
   "private": true,
   "scripts": {
     "dev": "next dev",
