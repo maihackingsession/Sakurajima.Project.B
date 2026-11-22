@@ -65,7 +65,7 @@ export default function Header({ tab, onTab, onSettings, compact = false }: Prop
                 {label} – Beispielantworten
               </span>
             )}
-            {beispiel && !serverMock && (
+            {beispiel && (
               <button onClick={endBeispiel} className="min-h-11 whitespace-nowrap text-[var(--ink)] underline underline-offset-[3px] hover:text-[var(--accent)]">
                 Beispielmodus beenden
               </button>
