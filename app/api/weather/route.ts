@@ -6,9 +6,17 @@ import { weatherText, weatherUrl } from "@/lib/weather";
 // Never invents weather: if Open-Meteo fails, the browser tries Open-Meteo itself, then asks the user.
 export async function GET(request: Request) {
   await connection(); // always dynamic: never serve a cached or prerendered answer
-  const date = new URL(request.url).searchParams.get("date") ?? "";
+  const q = new URL(request.url).searchParams;
+  const date = q.get("date") ?? "";
+  // Place from the Einstellungen (lat/lon), else the preset project.
+  const coord = (k: string, max: number, fallback: number) => {
+    const n = Number(q.get(k));
+    return q.get(k) && Number.isFinite(n) && Math.abs(n) <= max ? n : fallback;
+  };
+  const lat = coord("lat", 90, project.koordinaten.lat);
+  const lon = coord("lon", 180, project.koordinaten.lon);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return Response.json({ error: "Datum fehlt." }, { status: 400 });
-  const url = weatherUrl(date, project.koordinaten.lat, project.koordinaten.lon);
+  const url = weatherUrl(date, lat, lon);
   if (!url) return Response.json({ error: "Zu weit in der Zukunft." }, { status: 404 });
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(8000), cache: "no-store" });

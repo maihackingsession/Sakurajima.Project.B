@@ -18,6 +18,8 @@ export type VerlaufEntry = {
   /** Abhilfe-/Beseitigungsfrist from the letter (dd.mm.yyyy), "" if none. */
   deadline: string;
   text: { salutation: string; body: string; closing: string };
+  /** Standstill estimate in € at approval (Behinderung only; never in the letter). */
+  stillstand?: number;
   /** Only for the examples in Beispielmodus; never stored. */
   example?: boolean;
 };
@@ -39,6 +41,7 @@ export function saveToVerlauf(entry: Omit<VerlaufEntry, "example">) {
     approvedBy: entry.approvedBy,
     deadline: entry.deadline,
     text: { salutation: entry.text.salutation, body: entry.text.body, closing: entry.text.closing },
+    ...(entry.stillstand ? { stillstand: Math.round(entry.stillstand) } : {}),
   };
   write([clean, ...getVerlauf().filter((e) => e.id !== entry.id)]);
 }

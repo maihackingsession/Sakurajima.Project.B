@@ -1,15 +1,8 @@
-import project from "@/data/project.json";
+import { dateLine, senderLine, signatureLines, signer, type Settings } from "@/lib/settings";
 import type { Letter } from "@/lib/types";
 
-const company = project.auftragnehmer;
-export const senderLine = `${company.name} · ${company.strasse} · ${company.plz_ort}`;
-export const signature = [company.name, "", "", project.bauleiter.name, project.bauleiter.funktion];
-
-/** "München, 21.11.2026": the sender's city (auftragnehmer in project.json) + the given date (dd.mm.yyyy). */
-export function dateLine(date: string) {
-  const city = company.plz_ort.replace(/^\d{5}\s*/, "");
-  return `${city}, ${date}`;
-}
+// Letterhead, sender line, date line and signature come from the Einstellungen (lib/settings.ts).
+export { dateLine, senderLine, signatureLines };
 
 /** Evidence page for the export: what the draft is based on. */
 export type Appendix = { input: string; answers: Record<string, string>; createdAt: string; report?: string };
@@ -34,8 +27,8 @@ export function paragraphs(text: string) {
 export { stripDraftLines } from "@/lib/text";
 
 /** Full letter as plain text: Empfänger, Betreff, Anrede, Text, Gruß (+ Unterschrift). */
-export function plainText(letter: Letter) {
-  const sign = signature.filter(Boolean).join("\n");
+export function plainText(letter: Letter, s: Settings) {
+  const sign = signatureLines(s).filter(Boolean).join("\n");
   return [letter.recipient, letter.subject, letter.salutation, letter.body, `${letter.closing}\n\n${sign}`]
     .map((s) => s.trim())
     .filter(Boolean)
@@ -78,7 +71,8 @@ function download(blob: Blob, name: string) {
 }
 
 /** Word export in the browser, DIN 5008-like layout. Nothing is sent anywhere. */
-export async function exportDocx(letter: Letter, kind: string, isDraft: boolean, date: string, appendix?: Appendix) {
+export async function exportDocx(letter: Letter, kind: string, isDraft: boolean, date: string, s: Settings, appendix?: Appendix) {
+  const me = signer(s);
   const {
     Document, Packer, Paragraph, TextRun, AlignmentType, Footer, Header, BorderStyle, ImageRun, PageBreak,
     HorizontalPositionRelativeFrom, VerticalPositionRelativeFrom, HorizontalPositionAlign, VerticalPositionAlign,
@@ -131,25 +125,25 @@ export async function exportDocx(letter: Letter, kind: string, isDraft: boolean,
           new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [
-              new TextRun({ text: company.name, bold: true, size: 26 }),
-              new TextRun({ text: company.strasse, break: 1, size: 18 }),
-              new TextRun({ text: company.plz_ort, break: 1, size: 18 }),
-              new TextRun({ text: `Tel. ${company.telefon} · ${company.email}`, break: 1, size: 18 }),
+              new TextRun({ text: s.absender.firma, bold: true, size: 26 }),
+              new TextRun({ text: s.absender.strasse, break: 1, size: 18 }),
+              new TextRun({ text: `${s.absender.plz} ${s.absender.ort}`.trim(), break: 1, size: 18 }),
+              new TextRun({ text: [me.telefon && `Tel. ${me.telefon}`, s.ich.email].filter(Boolean).join(" · "), break: 1, size: 18 }),
             ],
             spacing: { after: 600 },
           }),
           new Paragraph({
-            children: [new TextRun({ text: senderLine, size: 16 })],
+            children: [new TextRun({ text: senderLine(s), size: 16 })],
             border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: "999999", space: 1 } },
             spacing: { after: 120 },
           }),
           new Paragraph({ children: lines(letter.recipient), spacing: { after: 720 } }),
-          new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun(dateLine(date))], spacing: { after: 480 } }),
+          new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun(dateLine(s, date))], spacing: { after: 480 } }),
           new Paragraph({ children: lines(letter.subject, { bold: true }), spacing: { after: 480 } }),
           new Paragraph({ children: [new TextRun(letter.salutation)], spacing: { after: 240 } }),
           ...paragraphs(letter.body).map((p) => new Paragraph({ children: lines(p), spacing: { after: 240 } })),
           new Paragraph({ children: lines(letter.closing), spacing: { before: 240 } }),
-          new Paragraph({ children: lines(signature.join("\n")) }),
+          new Paragraph({ children: lines(signatureLines(s).join("\n")) }),
           ...(appendix
             ? [
                 new Paragraph({ children: [new PageBreak()] }),

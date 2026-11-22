@@ -10,6 +10,15 @@ export const metadata: Metadata = {
   title: "Baufrist – Bauleiter-Assistent",
   description: "Baufrist erkennt im Tagesbericht, wann eine Anzeige nötig ist, und erstellt den Entwurf. Ein Assistent für den Bauleiter – kein Ersatz.",
   applicationName: "Baufrist",
+  metadataBase: new URL("https://baufrist.vercel.app"),
+  openGraph: {
+    title: "Baufrist – Bauleiter-Assistent",
+    description: "Erkennt im Bautagebuch, wann eine Anzeige nötig ist, und erstellt den Entwurf.",
+    url: "https://baufrist.vercel.app",
+    siteName: "Baufrist",
+    locale: "de_DE",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

@@ -35,7 +35,7 @@ export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {
   const result = await runPrompt<DeviationResult>(
     "deviation",
     { user_input: report, plan: relevantPlan(await readData<Plan>("plan.json"), report) },
-    { effort: "medium", mock: ctx.mock },
+    { effort: "medium", mock: ctx.mock, settings: ctx.settings },
   );
   return {
     summary: typeof result.summary === "string" ? result.summary : "",

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import project from "@/data/project.json";
 import { formatDate } from "@/lib/dates";
+import { signer as signerOf } from "@/lib/settings";
 import type { DailyReportResult, DeviationResult, LetterType } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadDemo } from "../lib/demo";
@@ -11,8 +11,8 @@ import {
   dayDate,
   entriesOfDay,
   getWeather,
+  getSettings,
   KIND_LABEL,
-  prefs,
   REPORT_FIELDS,
   removeEntry,
   saveReport,
@@ -20,6 +20,8 @@ import {
   updateReport,
   useEntries,
   useReports,
+  useBeispiel,
+  useSettings,
   useWeatherSnapshot,
   type DailyReport,
   type Entry,
@@ -32,6 +34,8 @@ import { approvalTime } from "./DraftEditor";
 import type { DraftSource } from "./LetterFlow";
 import { EntryText } from "./HeuteView";
 import { Thumb } from "./Photo";
+import { useFocus } from "./Focus";
+import Empty from "./Empty";
 import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 import WeatherLine, { loadWeather } from "./WeatherLine";
@@ -62,6 +66,7 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
     setDay(openDay.day);
   }
 
+  const beispiel = useBeispiel();
   const days = [...new Set([...entries.map((e) => e.date), ...reports.map((r) => r.date)])].sort().reverse();
 
   if (day) return <DayView day={day} onBack={() => setDay(null)} onDraft={onDraft} />;
@@ -70,20 +75,12 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
     <div className="fade-in">
       <p className={kicker}>Bautagebuch</p>
       <h1 className={h1}>Tagesberichte</h1>
-      <button className={greyLink} onClick={() => setForeign((v) => !v)} aria-expanded={foreign}>
-        {foreign ? "Fremden Bericht schließen" : "Fremden Bericht einfügen"}
-      </button>
-      {foreign && (
-        <div className="open-in mt-4 mb-6">
-          <DeviationTab embedded onDraft={onDraft} />
-        </div>
-      )}
 
       {days.length === 0 ? (
-        <p className="mt-8 flex flex-wrap items-center gap-x-5 text-[var(--grey)]">
-          Noch keine Einträge.
-          <button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>
-        </p>
+        <div className="mt-8">
+          <Empty text="Noch keine Tagesberichte." />
+          {beispiel && <p className="text-center"><button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button></p>}
+        </div>
       ) : (
         <ul className="mt-8 border-t-2 border-[var(--ink)]">
           {days.map((d) => (
@@ -91,6 +88,17 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
           ))}
         </ul>
       )}
+
+      <div className="mt-10">
+        <button className={`${greyLink} text-[13px]`} onClick={() => setForeign((v) => !v)} aria-expanded={foreign}>
+          {foreign ? "Fremden Bericht schließen" : "Fremden Bericht einfügen"}
+        </button>
+        {foreign && (
+          <div className="open-in mt-4 mb-6">
+            <DeviationTab embedded onDraft={onDraft} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -119,11 +127,14 @@ function DayRow({ day, count, report, onOpen }: { day: string; count: number; re
 function DayView({ day, onBack, onDraft }: { day: string; onBack: () => void; onDraft: Props["onDraft"] }) {
   const entries = entriesOfDay(useEntries(), day);
   const report = useReports().find((r) => r.date === day);
+  // Focus mode: „Tagesbericht · Sa 21.11.“, „← Zurück“ = all days.
+  const wd = dayDate(day).toLocaleDateString("de-DE", { weekday: "short" }).replace(".", "");
+  useFocus("berichte", { title: `Tagesbericht · ${wd} ${formatDate(dayDate(day), true)}`, status: report ? (report.signed ? "Abgezeichnet" : "Gespeichert") : "", onBack });
   const [busy, setBusy] = useState<"" | "report" | "plan">("");
   const [error, setError] = useState("");
   const [more, setMore] = useState(false);
   const [signing, setSigning] = useState(false);
-  const [signer, setSigner] = useState(() => prefs.approver(project.bauleiter.name));
+  const [signer, setSigner] = useState(() => getSettings().ich.name);
   const [check, setCheck] = useState<DeviationResult | null>(null);
 
   useEffect(() => {
@@ -182,7 +193,6 @@ function DayView({ day, onBack, onDraft }: { day: string; onBack: () => void; on
     e.preventDefault();
     const by = signer.trim();
     if (!by || !report) return;
-    prefs.setApprover(by);
     updateReport(day, { signed: { by, at: new Date().toISOString() } });
     setSigning(false);
   }
@@ -201,11 +211,13 @@ function DayView({ day, onBack, onDraft }: { day: string; onBack: () => void; on
 
   return (
     <div className="fade-in">
-      <button className={linkBtn} onClick={onBack}>← Alle Tagesberichte</button>
-      <p className={`${kicker} mt-6`}>{longDayYear(day)}</p>
+      <p className={kicker}>{longDayYear(day)}</p>
       <h1 className={`${h1} !mb-2`}>Tagesbericht</h1>
       <WeatherLine day={day} editable />
-      <p role="status" className={`${meta} mt-3 ${report?.signed ? "!text-[var(--accent)]" : ""}`}>{status}</p>
+      <p className="mt-3 flex flex-wrap items-center justify-between gap-x-6">
+        <span role="status" className={`${meta} ${report?.signed ? "!text-[var(--accent)]" : ""}`}>{status}</span>
+        <button className={`${greyLink} text-[13px]`} onClick={onBack}>Frühere Tage</button>
+      </p>
 
       <section className="mt-10" aria-labelledby="h-eintraege">
         <h2 id="h-eintraege" className={sectionLabel}>Einträge</h2>
@@ -349,9 +361,11 @@ function EntryRow({ entry }: { entry: Entry }) {
 /** Print view of the Tagesbericht: project + date, weather, filled fields, sign-off line. */
 function ReportSheet({ day, report }: { day: string; report: DailyReport }) {
   const w = getWeather(day);
+  const s = useSettings();
+  const me = signerOf(s);
   return (
     <div data-sheet="tagesbericht" className="print-sheet hidden bg-white font-sans text-[11pt] leading-snug text-black">
-      <p className="text-[9pt]">{project.auftragnehmer.name} · {project.bauvorhaben} · Vertrag {project.vertragsnummer}</p>
+      <p className="text-[9pt]">{s.absender.firma} · {s.projekt.bezeichnung} · Vertrag {s.projekt.vertragsnummer}</p>
       <p className="mt-4 text-[16pt] font-bold">Bautagesbericht {formatDate(dayDate(day))}</p>
       <p className="mt-1">{longDayYear(day)}</p>
       <p className="mt-3"><b>Wetter:</b> {w?.text ?? "–"}</p>
@@ -362,7 +376,7 @@ function ReportSheet({ day, report }: { day: string; report: DailyReport }) {
         </div>
       ))}
       <p className="mt-12 border-t border-neutral-500 pt-1 text-[10pt]">
-        {report.signed ? `Abgezeichnet: ${report.signed.by}, ${approvalTime(report.signed.at)}` : `Entwurf – nicht abgezeichnet · ${project.bauleiter.name}, ${project.bauleiter.funktion}`}
+        {report.signed ? `Abgezeichnet: ${report.signed.by}, ${approvalTime(report.signed.at)}` : `Entwurf – nicht abgezeichnet · ${[me.name, me.funktion].filter(Boolean).join(", ")}`}
       </p>
     </div>
   );

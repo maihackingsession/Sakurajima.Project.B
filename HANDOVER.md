@@ -72,6 +72,16 @@ Tabs: **Heute · Tagesberichte · Fristen & Verlauf · Zusammenfassen**.
 28. **Mengenänderung – Preisanpassung (§ 2 Abs. 3 VOB/B):** new letter type (router, Heute, Schreibenart wählen, Rückfragen, letter prompt, Prüfliste with 7 points, Fristen & Verlauf, Tagesbericht, demo data). The code (`lib/mengen.ts`) computes the deviation in %, the quantity above 110 % (Mehrmenge) or the < 90 % hint (Mindermenge); ≤ 10 % → no letter; no unit-price contract → red hint instead of the letter; AG order → Mehrkostenanzeige. The numbers go to the letter prompt as fixed values.
 29. **Wetter on Heute:** server route without fetch cache, browser retries and falls back to Open-Meteo directly.
 
+### Final-2 (branch final-2, not merged into main)
+30. **Fokusmodus + Einstellungen:** schmale Leiste (← Zurück · Titel · Speicherstatus) statt Kopfzeile, sobald eine Aufgabe offen ist; Reiter „Tagesbericht“ öffnet den heutigen Bericht; „2 fällig“ in der Kopfzeile. Einstellungen (Ich, Bauleitung, Absender, Projekt + Wetter-Ort über Open-Meteo Geocoding, Bauherr, weitere Beteiligte) im Browser; alle Stellen und Prompts lesen daraus.
+31. **Unklare Zuständigkeit:** Router-Status `unklar` → genau eine Frage mit zwei Knöpfen unter dem Eintrag (ohne weiteren KI-Aufruf).
+32. **Kleine Fehler:** Kopfzeilen-Datum im Browser und immer gleich „Heute · …“; Link „Beispielmodus beenden“.
+33. **Logo = Kran aus dem Loader** (`CraneMark`) + Favicon.
+34. **Fristen & Verlauf als Monatskalender** (Fällig, Kalender, Tagesliste, Umschalter Kalender · Liste).
+35. **Einfacher:** ein Begriff „Eintrag“, nur „Freigeben“, danach PDF / E-Mail (mailto), Demo-Links nur im Beispielmodus, Reiter „Unterlagen“, Bauzeitenplan in den Einstellungen, Hauptweg Eintrag → Empfehlung → Rückfragen → Schreiben → Freigeben → PDF/E-Mail.
+36. **Volle Seiten:** Kennzahlen, Als Nächstes, Diese Woche, Zuletzt freigegeben auf „Heute“, ab 1100px Seitenspalte, leere Zustände mit Kran, Impressum-Fußzeile; Adresse https://baufrist.vercel.app.
+37. **Ruhige Bewegung:** ein Bewegungssystem (`lib/motion.ts` + CSS-Variablen), nur opacity/transform, aus bei prefers-reduced-motion.
+
 ### Pitch only / next steps
 - Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
 - „Dokumente prüfen“ (PDF upload)
@@ -204,7 +214,7 @@ Rotate the builder every 3–4 hours.
 
 ## 13. Current status
 
-Live: **https://sakurajima-project-b.vercel.app** (fallback: same URL with `?beispiel=1`)
+Live: **https://baufrist.vercel.app** (fallback: same URL with `?beispiel=1`)
 
 Version 2 (§3 items 14–24) is finished on branch `features-v2` (Vercel preview); `main`/live is still Version 1 until the merge is approved. Tested in demo mode at 375/768/1280 (scripts/screenshots.mjs); 3 real API calls as a counter-check (gaps, letter with „Weiß ich nicht“, daily-report): no brackets.
 

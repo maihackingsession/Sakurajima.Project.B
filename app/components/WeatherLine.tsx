@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import project from "@/data/project.json";
 import { weatherText, weatherUrl } from "@/lib/weather";
-import { getWeather, setWeather, useWeatherSnapshot } from "../lib/store";
+import { getSettings, getWeather, setWeather, useSettings, useWeatherSnapshot } from "../lib/store";
 import { greyLink, linkBtn } from "../lib/ui";
 
 // One running request per day, shared by every WeatherLine of that day. A failure is not
@@ -11,14 +10,14 @@ import { greyLink, linkBtn } from "../lib/ui";
 const inflight = new Map<string, Promise<boolean>>();
 
 async function viaServer(day: string) {
-  const r = await fetch(`/api/weather?date=${day}`, { cache: "no-store" });
+  const r = await fetch(`/api/weather?date=${day}&lat=${getSettings().projekt.lat}&lon=${getSettings().projekt.lon}`, { cache: "no-store" });
   const d = (await r.json().catch(() => ({}))) as { text?: string };
   return r.ok && d.text ? d.text : null;
 }
 
 /** Fallback when the server can't reach Open-Meteo (e.g. blocked/slow from the host): ask Open-Meteo from the browser. */
 async function viaBrowser(day: string) {
-  const url = weatherUrl(day, project.koordinaten.lat, project.koordinaten.lon);
+  const url = weatherUrl(day, getSettings().projekt.lat, getSettings().projekt.lon);
   if (!url) return null;
   const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
   return r.ok ? weatherText(await r.json(), day) : null;
@@ -45,6 +44,7 @@ export function loadWeather(day: string) {
 export default function WeatherLine({ day, editable = false }: { day: string; editable?: boolean }) {
   useWeatherSnapshot(day);
   const w = getWeather(day);
+  const { lat, lon } = useSettings().projekt;
   const [failed, setFailed] = useState(false);
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState("");
@@ -58,7 +58,7 @@ export default function WeatherLine({ day, editable = false }: { day: string; ed
     return () => {
       alive = false;
     };
-  }, [day]);
+  }, [day, lat, lon]);
 
   if (editing)
     return (

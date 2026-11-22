@@ -60,6 +60,25 @@ export function loadDemo() {
       id: id(7), kind: "notiz", date: today, time: "12:00", example: true,
       title: "Baubesprechung Nr. 5", text: "Nächste Baubesprechung mit dem AG am Dienstag, 10:00 Uhr, im Baubüro.",
     },
+    // More days for the calendar in Fristen & Verlauf.
+    {
+      id: id(9), kind: "eintrag", date: shiftDay(today, -3), time: "07:10", example: true,
+      text: "Sauberkeitsschicht eingebaut, 12 m³ C12/15. Musterbau Betonbau 5 Arbeitskräfte.",
+      check: none("Normaler Baufortschritt – keine Anzeige nötig."),
+    },
+    {
+      id: id(10), kind: "lieferung", date: shiftDay(today, -3), time: "09:30", example: true,
+      title: "Betonstahl geliefert", text: "8 t Betonstahl, Lieferschein vollständig.",
+    },
+    {
+      id: id(11), kind: "eintrag", date: shiftDay(today, -6), time: "15:20", example: true,
+      text: "Grundleitungen verlegt und Dichtheitsprüfung bestanden.",
+      check: none("Normaler Baufortschritt – keine Anzeige nötig."),
+    },
+    {
+      id: id(12), kind: "frist", date: shiftDay(today, -2), time: "10:00", example: true,
+      title: "Prüfbericht Baugrund an den AG", text: "Zusage aus der Baubesprechung.", due: shiftDay(today, 3),
+    },
   ];
 
   const signedAt = new Date();

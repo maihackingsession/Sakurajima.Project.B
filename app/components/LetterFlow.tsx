@@ -11,6 +11,7 @@ import type { Tab } from "./Header";
 import DraftEditor, { NEW_APPROVAL, type Approval, type FlowInfo } from "./DraftEditor";
 import HeuteView from "./HeuteView";
 import MengenBox from "./MengenBox";
+import { useFocus } from "./Focus";
 import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 
@@ -35,6 +36,9 @@ export type LetterFlowHandle = { start: (text: string, letterType: LetterType, s
 type Props = {
   ref?: Ref<LetterFlowHandle>;
   onTab: (tab: Tab) => void;
+  onSettings: () => void;
+  /** Fristen & Verlauf on a day or with a letter open (week strip, „Zuletzt freigegeben“). */
+  onShowVerlauf: (req: { day?: string; letter?: string }) => void;
   /** Tells the page whether the start screen (big nameplate) is showing. */
   onStartScreen?: (start: boolean) => void;
 };
@@ -48,7 +52,7 @@ const LOADER: Record<Exclude<Busy, "">, { label: string; steps?: string[] }> = {
   letter: { label: "Anzeige wird entworfen", steps: ["Sammle die Fakten", "Formuliere das Schreiben", "Prüfe auf Vollständigkeit"] },
 };
 
-export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
+export default function LetterFlow({ ref, onTab, onSettings, onShowVerlauf, onStartScreen }: Props) {
   const [step, setStep] = useState<Step>("input");
   const [input, setInput] = useState("");
   const [letterType, setLetterType] = useState<LetterType>("behinderung");
@@ -173,6 +177,19 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     scrollTop();
   }
 
+  // Focus mode: Rückfragen and Schreiben replace the masthead with the slim bar; „← Zurück“ = Heute.
+  const short = shortType(LETTER_LABELS[letterType]);
+  useFocus(
+    "heute",
+    step !== "input" || busy === "prepare"
+      ? {
+          title: step === "draft" ? `${short} · Schreiben` : `${short} · Rückfragen`,
+          status: step === "draft" ? (approval.status === "freigegeben" ? "Freigegeben" : "Entwurf") : "",
+          onBack: restart,
+        }
+      : null,
+  );
+
   useImperativeHandle(ref, () => ({ start: (text, type, from) => prepare(text, type, from) }));
 
   const errorView = error && <div className="mt-8"><ErrorBox message={error} onRetry={() => retry.current?.()} /></div>;
@@ -192,13 +209,13 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     <div ref={topRef} className="scroll-mt-24">
       {step === "input" && (
         <>
-          <HeuteView onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment, language: d.language })} onTab={onTab} />
+          <HeuteView onSettings={onSettings} onShowDay={(day) => onShowVerlauf({ day })} onOpenLetter={(letter) => onShowVerlauf({ letter })} onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment, language: d.language })} onTab={onTab} />
           {errorView}
         </>
       )}
 
       {step === "questions" && (
-        <section className="fade-in">
+        <section className="rise-in">
           <p className={kicker}>{shortType(typeLabel)}</p>
           <h1 className={h1}>{shortType(typeLabel)}</h1>
           {reason && <p className="-mt-2 line-clamp-2 text-[18px] text-[var(--grey)] italic">{reason}</p>}

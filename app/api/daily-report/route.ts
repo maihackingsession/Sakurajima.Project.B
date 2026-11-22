@@ -15,7 +15,7 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
     .join("\n")
     .slice(0, 20000);
   if (!lines) throw new PromptError("Keine Einträge für diesen Tag.", 400);
-  const r = await runPrompt<Partial<DailyReportResult>>("daily-report", { date, entries: lines }, { effort: "low", mock: ctx.mock });
+  const r = await runPrompt<Partial<DailyReportResult>>("daily-report", { date, entries: lines }, { effort: "low", mock: ctx.mock, settings: ctx.settings });
   const out = {} as DailyReportResult;
   for (const k of DAILY_REPORT_KEYS) out[k] = typeof r[k] === "string" ? (r[k] as string).trim() : "";
   return out;

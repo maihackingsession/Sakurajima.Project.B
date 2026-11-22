@@ -6,6 +6,7 @@ import { urgency } from "@/lib/dates";
 import { LETTER_LABELS, type Deviation, type DeviationResult, type LetterType } from "@/lib/types";
 import type { DraftSource } from "./LetterFlow";
 import { errorText, postJson } from "../lib/api";
+import { useBeispiel } from "../lib/store";
 import { euro, numberFact } from "../lib/checks";
 import { loadSamples } from "../lib/samples";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, listHead, meta, shortType } from "../lib/ui";
@@ -26,6 +27,7 @@ export function draftText(d: Deviation) {
 const STEPS = ["Lese den Bericht", "Vergleiche mit dem Bauzeitenplan", "Bewerte Abweichungen"];
 
 export default function DeviationTab({ initialText = "", onDraft, embedded = false }: Props & { embedded?: boolean }) {
+  const beispiel = useBeispiel();
   const [text, setText] = useState(initialText);
   const [result, setResult] = useState<DeviationResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -95,7 +97,7 @@ export default function DeviationTab({ initialText = "", onDraft, embedded = fal
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
             {text.trim() && <button className={`${btnPrimary} open-in`} onClick={check}>Bericht prüfen</button>}
-            <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>
+            {beispiel && <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>}
           </div>
           {error && <div className="mt-8"><ErrorBox message={error} onRetry={check} /></div>}
         </section>
