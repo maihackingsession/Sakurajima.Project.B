@@ -1,5 +1,5 @@
 import { jsonRoute, PromptError, runPrompt } from "@/lib/claude";
-import project from "@/data/project.json";
+import { signer } from "@/lib/settings";
 import { mengenBlocker, mengenCalc, mengenPromptBlock } from "@/lib/mengen";
 import { stripDraftLines, stripDraftSubject, stripSignoff } from "@/lib/text";
 import { isLetterType, UNKNOWN, type Letter } from "@/lib/types";
@@ -32,7 +32,7 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
     {
       mockVariant: body.letter_type,
       effort: "medium",
-      mock: ctx.mock,
+      mock: ctx.mock, settings: ctx.settings,
       // Beispielmodus: the typed deadline answer goes into the prepared letter.
       mockTransform: (m) => {
         const answers = (body.answers && typeof body.answers === "object" ? body.answers : {}) as Record<string, unknown>;
@@ -52,7 +52,7 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
     recipient: str(letter.recipient),
     salutation: str(letter.salutation) || "Sehr geehrte Damen und Herren,",
     // The template adds closing + signature; remove any the model wrote into the body.
-    body: stripSignoff(stripDraftLines(str(letter.body)), [project.auftragnehmer.name, project.bauleiter.name, project.bauleiter.funktion]),
+    body: stripSignoff(stripDraftLines(str(letter.body)), [ctx.settings.absender.firma, signer(ctx.settings).name, signer(ctx.settings).funktion].filter(Boolean)),
     closing: str(letter.closing) || "Mit freundlichen Grüßen",
     legal_basis: str(letter.legal_basis),
     deadline_hint: str(letter.deadline_hint),

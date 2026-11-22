@@ -31,7 +31,7 @@ export const POST = jsonRoute<Body>(async (body, ctx) => {
       mockVariant: polish && body.letter_type === "behinderung" ? "behinderung-pl" : body.letter_type,
       effort: "low",
       fast: true,
-      mock: ctx.mock,
+      mock: ctx.mock, settings: ctx.settings,
       // Questions in German although the input is not → one retry with a clear note.
       validate: (r) =>
         inputLanguage && inputLanguage !== "de" && (r as Partial<GapsResult>)?.language === "de"

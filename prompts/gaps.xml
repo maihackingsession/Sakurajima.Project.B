@@ -1,4 +1,4 @@
-<!-- v3 (Version 2: alle Angaben für einen versandfertigen Brief, max. 6). v1 in prompts/archive/gaps.v1.xml -->
+<!-- v4: Projektdaten = Einstellungen. v3 (Version 2: alle Angaben für einen versandfertigen Brief, max. 6). v1 in prompts/archive/gaps.v1.xml -->
 <!--
   Platzhalter: {letter_type}, {user_input}, {facts}, {required_fields} (aus data/required_fields.json),
                {project_context}, {today}
@@ -15,7 +15,7 @@ Sprache der Rückfragen: {input_language}
 </task>
 
 <context>
-Projektdaten (gelten als bekannt und werden NIE erfragt: Bauvorhaben, Auftraggeber, Tragwerksplaner des AG, Vertragsnummer, Vertragsgrundlage, Nachunternehmer und ihre Adressen, Bauleiter):
+Projektdaten aus den Einstellungen des Bauleiters (gelten ALLE als bekannt und werden NIE erfragt: Bauvorhaben, Baustelle, Auftraggeber mit Ansprechpartner und Adresse, Vertragsnummer, Vertragsgrundlage, weitere Beteiligte mit Rolle/Name/Firma – z. B. Tragwerksplaner, Architekt –, Nachunternehmer und ihre Adressen, Bauleiter, Absender):
 {project_context}
 
 Heutiges Datum: {today}
@@ -27,6 +27,7 @@ Heutiges Datum: {today}
 
 <rules>
 Never invent facts. Ask only for what is truly missing.
+- Nie nach etwas fragen, das in den Projektdaten steht (z. B. den Namen des Tragwerksplaners, wenn er unter "weitere_beteiligte" eingetragen ist).
 Use only facts from the input, the answers and the project data. Never take facts from examples.
 - Höchstens 6 Fragen, die wichtigste zuerst. Zuerst die Pflichtangaben aus required_fields, dann alles andere, was der Brief konkret nennen muss:
   - Namen von Personen und Firmen (z. B. wer angeordnet hat, welcher Nachunternehmer)

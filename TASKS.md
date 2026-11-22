@@ -322,7 +322,7 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - [x] Router-Tests neu (echte KI, 22.11.): 16 Fälle + #17 Mengenänderung → **17/17, 0 Leakage**, keine Wiederholung (17 Aufrufe). tests/results/router-22-11.md
 
 ## Final-2 (baufrist-final2-prompt.md, branch final-2)
-- [ ] A Fokusmodus + Einstellungen (baufrist-fokus-einstellungen-prompt.md)
+- [x] A Fokusmodus + Einstellungen: lib/settings.ts (Vorbelegung aus data/project.json), Speicherung in app/lib/store.ts (`baufrist:einstellungen`); postJson schickt die Einstellungen an jede KI-Route → {project_context} und Demo-Antworten (Namen ersetzt); Wetter-Ort per Open-Meteo Geocoding; Fokusleiste (Focus.tsx) für Eingabe, Rückfragen, Schreiben, Tagesbericht, neues Ereignis, Einstellungen; Reiter „Tagesbericht“ öffnet heute, „Frühere Tage“; „2 fällig“ in der Kopfzeile; Zeile „Beispielprojekt · Einstellungen anpassen →“. Entscheidung: „← Zurück“ im offenen Eingabefeld verwirft den Text (wie „Verwerfen“, Status zeigt „Nicht gespeichert“). Getestet im Demo-Modus: Brief (Empfänger, Anrede, Absenderzeile, Datumszeile, Unterschrift), Stempel, Druckblatt, Tagesbericht-PDF, Kopfzeile zeigen neue Werte.
 - [ ] B Unklare Zuständigkeit (Router `unklar`, eine Frage mit zwei Knöpfen, Router-Tests → tests/results/router-final2.md)
 - [ ] C Kleine Fehler (Kopfzeilen-Datum, „Beispielmodus beenden“)
 - [ ] D Logo = Kran (CraneMark, Favicon)

@@ -1,5 +1,5 @@
-import { jsonRoute, PromptError, requireText, runPrompt } from "@/lib/claude";
-import project from "@/data/project.json";
+import { jsonRoute, PromptError, requireText, runPrompt, type RouteContext } from "@/lib/claude";
+import type { Settings } from "@/lib/settings";
 import { LETTER_TYPES, type LetterType, type RouterResult } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -24,7 +24,7 @@ function validate(reply: unknown) {
 }
 
 // Minimal project meta only: no participant names, no schedule, no samples.
-const PROJECT_META = `Projekt: ${project.bauvorhaben}. "Wir" = Auftragnehmer (Bauunternehmen des Bauleiters). "Auftraggeber"/"Bauherr" = unser Vertragspartner; Architekt/Planer gehören zum Auftraggeber. "Nachunternehmer"/"Subunternehmer" = von uns beauftragte Firmen.`;
+const projectMeta = (s: Settings) => `Projekt: ${s.projekt.bezeichnung}. "Wir" = Auftragnehmer (Bauunternehmen des Bauleiters). "Auftraggeber"/"Bauherr" = unser Vertragspartner; Architekt/Planer gehören zum Auftraggeber. "Nachunternehmer"/"Subunternehmer" = von uns beauftragte Firmen.`;
 
 // Demo-Modus only (no API key): crude keyword guess, no prepared facts.
 function guess(text: string): RouterReply {
@@ -41,24 +41,24 @@ function guess(text: string): RouterReply {
   return r("keine", "Normaler Baufortschritt – keine Anzeige nötig.");
 }
 
-async function ask(input: string, date: string, mock: boolean, retryNote: string) {
+async function ask(input: string, date: string, ctx: RouteContext, retryNote: string) {
   return runPrompt<RouterReply>(
     "router",
-    { user_input: input, entry_date: date || "unbekannt", project_meta: PROJECT_META, retry_note: retryNote },
-    { effort: "low", fast: true, maxTokens: 1000, mock, validate, mockTransform: () => guess(input) },
+    { user_input: input, entry_date: date || "unbekannt", project_meta: projectMeta(ctx.settings), retry_note: retryNote },
+    { effort: "low", fast: true, maxTokens: 1000, mock: ctx.mock, validate, mockTransform: () => guess(input) },
   );
 }
 
 export const POST = jsonRoute<{ input?: unknown; date?: unknown }>(async (body, ctx) => {
   const input = requireText(body.input, "eine Beschreibung");
   const date = typeof body.date === "string" ? body.date.slice(0, 20) : "";
-  let reply = await ask(input, date, ctx.mock, "");
+  let reply = await ask(input, date, ctx, "");
   if (validate(reply)) throw new PromptError("Die Antwort der KI war ungültig. Bitte erneut versuchen.");
 
   // Leakage check: a reason naming sample facts that are not in the input → one retry, then a warning.
   if (leakedWords(String(reply.reason ?? ""), input).length) {
     console.warn("[ki] route=router wiederholung=fremde_fakten");
-    const again = await ask(input, date, ctx.mock, "- Nenne nur Fakten aus der Eingabe.");
+    const again = await ask(input, date, ctx, "- Nenne nur Fakten aus der Eingabe.");
     if (!validate(again)) reply = again;
     const still = leakedWords(String(reply.reason ?? ""), input);
     if (still.length) console.warn(`[ki] route=router warnung=fremde_fakten woerter=${still.join(",")}`);

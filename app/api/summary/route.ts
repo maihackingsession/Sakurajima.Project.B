@@ -7,7 +7,7 @@ const list = (v: unknown) => (Array.isArray(v) ? v : []);
 
 export const POST = jsonRoute<{ input?: unknown }>(async (body, ctx) => {
   const text = requireText(body.input, "Text zum Zusammenfassen", 30000);
-  const r = await runPrompt<SummaryResult>("summary", { user_input: text }, { effort: "medium", mock: ctx.mock });
+  const r = await runPrompt<SummaryResult>("summary", { user_input: text }, { effort: "medium", mock: ctx.mock, settings: ctx.settings });
   return {
     summary: typeof r.summary === "string" ? r.summary : "",
     decisions: list(r.decisions).map(String),

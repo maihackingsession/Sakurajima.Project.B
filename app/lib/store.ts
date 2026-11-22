@@ -3,6 +3,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { DEFAULT_SETTINGS, normalizeSettings, type Settings } from "@/lib/settings";
 import type { LetterType } from "@/lib/types";
 
 const CHANGED = "baufrist:store";
@@ -226,12 +227,6 @@ export function useWeatherSnapshot(day: string) {
   );
 }
 
-// ---------- Small settings ----------
-
-export const prefs = {
-  approver: (fallback: string) => readJSON("baufrist:freigeber", fallback),
-  setApprover: (name: string) => writeJSON("baufrist:freigeber", name),
-};
 
 // ---------- Approved letters (Fristen & Verlauf) ----------
 
@@ -288,4 +283,98 @@ export async function getPhoto(id: string): Promise<Blob | null> {
   } catch {
     return null;
   }
+}
+
+// ---------- Einstellungen (preset: data/project.json via lib/settings.ts) ----------
+
+const SETTINGS_KEY = "baufrist:einstellungen";
+let settingsRaw: string | null | undefined;
+let settingsCache: Settings = DEFAULT_SETTINGS;
+
+/** Saved settings or the preset. Stable snapshot for useSyncExternalStore. */
+export function getSettings(): Settings {
+  let now: string | null = null;
+  try {
+    now = localStorage.getItem(SETTINGS_KEY);
+  } catch {
+    now = null;
+  }
+  if (now !== settingsRaw) {
+    settingsRaw = now;
+    try {
+      settingsCache = now ? normalizeSettings(JSON.parse(now)) : DEFAULT_SETTINGS;
+    } catch {
+      settingsCache = DEFAULT_SETTINGS;
+    }
+  }
+  return settingsCache;
+}
+
+export function useSettings() {
+  return useSyncExternalStore(subscribe, getSettings, () => DEFAULT_SETTINGS);
+}
+
+export function saveSettings(s: Settings) {
+  const old = getSettings();
+  writeJSON(SETTINGS_KEY, s);
+  // Another weather place: the cached weather of every day is for the old place.
+  if (old.projekt.lat !== s.projekt.lat || old.projekt.lon !== s.projekt.lon) {
+    try {
+      for (const k of Object.keys(localStorage)) if (k.startsWith("baufrist:wetter:")) localStorage.removeItem(k);
+    } catch {
+      // blocked storage: nothing cached anyway
+    }
+    window.dispatchEvent(new CustomEvent(CHANGED, { detail: "baufrist:wetter" }));
+  }
+}
+
+// ---------- Today (re-read every minute and when the tab becomes visible) ----------
+
+function subscribeClock(onChange: () => void) {
+  const t = setInterval(onChange, 60_000);
+  document.addEventListener("visibilitychange", onChange);
+  return () => {
+    clearInterval(t);
+    document.removeEventListener("visibilitychange", onChange);
+  };
+}
+
+/** Today's day (YYYY-MM-DD) in the browser's local time; "" on the server. Never fixed at build time. */
+export function useToday() {
+  return useSyncExternalStore(subscribeClock, () => isoDay(), () => "");
+}
+
+// ---------- Beispielmodus (?beispiel=1; kept for this browser tab only) ----------
+
+const BEISPIEL_KEY = "baufrist:beispiel";
+
+/** On with ?beispiel=1 in the address; stays on in this tab (sessionStorage) until „Beispielmodus beenden“. */
+export function beispielOn() {
+  if (typeof window === "undefined") return false;
+  const param = new URLSearchParams(window.location.search).get("beispiel");
+  try {
+    if (param === "1") sessionStorage.setItem(BEISPIEL_KEY, "1");
+    if (param === "0") sessionStorage.removeItem(BEISPIEL_KEY);
+    return sessionStorage.getItem(BEISPIEL_KEY) === "1";
+  } catch {
+    return param === "1";
+  }
+}
+
+export function useBeispiel() {
+  return useSyncExternalStore(subscribe, beispielOn, () => false);
+}
+
+/** Switches the Beispielmodus off: removes the flag and the address parameter. */
+export function endBeispiel() {
+  try {
+    sessionStorage.removeItem(BEISPIEL_KEY);
+    localStorage.removeItem(BEISPIEL_KEY);
+  } catch {
+    // nothing stored
+  }
+  const url = new URL(window.location.href);
+  url.searchParams.delete("beispiel");
+  window.history.replaceState(null, "", url);
+  window.dispatchEvent(new CustomEvent(CHANGED, { detail: BEISPIEL_KEY }));
 }

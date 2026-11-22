@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { formatDate } from "@/lib/dates";
 import { LETTER_LABELS } from "@/lib/types";
-import { dateLine, exportDocx, paragraphs, senderLine, signature } from "../lib/export";
+import { dateLine, exportDocx, paragraphs, senderLine, signatureLines } from "../lib/export";
 import {
   addEntry,
   clearAll,
@@ -15,6 +15,7 @@ import {
   KIND_LABEL,
   updateEntry,
   useEntries,
+  useSettings,
   type Entry,
   type EntryKind,
 } from "../lib/store";
@@ -24,6 +25,7 @@ import { DEADLINE_LABEL, countdown, letterDateOf, letterOf, type VerlaufEntry } 
 import { loadDemo } from "../lib/demo";
 import { approvalTime, PrintSheet } from "./DraftEditor";
 import { EntryText } from "./HeuteView";
+import { useFocus } from "./Focus";
 import VoiceField from "./VoiceField";
 
 const firstLine = (s: string) => s.split("\n")[0].trim();
@@ -184,6 +186,7 @@ function EventRow({ entry }: { entry: Entry }) {
 
 /** „Neues Ereignis“ inline: kind, title, description, date + time, for „Frist“ the due day. Saved in the same store as the entries. */
 function EventForm({ onDone }: { onDone: () => void }) {
+  useFocus("verlauf", { title: "Neues Ereignis", onBack: onDone });
   const now = new Date();
   const [kind, setKind] = useState<EntryKind>("notiz");
   const [title, setTitle] = useState("");
@@ -249,6 +252,7 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
   const date = letterDateOf(entry);
   const title = LETTER_LABELS[entry.type];
   const [error, setError] = useState("");
+  const settings = useSettings();
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -263,7 +267,7 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
   async function word() {
     setError("");
     try {
-      await exportDocx(letter, title, false, date);
+      await exportDocx(letter, title, false, date, settings);
     } catch {
       setError("Word-Export fehlgeschlagen. Bitte erneut versuchen.");
     }
@@ -302,10 +306,10 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
             <p>Freigegeben</p>
             <div aria-hidden className="mx-auto mt-[10px] h-[2px] w-16 bg-[var(--accent)]" />
           </div>
-          <p className="border-b border-[var(--rule)] pb-2 font-sans text-[12px] text-[var(--grey)]">{senderLine}</p>
+          <p className="border-b border-[var(--rule)] pb-2 font-sans text-[12px] text-[var(--grey)]">{senderLine(settings)}</p>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:justify-between">
             <p className="whitespace-pre-line">{letter.recipient}</p>
-            <p className="shrink-0 whitespace-nowrap sm:pt-[4.95em] sm:text-right">{dateLine(date)}</p>
+            <p className="shrink-0 whitespace-nowrap sm:pt-[4.95em] sm:text-right">{dateLine(settings, date)}</p>
           </div>
           <p className="mt-7 font-bold whitespace-pre-line">{letter.subject}</p>
           <p className="mt-6">{letter.salutation}</p>
@@ -313,7 +317,7 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
             <p key={i} className="mt-4 whitespace-pre-line">{p}</p>
           ))}
           <p className="mt-6">{letter.closing}</p>
-          <p className="mt-1 whitespace-pre-line">{signature.join("\n")}</p>
+          <p className="mt-1 whitespace-pre-line">{signatureLines(settings).join("\n")}</p>
           <div className="stamp absolute top-[52%] right-[8%] border-[3px] border-[var(--urgent)] bg-white/70 px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]" aria-hidden>
             <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
             <p className="mt-[6px] font-sans text-[12px] font-bold whitespace-nowrap">{approvalTime(entry.approvedAt)} · {entry.approvedBy}</p>

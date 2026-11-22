@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import situations from "@/tests/situations.json";
 import { formatDate } from "@/lib/dates";
 import { isLetterType, LETTER_LABELS, LETTER_TYPES, type LetterType, type RouterResult } from "@/lib/types";
 import { postJson } from "../lib/api";
 import { loadDemo } from "../lib/demo";
-import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, savePhoto, updateEntry, useEntries, type Entry } from "../lib/store";
+import { isDefaultSettings } from "@/lib/settings";
+import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, savePhoto, updateEntry, useEntries, useSettings, useToday, type Entry } from "../lib/store";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, recBtn, sectionLabel, shortType } from "../lib/ui";
 import { useDueItems } from "../lib/useVerlauf";
+import { useFocus } from "./Focus";
 import type { Tab } from "./Header";
 import { RecDot } from "./Status";
 import { PhotoButton, Thumb } from "./Photo";
@@ -24,12 +26,12 @@ type Props = {
   /** Starts the existing flow: Rückfragen → Schreiben. */
   onDraft: (d: EntryDraft) => void;
   onTab: (tab: Tab) => void;
+  onSettings: () => void;
 };
 
-const noop = () => () => {};
-const todayKey = () => isoDay();
-const headDate = () => {
-  const d = new Date();
+const headDate = (day: string) => {
+  if (!day) return "";
+  const d = dayDate(day);
   const wd = d.toLocaleDateString("de-DE", { weekday: "short" }).replace(".", "");
   return `${wd}, ${formatDate(d)}`;
 };
@@ -86,9 +88,11 @@ export function EntryText({ text }: { text: string }) {
   );
 }
 
-export default function HeuteView({ onDraft, onTab }: Props) {
-  const today = useSyncExternalStore(noop, todayKey, () => "");
-  const head = useSyncExternalStore(noop, headDate, () => "");
+export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
+  // Same source as the masthead date: the browser's today, re-read every minute.
+  const today = useToday();
+  const head = headDate(today);
+  const settings = useSettings();
   const all = useEntries();
   const todays = entriesOfDay(all, today).reverse();
   const due = useDueItems().slice(0, 3);
@@ -101,6 +105,8 @@ export default function HeuteView({ onDraft, onTab }: Props) {
   const fieldRef = useRef<HTMLTextAreaElement & HTMLInputElement>(null);
   const dictation = useDictation((t) => setText((v) => (v.trim() ? `${v.trimEnd()} ${t}` : t)));
   const isOpen = writing || !!text.trim() || dictation.recording;
+  // Focus mode while the input is open; „← Zurück“ closes it (the text is discarded, as with „Verwerfen“).
+  useFocus("heute", isOpen ? { title: "Neuer Eintrag", status: text.trim() ? "Nicht gespeichert" : "", onBack: discard } : null);
 
   // A check that was running when the page was closed is started again.
   const resumed = useRef(false);
@@ -160,6 +166,11 @@ export default function HeuteView({ onDraft, onTab }: Props) {
   return (
     <div>
       <section className="fade-in" aria-labelledby="h-heute">
+        {isDefaultSettings(settings) && (
+          <p className="-mt-4 mb-5 font-sans text-[13px] text-[var(--grey)]">
+            Beispielprojekt · <button className="min-h-11 underline underline-offset-[3px] hover:text-[var(--accent)]" onClick={onSettings}>Einstellungen anpassen →</button>
+          </p>
+        )}
         <p className={kicker}>Heute{head ? ` · ${head}` : ""}</p>
         {today && <WeatherLine day={today} />}
         <h1 id="h-heute" className={h1}>Was ist auf der Baustelle passiert?</h1>

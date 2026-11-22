@@ -130,3 +130,7 @@ a:hover { color: var(--accent); }
     print-color-adjust: exact;
   }
 }
+
+/* Crane mark (components/CraneMark.tsx): the top block is set down once on the first page load. */
+.crane-drop { animation: craneDrop .8s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes craneDrop { 0% { opacity: 0; transform: translateY(-34px); } 70% { opacity: 1; } 100% { opacity: 1; transform: none; } }
