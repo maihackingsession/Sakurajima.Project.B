@@ -390,3 +390,11 @@ export function endBeispiel() {
   window.history.replaceState(null, "", url);
   window.dispatchEvent(new CustomEvent(CHANGED, { detail: BEISPIEL_KEY }));
 }
+
+// ---------- Small view preferences (e.g. „Kalender · Liste“) ----------
+
+/** A remembered string choice in this browser; falls back when storage is blocked. */
+export function usePref<T extends string>(key: string, fallback: T): [T, (v: T) => void] {
+  const value = useSyncExternalStore(subscribe, () => readJSON<T>(key, fallback), () => fallback);
+  return [value, (v: T) => writeJSON(key, v)];
+}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { formatDate } from "@/lib/dates";
+import { formatDate, parseGermanDate } from "@/lib/dates";
 import { LETTER_LABELS } from "@/lib/types";
 import { dateLine, exportDocx, paragraphs, senderLine, signatureLines } from "../lib/export";
 import {
@@ -15,7 +15,10 @@ import {
   KIND_LABEL,
   updateEntry,
   useEntries,
+  usePref,
+  useBeispiel,
   useSettings,
+  useToday,
   type Entry,
   type EntryKind,
 } from "../lib/store";
@@ -27,6 +30,9 @@ import { approvalTime, PrintSheet } from "./DraftEditor";
 import { EntryText } from "./HeuteView";
 import { useFocus } from "./Focus";
 import VoiceField from "./VoiceField";
+import Calendar from "./Calendar";
+import Empty from "./Empty";
+import { shortDay, useCalendarItems, type DayItem } from "../lib/calendar";
 
 const firstLine = (s: string) => s.split("\n")[0].trim();
 const dayHead = (day: string) => dayDate(day).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -46,13 +52,32 @@ function TypeKicker({ e }: { e: VerlaufEntry }) {
 /** One row of the timeline: an entry/event or an approved letter. */
 type Item = { key: string; day: string; time: string; entry?: Entry; letter?: VerlaufEntry };
 
-export default function VerlaufTab({ onOpenDay }: { onOpenDay?: (day: string) => void }) {
+/** A request from another screen to show a day (n changes on every request). */
+export type ShowDay = { day: string; n: number } | null;
+
+type Props = { onOpenDay?: (day: string) => void; showDay?: ShowDay };
+
+export default function VerlaufTab({ onOpenDay, showDay }: Props) {
   const { saved, entries: letters } = useVerlaufEntries();
   const events = useEntries();
   const due = useDueItems().filter((d) => d.urgent);
+  const byDay = useCalendarItems();
+  const today = useToday();
+  const beispiel = useBeispiel();
+  const [view, setView] = usePref<"kalender" | "liste">("baufrist:verlauf-ansicht", "kalender");
+  const [picked, setPicked] = useState("");
+  const selected = picked || today;
   const [openId, setOpenId] = useState("");
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  // Other screens (week strip on „Heute“) can open a day.
+  const [handled, setHandled] = useState(0);
+  if (showDay && showDay.n !== handled) {
+    setHandled(showDay.n);
+    setPicked(showDay.day);
+    setView("kalender");
+    setOpenId("");
+  }
 
   const open = letters.find((e) => e.id === openId);
   if (open) return <SavedLetter entry={open} onBack={() => setOpenId("")} />;
@@ -63,30 +88,38 @@ export default function VerlaufTab({ onOpenDay }: { onOpenDay?: (day: string) =>
   ].sort((a, b) => `${b.day} ${b.time}`.localeCompare(`${a.day} ${a.time}`));
   const days = [...new Set(items.map((i) => i.day))];
   const anything = saved.length > 0 || events.length > 0;
+  const toggle = (v: "kalender" | "liste", label: string) => (
+    <button onClick={() => setView(v)} aria-pressed={view === v} className={`min-h-11 ${view === v ? "font-bold text-[var(--ink)]" : "text-[var(--grey)] underline underline-offset-[3px] hover:text-[var(--accent)]"}`}>{label}</button>
+  );
 
   return (
     <div className="fade-in">
-      <p className={kicker}>Zeitachse</p>
-      <h1 className={h1}>Fristen & Verlauf</h1>
+      <div className="flex items-start justify-between gap-4">
+        <p className={kicker}>Fristen & Verlauf</p>
+        <p className="-mt-3 flex items-center gap-x-2 font-sans text-[14px]" aria-label="Ansicht">
+          {toggle("kalender", "Kalender")}<span aria-hidden className="text-[var(--grey)]">·</span>{toggle("liste", "Liste")}
+        </p>
+      </div>
+      <h1 className={h1}>Was steht an?</h1>
 
-      {adding ? (
-        <EventForm onDone={() => setAdding(false)} />
+      {adding !== null ? (
+        <EventForm initialDate={adding || today} onDone={() => setAdding(null)} />
       ) : (
-        <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={() => setAdding(true)}>Neues Ereignis</button>
+        <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={() => setAdding("")}>Eintrag für anderen Tag</button>
       )}
 
       {due.length > 0 && (
-        <section className="mt-12" aria-labelledby="h-faellig-v">
-          <h2 id="h-faellig-v" className={`${sectionLabel} !text-[var(--urgent)] !border-[var(--urgent)]`}>Fällig</h2>
+        <section className="mt-10" aria-labelledby="h-faellig-v">
+          <h2 id="h-faellig-v" className={`${sectionLabel} !border-[var(--urgent)] !text-[var(--urgent)]`}>Fällig</h2>
           <ul>
             {due.map((d) => (
               <li key={d.id}>
                 <button
-                  onClick={() => letters.some((l) => l.id === d.id) && setOpenId(d.id)}
-                  className="flex w-full flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-[var(--rule)] py-4 text-left"
+                  onClick={() => (letters.some((l) => l.id === d.id) ? setOpenId(d.id) : setPicked(isoDay(parseGermanDate(d.deadline) ?? new Date())))}
+                  className="flex min-h-11 w-full items-baseline justify-between gap-x-4 border-b border-[var(--rule)] py-2 text-left text-[var(--urgent)]"
                 >
-                  <span className="font-serif text-[21px] leading-[1.25] font-semibold">{d.title}</span>
-                  <span className="font-sans text-[12px] font-bold tracking-[.04em] text-[var(--urgent)] uppercase">{d.status}</span>
+                  <span className="min-w-0 truncate font-serif text-[18px] font-semibold">{d.title}</span>
+                  <span className="shrink-0 font-sans text-[12px] font-bold tracking-[.04em] uppercase">{d.status}</span>
                 </button>
               </li>
             ))}
@@ -94,9 +127,14 @@ export default function VerlaufTab({ onOpenDay }: { onOpenDay?: (day: string) =>
         </section>
       )}
 
-      {items.length === 0 ? (
-        <p className="mt-10 text-[var(--grey)]">Noch keine Ereignisse.</p>
-      ) : (
+      {view === "kalender" && today ? (
+        <>
+          <Calendar today={today} selected={selected} onSelect={setPicked} byDay={byDay} />
+          <DayList key={selected} day={selected} items={byDay.get(selected) ?? []} onOpenLetter={setOpenId} onOpenDay={onOpenDay} onAdd={() => setAdding(selected)} />
+        </>
+      ) : view === "liste" && items.length === 0 ? (
+        <Empty text="Noch keine Einträge." />
+      ) : view === "liste" ? (
         days.map((day) => (
           <section key={day} className="mt-12" aria-label={dayHead(day)}>
             <h2 className={`${sectionLabel} flex flex-wrap items-baseline justify-between gap-x-4`}>
@@ -125,9 +163,9 @@ export default function VerlaufTab({ onOpenDay }: { onOpenDay?: (day: string) =>
             </ul>
           </section>
         ))
-      )}
+      ) : null}
 
-      {events.length === 0 && (
+      {events.length === 0 && beispiel && (
         <button className={`${greyLink} mt-2 text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>
       )}
 
@@ -145,6 +183,67 @@ export default function VerlaufTab({ onOpenDay }: { onOpenDay?: (day: string) =>
         </div>
       )}
     </div>
+  );
+}
+
+/** Items of the selected day under the calendar: time, type kicker, title, „Öffnen“ / „Datum ändern“. */
+function DayList({ day, items, onOpenLetter, onOpenDay, onAdd }: { day: string; items: DayItem[]; onOpenLetter: (id: string) => void; onOpenDay?: (day: string) => void; onAdd: () => void }) {
+  const head = dayDate(day).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
+  return (
+    <section className="fade-in mt-8" aria-live="polite" aria-label={head}>
+      <h2 className={sectionLabel}>{head}</h2>
+      {items.length === 0 ? (
+        <div className="py-4">
+          <Empty text="Nichts eingetragen." />
+          <button className={linkBtn} onClick={onAdd}>Eintrag am {shortDay(day)} anlegen</button>
+        </div>
+      ) : (
+        <ul>
+          {items.map((i) => <DayRow key={i.key} item={i} onOpenLetter={onOpenLetter} onOpenDay={onOpenDay} />)}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function DayRow({ item, onOpenLetter, onOpenDay }: { item: DayItem; onOpenLetter: (id: string) => void; onOpenDay?: (day: string) => void }) {
+  const [moving, setMoving] = useState(false);
+  const e = item.entry;
+  const [date, setDate] = useState(e?.date ?? "");
+  const tone = item.mark === "frist" || e?.check?.status === "done" && e.check.letterType ? "text-[var(--urgent)]" : item.mark === "schreiben" ? "text-[var(--accent)]" : "text-[var(--grey)]";
+  const kickerText = e?.check?.status === "done" && e.check.letterType ? LETTER_LABELS[e.check.letterType].split(" (")[0] : item.kicker;
+  const dateField = "min-h-11 border-0 border-b border-[var(--ink)] bg-transparent font-sans text-[16px]";
+  return (
+    <li className="border-b border-[var(--rule)] py-3">
+      <p className="flex flex-wrap items-baseline gap-x-3 font-sans text-[12px] font-bold tracking-[.06em] uppercase">
+        {item.time && <span className="font-semibold tracking-normal text-[var(--grey)] normal-case">{item.time} Uhr</span>}
+        <span className={tone}>{kickerText}</span>
+      </p>
+      <p className="mt-1 line-clamp-2 font-serif text-[19px] leading-[1.3] font-semibold">{item.title}</p>
+      {moving && e ? (
+        <form
+          className="mt-2 flex flex-wrap items-end gap-x-4"
+          onSubmit={(ev) => {
+            ev.preventDefault();
+            if (date) updateEntry(e.id, { date });
+            setMoving(false);
+          }}
+        >
+          <input type="date" aria-label="Datum" className={dateField} value={date} onChange={(ev) => setDate(ev.target.value)} required />
+          <button type="submit" className={linkBtn}>Übernehmen</button>
+          <button type="button" className={greyLink} onClick={() => setMoving(false)}>Abbrechen</button>
+        </form>
+      ) : (
+        <p className="flex flex-wrap gap-x-5">
+          {item.letter ? (
+            <button className={`${linkBtn} text-[13px]`} onClick={() => onOpenLetter(item.letter!.id)}>Öffnen</button>
+          ) : (
+            onOpenDay && <button className={`${linkBtn} text-[13px]`} onClick={() => onOpenDay(e!.date)}>Öffnen</button>
+          )}
+          {e && item.mark !== "frist" && <button className={`${greyLink} text-[13px]`} onClick={() => setMoving(true)}>Datum ändern</button>}
+        </p>
+      )}
+    </li>
   );
 }
 
@@ -184,14 +283,14 @@ function EventRow({ entry }: { entry: Entry }) {
   );
 }
 
-/** „Neues Ereignis“ inline: kind, title, description, date + time, for „Frist“ the due day. Saved in the same store as the entries. */
-function EventForm({ onDone }: { onDone: () => void }) {
-  useFocus("verlauf", { title: "Neues Ereignis", onBack: onDone });
+/** „Eintrag für anderen Tag“ inline: kind, title, description, date + time, for „Frist“ the due day. Saved in the same store as the entries. */
+function EventForm({ onDone, initialDate }: { onDone: () => void; initialDate: string }) {
+  useFocus("verlauf", { title: "Eintrag für anderen Tag", onBack: onDone });
   const now = new Date();
   const [kind, setKind] = useState<EntryKind>("notiz");
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
-  const [date, setDate] = useState(isoDay(now));
+  const [date, setDate] = useState(initialDate || isoDay(now));
   const [time, setTime] = useState(clock(now));
   const [due, setDue] = useState("");
   const field = "min-h-11 border-0 border-b border-[var(--ink)] bg-transparent font-sans text-[16px]";
@@ -206,8 +305,8 @@ function EventForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form onSubmit={save} className="open-in border-t-2 border-[var(--ink)] pt-3" aria-label="Neues Ereignis">
-      <p className="font-sans text-[13px] font-extrabold tracking-[.04em] uppercase">Neues Ereignis</p>
+    <form onSubmit={save} className="open-in border-t-2 border-[var(--ink)] pt-3" aria-label="Eintrag für anderen Tag">
+      <p className="font-sans text-[13px] font-extrabold tracking-[.04em] uppercase">Eintrag für anderen Tag</p>
       <div className="mt-4">
         <label htmlFor="ev-kind" className={label}>Art</label>
         <select id="ev-kind" className={`${field} font-semibold`} value={kind} onChange={(e) => setKind(e.target.value as EntryKind)}>

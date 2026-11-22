@@ -134,3 +134,9 @@ a:hover { color: var(--accent); }
 /* Crane mark (components/CraneMark.tsx): the top block is set down once on the first page load. */
 .crane-drop { animation: craneDrop .8s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes craneDrop { 0% { opacity: 0; transform: translateY(-34px); } 70% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+
+/* Calendar (components/Calendar.tsx): month change fades and slides 8px in the arrow's direction. */
+.cal-next { animation: calNext .25s cubic-bezier(.2,.7,.2,1) both; }
+.cal-prev { animation: calPrev .25s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes calNext { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+@keyframes calPrev { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
