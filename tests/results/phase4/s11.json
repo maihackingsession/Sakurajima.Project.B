@@ -32,10 +32,10 @@
   },
   "letter": {
     "subject": "Bedenkenanzeige gem. § 4 Abs. 3 VOB/B – Betongüte C25/30 für die Tiefgarage\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
-    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
-    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrter Herr Prof. Jagtap,",
     "body": "gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgeschriebene Betongüte C25/30 für die Betonierarbeiten der Tiefgarage mit.\n\nDer in der Planung vorgeschriebene Beton C25/30 entspricht nach unserer Einschätzung nicht der Expositionsklasse, die für die Tiefgarage maßgebend ist. Auf unsere Hinweise hat der Planer angeordnet, den Beton unverändert zu belassen. [Plan- bzw. Positionsnummer der Vorgabe einsetzen] [Zugrunde gelegte Expositionsklasse einsetzen]\n\nBei Ausführung mit der vorgeschriebenen Betongüte besteht [mögliche Folgen einsetzen, z. B. Beeinträchtigung der Dauerhaftigkeit des Bauteils].\n\nWir bitten Sie, die Vorgabe prüfen zu lassen und uns bis zum [Frist für Ihre Entscheidung einsetzen] schriftlich mitzuteilen, wie ausgeführt werden soll. Vorsorglich weisen wir auf § 13 Abs. 3 VOB/B hin.",
-    "closing": "Mit freundlichen Grüßen\nThomas Berger\nBauleiter\nMusterbau GmbH",
+    "closing": "Mit freundlichen Grüßen\nYuzhi Shao\nBauleiter\nMusterbau GmbH",
     "legal_basis": "§ 4 Abs. 3 VOB/B (Bedenkenanzeige), § 13 Abs. 3 VOB/B (Haftungsfreistellung) – bitte prüfen",
     "deadline_hint": "Vor Beginn der Betonierarbeiten Tiefgarage per E-Mail und Einschreiben an den Auftraggeber senden – Zugang dokumentieren. Anordnung des Planers, den Beton zu belassen, nach Möglichkeit schriftlich bestätigen lassen und beilegen.",
     "missing": [

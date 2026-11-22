@@ -4,9 +4,12 @@ import { useState } from "react";
 import type { SummaryResult } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadSamples } from "../lib/samples";
-import { btnPrimary, greyLink, h1, kicker, sectionLabel } from "../lib/ui";
+import { btnPrimary, greyLink, h1, kicker, linkBtn, sectionLabel } from "../lib/ui";
+import { addEntry, clock, dayDate, isoDay, useBeispiel } from "../lib/store";
+import { formatDate } from "@/lib/dates";
 import CraneLoader, { atLeast } from "./CraneLoader";
 import { ErrorBox } from "./Status";
+import VoiceField from "./VoiceField";
 
 const STEPS = ["Lese die Einträge", "Finde offene Punkte", "Schreibe die Zusammenfassung"];
 
@@ -19,7 +22,24 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function SummaryTab({ initialText = "" }: { initialText?: string }) {
+/** The summary as plain text for the Tagesbericht entry. */
+function summaryText(r: SummaryResult) {
+  const list = (title: string, items: string[]) => (items.length ? `${title}:\n${items.map((i) => `– ${i}`).join("\n")}` : "");
+  return [
+    r.summary,
+    list("Fristen und Termine", r.deadlines.map((d) => `${d.date}: ${d.what}`)),
+    list("Entscheidungen", r.decisions),
+    list("Offene Punkte", r.open_items.map((o) => [o.task, o.owner, o.due].filter(Boolean).join(" · "))),
+    list("Risiken", r.risks),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+export default function SummaryTab({ initialText = "", onOpenDay }: { initialText?: string; onOpenDay?: (day: string) => void }) {
+  const beispiel = useBeispiel();
+  const [saveDay, setSaveDay] = useState("");
+  const [savedDay, setSavedDay] = useState("");
   const [text, setText] = useState(initialText);
   const [result, setResult] = useState<SummaryResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -42,6 +62,8 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
     setError("");
     try {
       setResult(await atLeast(900, postJson<SummaryResult>("/api/summary", { input: text })));
+      setSavedDay("");
+      setSaveDay(isoDay());
     } catch (e) {
       setError(errorText(e));
     } finally {
@@ -56,21 +78,22 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
   return (
     <div className="fade-in">
       <section>
-        <p className={kicker}>Protokoll · Bautagebuch · E-Mails</p>
-        <h1 className={h1}>Zusammenfassen</h1>
+        <p className={kicker}>Protokolle · E-Mails</p>
+        <h1 className={h1}>Unterlagen</h1>
         <div>
-          <textarea
+          <VoiceField
             id="docs"
-            aria-label="Text zum Zusammenfassen"
+            label="Text zum Zusammenfassen"
+            multiline
             className={`line-field overflow-y-auto ${result ? "min-h-28 max-h-40" : "min-h-40 max-h-[45vh]"}`}
             placeholder="Text hier einfügen …"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={setText}
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-            {text.trim() && <button className={`${btnPrimary} open-in`} onClick={summarise}>Zusammenfassen</button>}
-            <button className={greyLink} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
-            <button className={greyLink} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
+            {text.trim() && (result ? <button className={linkBtn} onClick={summarise}>Neu zusammenfassen</button> : <button className={`${btnPrimary} open-in`} onClick={summarise}>Zusammenfassen</button>)}
+            {beispiel && <button className={greyLink} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>}
+            {beispiel && <button className={greyLink} onClick={() => load("email")}>Beispiel laden: E-Mails</button>}
           </div>
           {error && <div className="mt-8"><ErrorBox message={error} onRetry={summarise} /></div>}
         </div>
@@ -118,6 +141,31 @@ export default function SummaryTab({ initialText = "" }: { initialText?: string 
               <Section title="Risiken">
                 <ul>{result.risks.map((r, i) => <li key={i} className={row}>{r}</li>)}</ul>
               </Section>
+            )}
+          </div>
+
+          <div className="mt-12 border-t border-[var(--ink)] pt-4">
+            {savedDay ? (
+              <p role="status" className="flex flex-wrap items-center gap-x-4">
+                <span className={kicker}>Im Tagesbericht vom {formatDate(dayDate(savedDay), true)} gespeichert</span>
+                {onOpenDay && <button className={linkBtn} onClick={() => onOpenDay(savedDay)}>Zum Tagesbericht →</button>}
+              </p>
+            ) : (
+              <form
+                className="flex flex-wrap items-end gap-x-5 gap-y-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!saveDay) return;
+                  addEntry({ kind: "zusammenfassung", date: saveDay, time: clock(), title: "Zusammenfassung", text: summaryText(result) });
+                  setSavedDay(saveDay);
+                }}
+              >
+                <div>
+                  <label htmlFor="sum-day" className="block font-sans text-[12px] font-bold tracking-[.06em] text-[var(--grey)] uppercase">Datum</label>
+                  <input id="sum-day" type="date" className="min-h-11 border-0 border-b border-[var(--ink)] bg-transparent font-sans text-[16px]" value={saveDay} onChange={(e) => setSaveDay(e.target.value)} required />
+                </div>
+                <button type="submit" className={`${btnPrimary} w-full min-[600px]:w-auto`}>Als Tagesbericht speichern</button>
+              </form>
             )}
           </div>
         </section>

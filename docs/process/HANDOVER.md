@@ -49,6 +49,39 @@ Product name **Baufrist – Bauleiter-Assistent**. Demo dates are relative to to
 12. **Test set:** 21 situations, `npm run test:letters`, report in tests/results/report.md (20/21 correct, 0 invented facts).
 13. Models: router + Rückfragen on claude-haiku-5-5 (ANTHROPIC_FAST_MODEL); letters, report check and summary on claude-sonnet-5-5.
 
+### Version 2 (branch features-v2, done – not merged into main yet)
+Goal: the Bauleiter is never overwhelmed – one main action per screen, everything else folded away.
+Tabs: **Heute · Tagesberichte · Fristen & Verlauf · Zusammenfassen**.
+
+14. **Names:** client contact Herr Prof. Jagtap (no first name), Bauleiter Yuzhi Shao (stamp „Y. SHAO“).
+15. **Rückfragen without [Klammern]:** gaps asks every missing fact for a send-ready letter (max. 6, project facts never asked); each answer has „Weiß ich nicht“; „Schreiben erstellen“ only when all are answered or marked; the letter prompt never outputs placeholders. Safety net in code: leftover `[…]` → „Angabe fehlt: …“ field above the letter that replaces the bracket in place (no AI call); Freigeben locked while one is left.
+16. **VoiceField:** one text field component with „● Sprechen“ (existing browser dictation), used for every text input; hidden button without speech support.
+17. **Heute (start screen):** one field → „Speichern“ stores the entry at once (no AI), then the existing router checks it in the background („wird geprüft …“) → „… EMPFOHLEN · Schreiben entwerfen →“ or „Im Tagesbericht gespeichert“. „Heute festgehalten“ (today's entries) and „Fällig“ (max. 3 deadlines).
+18. **Tagesberichte:** list of days (entries, weather, status Entwurf / Abgezeichnet / Anzeige); day view with entries (edit, change date/time), „Bericht aus Einträgen erstellen“ (`/api/daily-report`, new prompt, sorts entries into Personal, Geräte, Arbeiten, Lieferungen, Anordnungen & Besucher, Behinderungen & Mängel, Sonstiges – nothing invented), „Mit Bauzeitenplan prüfen“ (existing deviation check), PDF, „Abzeichnen“. „Fremden Bericht einfügen“ = the old Tagesbericht check, folded.
+19. **Wetter:** `/api/weather?date=` via Open-Meteo (free, no key) with the project coordinates; cached per date in the browser; on failure „Wetter eintragen“ by hand; never invented.
+20. **Fristen & Verlauf:** „Neues Ereignis“ inline (Notiz, Anordnung, Lieferung, Behinderung, Mangel, Frist; date/time changeable); one timeline grouped by day; events and entries share one store and show up in the Tagesbericht of their date.
+21. **Zusammenfassen → „Als Tagesbericht speichern“** at a chosen date.
+22. **Demo data** for all of the above without API („Beispieldaten laden“ on empty lists).
+23. Optional: photo per entry (IndexedDB, resized in the browser, never sent to the AI; letter lists it as Anlage).
+24. Storage: browser only (localStorage, photos in IndexedDB), all access in `app/lib/store.ts`.
+
+### Router-Fix + Teil 3 (branch teil-final, not merged into main)
+25. **Router v3:** strict type enum incl. „keine“, only the input text goes to the router, visible „KI nicht erreichbar“, no sample leakage (16/16 router tests, `npm run test:router`).
+26. **Rückfragen in the user's language:** questions, examples, the short explanation and the „Weiß ich nicht“ switch come translated from the gaps prompt; the letter stays formal German; all other UI stays German.
+27. **Stillstand count-up on every change:** 0.6 s ease-out from the old to the new value, instant under reduced motion.
+28. **Mengenänderung – Preisanpassung (§ 2 Abs. 3 VOB/B):** new letter type (router, Heute, Schreibenart wählen, Rückfragen, letter prompt, Prüfliste with 7 points, Fristen & Verlauf, Tagesbericht, demo data). The code (`lib/mengen.ts`) computes the deviation in %, the quantity above 110 % (Mehrmenge) or the < 90 % hint (Mindermenge); ≤ 10 % → no letter; no unit-price contract → red hint instead of the letter; AG order → Mehrkostenanzeige. The numbers go to the letter prompt as fixed values.
+29. **Wetter on Heute:** server route without fetch cache, browser retries and falls back to Open-Meteo directly.
+
+### Final-2 (branch final-2, not merged into main)
+30. **Fokusmodus + Einstellungen:** schmale Leiste (← Zurück · Titel · Speicherstatus) statt Kopfzeile, sobald eine Aufgabe offen ist; Reiter „Tagesbericht“ öffnet den heutigen Bericht; „2 fällig“ in der Kopfzeile. Einstellungen (Ich, Bauleitung, Absender, Projekt + Wetter-Ort über Open-Meteo Geocoding, Bauherr, weitere Beteiligte) im Browser; alle Stellen und Prompts lesen daraus.
+31. **Unklare Zuständigkeit:** Router-Status `unklar` → genau eine Frage mit zwei Knöpfen unter dem Eintrag (ohne weiteren KI-Aufruf).
+32. **Kleine Fehler:** Kopfzeilen-Datum im Browser und immer gleich „Heute · …“; Link „Beispielmodus beenden“.
+33. **Logo = Kran aus dem Loader** (`CraneMark`) + Favicon.
+34. **Fristen & Verlauf als Monatskalender** (Fällig, Kalender, Tagesliste, Umschalter Kalender · Liste).
+35. **Einfacher:** ein Begriff „Eintrag“, nur „Freigeben“, danach PDF / E-Mail (mailto), Demo-Links nur im Beispielmodus, Reiter „Unterlagen“, Bauzeitenplan in den Einstellungen, Hauptweg Eintrag → Empfehlung → Rückfragen → Schreiben → Freigeben → PDF/E-Mail.
+36. **Volle Seiten:** Kennzahlen, Als Nächstes, Diese Woche, Zuletzt freigegeben auf „Heute“, ab 1100px Seitenspalte, leere Zustände mit Kran, Impressum-Fußzeile; Adresse https://baufrist.vercel.app.
+37. **Ruhige Bewegung:** ein Bewegungssystem (`lib/motion.ts` + CSS-Variablen), nur opacity/transform, aus bei prefers-reduced-motion.
+
 ### Pitch only / next steps
 - Gegenseiten-Check „Aus Sicht des Auftraggebers prüfen“
 - „Dokumente prüfen“ (PDF upload)
@@ -181,7 +214,9 @@ Rotate the builder every 3–4 hours.
 
 ## 13. Current status
 
-Live: **https://sakurajima-project-b.vercel.app** (fallback: same URL with `?beispiel=1`)
+Live: **https://baufrist.vercel.app** (fallback: same URL with `?beispiel=1`)
+
+Version 2 (§3 items 14–24) is finished on branch `features-v2` (Vercel preview); `main`/live is still Version 1 until the merge is approved. Tested in demo mode at 375/768/1280 (scripts/screenshots.mjs); 3 real API calls as a counter-check (gaps, letter with „Weiß ich nicht“, daily-report): no brackets.
 
 - [x] Registered and accepted, Challenge B chosen
 - [x] Claude Code on laptop connected to GitHub

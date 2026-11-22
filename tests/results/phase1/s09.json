@@ -20,7 +20,7 @@
       {
         "field": "Anordnung durch wen + wann",
         "question": "Wie heißt der Elektroplaner des Bauherrn, und wer war bei der mündlichen Anordnung gestern (20.11.2026) dabei?",
-        "example": "Herr Meier vom Planungsbüro XY; anwesend waren Herr Berger und Herr Schneider"
+        "example": "Herr Meier vom Planungsbüro XY; anwesend waren Yuzhi Shao und Herr Schneider"
       },
       {
         "field": "Beginn der Ausführung",
@@ -41,8 +41,8 @@
   },
   "letter": {
     "subject": "Ankündigung von Mehrkosten gemäß § 2 Abs. 5 und Abs. 6 VOB/B – Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
-    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
-    "salutation": "Sehr geehrte Frau Dr. Lindner,",
+    "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr\nBoltzmannstraße 15\n85748 Garching bei München",
+    "salutation": "Sehr geehrter Herr Prof. Jagtap,",
     "body": "ENTWURF ZUR PRÜFUNG – nicht versendet.\n\nhiermit zeigen wir Ihnen gemäß § 2 Abs. 5 und Abs. 6 VOB/B an, dass für die nachfolgend beschriebene Leistung im Rahmen des oben genannten Bauvorhabens (Baustelle: Lichtenbergstraße 8, 85748 Garching bei München) Mehrkosten entstehen und wir hierfür einen Anspruch auf besondere bzw. geänderte Vergütung geltend machen.\n\nDer Elektroplaner des Bauherrn hat am 20.11.2026 mündlich angeordnet, dass zusätzlich Leerrohre für Ladesäulen in der Bodenplatte einzubauen sind. Nach unserer Kenntnis sind diese Leerrohre im bestehenden Vertrag nicht vorgesehen. Die Anordnung betrifft die Leistung „zusätzliche Leerrohre für Ladesäulen in der Bodenplatte“. Eine schriftliche Anordnung liegt uns bislang nicht vor; [Name des Elektroplaners einsetzen].\n\nDer geplante Beginn der Ausführung dieser Leistung ist [Beginn der Ausführung einsetzen]. Wir kündigen den Vergütungsanspruch hiermit vor Beginn der Ausführung an. Weitere Einzelheiten zu Art, Umfang und Lage der Leerrohre ([Anzahl, Lage und Spezifikation der Leerrohre einsetzen]) werden wir mit Ihnen bzw. Ihren Planern abstimmen.\n\nDie Mehrkosten werden wir gesondert beziffern; ein Nachtragsangebot wird folgen. Wir bitten Sie, uns die Anordnung schriftlich zu bestätigen und uns mitzuteilen, ob die Leistung wie angeordnet ausgeführt werden soll. Etwaige Auswirkungen auf Ausführungsfristen und den Bauablauf behalten wir uns ausdrücklich vor.",
     "closing": "Mit freundlichen Grüßen",
     "legal_basis": "§ 2 Abs. 5 und Abs. 6 VOB/B",

@@ -1,6 +1,6 @@
 # Demo-Ablauf (Hero-Story, alle Daten = heute)
 
-1. Vorbereitet: Tab A https://sakurajima-project-b.vercel.app · Tab B dieselbe URL mit `?beispiel=1` (Fallback, ohne KI). Browser-Zoom 100 %, Fenster 1280×720.
+1. Vorbereitet: Tab A https://baufrist.vercel.app · Tab B dieselbe URL mit `?beispiel=1` (Fallback, ohne KI). Browser-Zoom 100 %, Fenster 1280×720.
 2. Tab A → Reiter **„Tagesbericht“** (oben im blauen Kopf) → **„Beispiel laden“** (Bautagesbericht Nr. 16 von heute: Bewehrungspläne fehlen, 4 von 6 Leuten ohne Arbeit).
 3. **„Bericht prüfen“** → blaues Kran-Band „Tagesbericht wird geprüft …“ → rotes Band „Abweichung · Bautagesbericht <heute>“ · Überschrift z. B. **„Bodenplatte bewehren: Nicht begonnen“** · „Behinderungsanzeige empfohlen · Unverzüglich anzeigen – heute“. Darunter 6 Blöcke (4 rot = ohne Arbeit, 2 umgesetzt) und Ursache · Gefährdet · Pro Tag 1.856 €.
 4. **„Anzeige entwerfen“** → Kran-Band → Seite „Rückfragen · Behinderungsanzeige“, Rückfrage „Bis wann müssen die Pläne spätestens da sein?“ → tippen: **Regel: heute + 3 Tage, 12:00 Uhr** – z. B. am Samstag 21.11.2026 → **„24.11.2026, 12:00 Uhr“**, am Sonntag 22.11.2026 → **„25.11.2026, 12:00 Uhr“** → Enter.

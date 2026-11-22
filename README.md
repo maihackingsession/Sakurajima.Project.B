@@ -10,23 +10,25 @@ TUM.ai × BBIV, Challenge B: site managers lose money because formal notices und
 
 ## Main flow
 
-**Eintrag → Empfehlung → Rückfragen → Schreiben → Freigeben → PDF / Word / Text kopieren (für die E-Mail)**
+**Eintrag → Empfehlung → Rückfragen → Schreiben → Freigeben → PDF / E-Mail**
 
 1. **Eintrag:** type or dictate what happened, or paste a Tagesbericht.
-2. **Empfehlung:** Baufrist says which notice is needed, or that none is needed, or that the cause lies in the company's own area.
-3. **Rückfragen:** at most three short questions, only for facts that are missing.
+2. **Empfehlung:** Baufrist says which notice is needed, or that none is needed, or that the cause lies in the company's own area. If responsibility is unclear (e.g. "Der Trockenbauer hat die Wände schief gestellt" – our subcontractor or the client's?), it asks one question with two buttons instead of guessing.
+3. **Rückfragen:** short questions only for facts a send-ready letter still needs (max. 6, each with "Weiß ich nicht"), in the language of the input.
 4. **Schreiben:** a formal German letter (content based on VOB/B, layout based on DIN 5008) with the project and recipient data filled in.
 5. **Freigeben:** the letter stays an editable draft until the site manager approves it by name. Baufrist never sends anything.
-6. **Export:** PDF (print view), Word (.docx) or plain text to paste into an e-mail.
+6. **PDF / E-Mail:** after approval, "PDF herunterladen" and "Per E-Mail senden" (opens your own mail program with subject and text; you attach the PDF yourself). Word (.docx) and copy-as-text are also available.
 
 ## Features
 
-- Input by text, dictation (Web Speech API) or a pasted Tagesbericht.
+- **Heute:** entries by text or dictation (Web Speech API), optional photo per entry (stays in the browser, never sent to the AI), weather from Open-Meteo, key figures (open deadlines, notices this week, standstill cost so far), next steps from the Bauzeitenplan.
+- **Tagesbericht:** the day's entries become a daily report (PDF, sign-off); foreign reports can be pasted and checked.
 - Tagesbericht check against the Bauzeitenplan: what is late, and what follows from it.
 - Follow-up questions in the language of the input (tested with Polish and Turkish); the letter is always German.
 - Prüfliste per letter type, standstill cost estimate (workers × hours × rate), deadlines.
-- **Fristen & Verlauf:** approved letters with their deadlines ("heute fällig", "seit X Tagen").
-- **Zusammenfassen:** minutes, site diaries and e-mails summarised into decisions and to-dos.
+- **Fristen & Verlauf:** month calendar (or list) with entries, events, deadlines and approved letters; "heute fällig" on top.
+- **Einstellungen:** your name, company, project, client and other parties; letter, stamp, PDF, weather and all prompts use them. Stored in the browser.
+- **Unterlagen:** minutes, site diaries and e-mails summarised into decisions, deadlines and to-dos.
 - Approval stamp with name and time; exports of unapproved drafts carry an "ENTWURF" watermark.
 
 ## Letter types
@@ -36,6 +38,7 @@ TUM.ai × BBIV, Challenge B: site managers lose money because formal notices und
 | Behinderungsanzeige | § 6 Abs. 1 VOB/B; reservation of time (§ 6 Abs. 2) and costs (§ 6 Abs. 6) | Bauherr |
 | Mehrkostenanzeige | § 2 Abs. 5 / Abs. 6 VOB/B | Bauherr |
 | Bedenkenanzeige | § 4 Abs. 3 VOB/B, note on § 13 Abs. 3 VOB/B | Bauherr |
+| Mengenänderung – Preisanpassung | § 2 Abs. 3 VOB/B (deviation > 10 % from the LV quantity, calculated in code) | Bauherr |
 | Mängelanzeige | subcontract (NU-Vertrag): defect, deadline to fix, reservation of Ersatzvornahme | Nachunternehmer |
 
 Two more outcomes need no letter: **"Keine Anzeige nötig"** and **"Ursache im eigenen Bereich – bitte prüfen"**. In every letter the legal basis is marked "bitte prüfen".
@@ -45,7 +48,7 @@ Two more outcomes need no letter: **"Keine Anzeige nötig"** and **"Ursache im e
 ```
 Eintrag / Tagesbericht / dictation
   → Router       which letter? notice needed? own fault?
-  → Rückfragen   only missing required facts, max. 3
+  → Rückfragen   only missing required facts
   → Schreiben    formal German letter as JSON
   → Prüfliste, Kosten, Fristen, Freigabe   plain code, no AI
   → Export       PDF, Word, text
@@ -60,6 +63,9 @@ Each step is one function and one Claude call (`lib/claude.ts` → `runPrompt`).
 | Schreiben | `app/api/letter/route.ts` | `prompts/letter.xml` | `claude-sonnet-5-5` |
 | Tagesbericht vs. Bauzeitenplan | `app/api/deviation/route.ts` | `prompts/deviation.xml` | `claude-sonnet-5-5` |
 | Zusammenfassen | `app/api/summary/route.ts` | `prompts/summary.xml` | `claude-sonnet-5-5` |
+| Tagesbericht aus Einträgen | `app/api/daily-report/route.ts` | `prompts/daily-report.xml` | `claude-sonnet-5-5` |
+
+Weather (`app/api/weather/route.ts`) comes from Open-Meteo, without AI.
 
 The defaults are set in `lib/claude.ts` and can be overridden with `ANTHROPIC_MODEL` (letters, check, summary) and `ANTHROPIC_FAST_MODEL` (router, follow-up questions). Every prompt returns JSON, and each route checks and normalises it before it reaches the UI. Project data and the schedule are JSON files in `/data`. Diagram: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 
@@ -98,6 +104,8 @@ Open https://baufrist.vercel.app/?beispiel=1. Every step is answered from `data/
 
 ## Tests and results
 
+**Router test (22.11.2026, real AI, `node scripts/test-router.mjs`, cases in `tests/router-cases.json`):** **21/21** correct, incl. the unclear-responsibility cases; 0 sample-data leakage. Table: [tests/results/router-final2.md](tests/results/router-final2.md).
+
 `npm run test:letters -- <url>` sends 21 test situations (`tests/situations.json`) to a running app with a real key and writes `tests/results/report.md`. Measured on 21.11.2026 (Router and Rückfragen on Haiku, letter on Sonnet):
 
 - **Letter type correct: 20/21**, including 2× "Keine Anzeige nötig" and 2× "eigener Bereich". The one miss ("Bagger ausgefallen") was flagged "eigener Bereich – bitte prüfen"; the input doesn't say whose excavator it is.
@@ -111,8 +119,8 @@ Open https://baufrist.vercel.app/?beispiel=1. Every step is answered from `data/
 ## Known limitations
 
 - No login, no user accounts, no database.
-- Approvals and "Fristen & Verlauf" are stored only in the browser (localStorage); clearing the browser data deletes them.
-- Project data, schedule and recipients are fixed sample files in `/data`; there is no connection to real systems.
+- Entries, settings, approvals and "Fristen & Verlauf" are stored only in the browser (localStorage/IndexedDB); clearing the browser data deletes them, and nothing syncs between devices.
+- The Bauzeitenplan and sample data are fixed files in `/data`; there is no connection to real systems.
 - The text you enter is sent to the Claude API (Anthropic) to be analysed. Don't enter data you aren't allowed to share.
 - Dictation uses the browser's speech recognition, set to German; it works reliably only in Chrome/Edge and was not tested on real iPad or Android devices.
 - Not legal advice. Every letter is a draft and must be checked before it is sent.
@@ -129,7 +137,7 @@ Open https://baufrist.vercel.app/?beispiel=1. Every step is answered from `data/
 | `prompts/` | XML prompts (`archive/` = older versions) |
 | `data/` | sample project, schedule, required fields, sample documents, mocks |
 | `tests/` | test situations and results |
-| `docs/` | how it works, architecture, integration, screenshots; `docs/process/` = working notes from the hackathon |
+| `docs/` | how it works, architecture, integration, screenshots; `docs/process/` = working notes and reports from the hackathon |
 
 ## Team
 

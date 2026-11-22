@@ -13,17 +13,6 @@ export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () =
   );
 }
 
-/** The I-beam mark: ink beam, accent flange. */
-export function Logo({ size = 34 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" role="img" aria-label="Baufrist" className="shrink-0">
-      <rect x="4" y="4" width="24" height="5" fill="#121212" />
-      <rect x="13.5" y="9" width="5" height="14" fill="#121212" />
-      <rect x="4" y="23" width="24" height="5" fill="#2B5B84" />
-    </svg>
-  );
-}
-
 /** Red record dot (decorative). */
 export function RecDot({ blink = false, size = 9 }: { blink?: boolean; size?: number }) {
   return <span aria-hidden className={`dot inline-block shrink-0 bg-[var(--urgent)] ${blink ? "blink" : ""}`} style={{ width: size, height: size }} />;

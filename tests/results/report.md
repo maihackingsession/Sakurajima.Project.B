@@ -29,7 +29,7 @@ Live-URL: https://sakurajima-project-b.vercel.app · Router + Rückfragen: claud
 | s05: Frost, kein Betonieren möglich, Decke UG verschiebt sich | Behinderung | Behinderung | ja (1: seit wann) | 0 | brauchbar – Witterung jetzt richtig: nur Fristverlängerung, kein § 6 Abs. 6, keine Abhilfe-Frist |  | 13.7 s |
 | s06: In der Baubesprechung am 19.11.2026 hat Architekt Vogel angeordnet, im … | Mehrkosten | Mehrkosten | ja (0, alles da) | 0 | brauchbar |  | 10.2 s |
 | s07: AG will jetzt doch andere Fenster, größere Öffnungen in der Fassade No … | Mehrkosten | Mehrkosten | ja (2) | 0 | brauchbar – viele Platzhalter, weil Eingabe sehr knapp |  | 10.1 s |
-| s08: Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angew … | Mehrkosten | Mehrkosten | ja (0) | 0 | brauchbar |  | 8.8 s |
+| s08: Der Bauherr Herr Prof. Jagtap hat uns am 16.11.2026 schriftlich angew … | Mehrkosten | Mehrkosten | ja (0) | 0 | brauchbar |  | 8.8 s |
 | s09: zusätzlich noch leerrohre für ladesäulen in der bodenplatte, hat der e … | Mehrkosten | Mehrkosten | ja (1) | 0 | brauchbar – „gestern“ korrekt in Datum umgerechnet |  | 10.1 s |
 | s10: Laut Ausführungsplanung ist die Bodenplatte nur für Bodenfeuchte ausge … | Bedenken | Bedenken | ja (0) | 0 | brauchbar |  | 8.8 s |
 | s11: Der vorgeschriebene Beton C25/30 passt nicht zur Expositionsklasse für … | Bedenken | Bedenken | ja (1) | 0 | Nacharbeit – technische Begründung nur als Platzhalter; Formulierung „auf unsere Hinweise“ nicht aus der Eingabe |  | 11.3 s |
@@ -57,7 +57,7 @@ Live-URL: https://sakurajima-project-b.vercel.app · Router + Rückfragen: claud
 
 **Betreff:** Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Baustillstand · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist [betroffene Leistung/Bauteil einsetzen].
 
@@ -88,7 +88,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 **Betreff:** Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Sperrung der Zufahrt Nord, Aushub Bauabschnitt 2 · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist der Aushub im Bauabschnitt 2.
 
@@ -119,7 +119,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 **Betreff:** Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Fehlende Bewehrungspläne Bodenplatte · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.
 
@@ -151,7 +151,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 **Betreff:** Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Verdachtsobjekt (mögliche Kampfmittel) im Aushubbereich BA 2 · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind der Aushub und die Grundleitungen im Bereich BA 2.
 
@@ -182,7 +182,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 **Betreff:** Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Witterungsbedingte Behinderung der Betonarbeiten · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind die Betonarbeiten an der Decke über dem Untergeschoss ([genaues Bauteil bzw. Abschnitt einsetzen]).
 
@@ -208,7 +208,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 **Betreff:** Anzeige von Mehrkosten gem. § 2 Abs. 6 VOB/B – Pumpensumpf mit Hebeanlage, UG Achse B/3 · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 in der Baubesprechung am 19.11.2026 hat Herr Vogel (Architekt) angeordnet, im Untergeschoss, Achse B/3, zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen.
 
@@ -234,7 +234,7 @@ Wir bitten Sie, die Anordnung schriftlich zu bestätigen.
 
 **Betreff:** Mehrkostenanzeige gem. § 2 Abs. 5 und Abs. 6 VOB/B – Änderung der Fenster und Öffnungen in der Fassade Nord · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 der Auftraggeber hat [Datum der Anordnung einsetzen] [Art der Anordnung und anordnende Person einsetzen, z. B. Baubesprechung, E-Mail] angeordnet, in der Fassade Nord andere Fenster einzubauen und die Öffnungen zu vergrößern. Dadurch muss die Schalung geändert werden.
 
@@ -250,13 +250,13 @@ Wir bitten Sie, die Anordnung schriftlich zu bestätigen.
 
 ### s08 – Mehrkosten
 
-**Eingabe:** Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.
+**Eingabe:** Der Bauherr Herr Prof. Jagtap hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.
 
 **Erkannt:** Mehrkosten – Der Auftraggeber hat schriftlich eine vertiefte Aushubausführung angeordnet, die nicht im Vertrag enthalten ist, daher ist eine Mehrkostenanzeige sinnvoll.
 
 **Betreff:** Mehrkostenanzeige gem. § 2 Abs. 5 und 6 VOB/B – Tieferer Aushub der Baugrube (BA 1 und BA 2) und Verbau · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 mit Schreiben vom 16.11.2026 haben Sie uns wegen der geänderten Tiefgaragenplanung angewiesen, die Baugrube um 40 cm tiefer auszuheben. Betroffen sind der Aushub BA 1 und BA 2 sowie der Verbau.
 
@@ -281,7 +281,7 @@ Wir bitten Sie, die Anordnung vom 16.11.2026 schriftlich zu bestätigen.
 
 **Betreff:** Mehrkostenanzeige gem. § 2 Abs. 6 VOB/B – Zusätzliche Leerrohre für Ladesäulen in der Bodenplatte · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 am 20.11.2026 hat der Elektroplaner des Bauherrn [Name des Elektroplaners einsetzen] angeordnet, in der Bodenplatte zusätzlich Leerrohre für Ladesäulen herzustellen.
 
@@ -303,7 +303,7 @@ Wir bitten Sie, die Anordnung schriftlich zu bestätigen.
 
 **Betreff:** Bedenkenanzeige gem. § 4 Abs. 3 VOB/B – Abdichtung der Bodenplatte im Untergeschoss · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgesehene Abdichtung der Bodenplatte und des Untergeschosses mit.
 
@@ -328,7 +328,7 @@ Wir bitten Sie, die Planung prüfen zu lassen und uns bis zum [Frist für Ihre E
 
 **Betreff:** Bedenkenanzeige gem. § 4 Abs. 3 VOB/B – Betongüte C25/30 für die Tiefgarage · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgeschriebene Betongüte C25/30 für die Betonierarbeiten der Tiefgarage mit.
 
@@ -350,7 +350,7 @@ Wir bitten Sie, die Vorgabe prüfen zu lassen und uns bis zum [Frist für Ihre E
 
 **Betreff:** Bedenkenanzeige gem. § 4 Abs. 3 VOB/B – Betondeckung der Bewehrung, Kellerwände UG · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 gem. § 4 Abs. 3 VOB/B teilen wir Ihnen unsere Bedenken gegen die vorgesehene Betondeckung der Bewehrung der Kellerwände im Untergeschoss mit.
 
@@ -472,7 +472,7 @@ Nach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten du
 
 **Betreff:** Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Fehlende Bewehrungspläne Bodenplatte · Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.
 

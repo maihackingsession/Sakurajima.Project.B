@@ -10,7 +10,7 @@ Read HANDOVER.md, TASKS.md and CLAUDE.md first. This file (FINAL_PROMPT v2, Satu
 # SITUATION
 The app is live on Vercel with a real ANTHROPIC_API_KEY (production Demo-Modus is off; .env.local on this laptop has the key too). The backup video and the pitch-deck screenshots are made from the `freeze-candidate` version tonight, so that version must be finished by 21:00. Pitch is Sunday 13:00 in German, presented from this laptop on a projector. Reliability beats features.
 
-Live URL: https://sakurajima-project-b.vercel.app
+Live URL: https://baufrist.vercel.app
 
 ## Decisions already made (do not re-discuss)
 - Product name: **Baufrist**, subtitle "Bauleiter-Assistent". Tagline: "Ein Assistent für den Bauleiter – kein Ersatz."
@@ -51,7 +51,7 @@ Live URL: https://sakurajima-project-b.vercel.app
 Commit anything uncommitted. Create git tag `pre-final-v2` so we can always roll back.
 
 # PHASE 1 — Real-AI health check (20 min)
-- [MUST] Run the test set once against the LIVE URL (`npm run test:letters -- https://sakurajima-project-b.vercel.app`).
+- [MUST] Run the test set once against the LIVE URL (`npm run test:letters -- https://baufrist.vercel.app`).
 - [MUST] In TASKS.md, a short table per situation: expected vs detected type, number of follow-up questions, parse errors, errors, response time per step ON THE LIVE URL (these are the waits we will have on stage).
 - [MUST] Read every saved letter YOURSELF (no API call) and rate it: brauchbar / Nacharbeit / falsch + one-line reason (wrong type? weak questions? missing VOB/B logic? bad German?).
 - [MUST] Count "erfundene Fakten" per letter: any date, name, number, plan number, address or quantity in the letter that is NOT in the input or the answers and is not a [Platzhalter]. Add a column.

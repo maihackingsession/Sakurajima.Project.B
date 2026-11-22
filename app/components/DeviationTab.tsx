@@ -6,11 +6,13 @@ import { urgency } from "@/lib/dates";
 import { LETTER_LABELS, type Deviation, type DeviationResult, type LetterType } from "@/lib/types";
 import type { DraftSource } from "./LetterFlow";
 import { errorText, postJson } from "../lib/api";
+import { useBeispiel } from "../lib/store";
 import { euro, numberFact } from "../lib/checks";
 import { loadSamples } from "../lib/samples";
 import { btnPrimary, greyLink, h1, kicker, kickerUrgent, listHead, meta, shortType } from "../lib/ui";
 import CraneLoader, { atLeast } from "./CraneLoader";
 import { ErrorBox } from "./Status";
+import VoiceField from "./VoiceField";
 
 type Props = {
   initialText?: string;
@@ -18,13 +20,14 @@ type Props = {
 };
 
 /** Text handed to the letter flow: what happened, per the report and the plan. */
-function draftText(d: Deviation) {
+export function draftText(d: Deviation) {
   return [`${d.activity}: ${d.actual}`, `Geplant laut Bauzeitenplan: ${d.planned}`, d.explanation].filter(Boolean).join("\n");
 }
 
 const STEPS = ["Lese den Bericht", "Vergleiche mit dem Bauzeitenplan", "Bewerte Abweichungen"];
 
-export default function DeviationTab({ initialText = "", onDraft }: Props) {
+export default function DeviationTab({ initialText = "", onDraft, embedded = false }: Props & { embedded?: boolean }) {
+  const beispiel = useBeispiel();
   const [text, setText] = useState(initialText);
   const [result, setResult] = useState<DeviationResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -77,19 +80,24 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
     <div className="fade-in">
       {!result || showReport ? (
         <section>
-          <p className={kicker}>Abgleich mit dem Bauzeitenplan</p>
-          <h1 className={h1}>Tagesbericht prüfen</h1>
-          <textarea
+          {!embedded && (
+            <>
+              <p className={kicker}>Abgleich mit dem Bauzeitenplan</p>
+              <h1 className={h1}>Tagesbericht prüfen</h1>
+            </>
+          )}
+          <VoiceField
             id="report"
-            aria-label="Bautagesbericht"
+            label="Bautagesbericht"
+            multiline
             className="line-field max-h-[45vh] min-h-[120px] overflow-y-auto"
             placeholder="Bautagesbericht hier einfügen …"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={setText}
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
             {text.trim() && <button className={`${btnPrimary} open-in`} onClick={check}>Bericht prüfen</button>}
-            <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>
+            {beispiel && <button className={greyLink} onClick={loadExample}>{text.trim() ? "Anderes Beispiel laden" : "Beispiel laden"}</button>}
           </div>
           {error && <div className="mt-8"><ErrorBox message={error} onRetry={check} /></div>}
         </section>
@@ -124,7 +132,7 @@ export default function DeviationTab({ initialText = "", onDraft }: Props) {
 }
 
 /** A deviation that needs a letter: urgent kicker, headline, key facts, the main button. */
-function Notice({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
+export function Notice({ d, onDraft }: { d: Deviation; onDraft: () => void }) {
   const u = urgency(d.event_date);
   const type = shortType(LETTER_LABELS[d.suggested_letter as LetterType]);
   const status = d.actual.split(/[:.]/)[0].trim();

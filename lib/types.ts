@@ -1,6 +1,6 @@
 // Shared types and labels. Output keys must match the prompts in /prompts.
 
-export const LETTER_TYPES = ["behinderung", "mehrkosten", "bedenken", "maengel"] as const;
+export const LETTER_TYPES = ["behinderung", "mehrkosten", "bedenken", "maengel", "mengenaenderung"] as const;
 export type LetterType = (typeof LETTER_TYPES)[number];
 
 export const LETTER_LABELS: Record<LetterType, string> = {
@@ -8,6 +8,7 @@ export const LETTER_LABELS: Record<LetterType, string> = {
   mehrkosten: "Mehrkostenanzeige",
   bedenken: "Bedenkenanzeige",
   maengel: "Mängelanzeige (an Nachunternehmer)",
+  mengenaenderung: "Mengenänderung – Preisanpassung",
 };
 
 export function isLetterType(v: unknown): v is LetterType {
@@ -26,7 +27,7 @@ export type Letter = {
 };
 
 /** Router verdict for a letter situation: notice needed, no notice needed, or cause possibly in our own area. */
-export const OUTCOMES = ["anzeige", "keine_anzeige", "eigener_bereich"] as const;
+export const OUTCOMES = ["anzeige", "keine_anzeige", "eigener_bereich", "unklar"] as const;
 export type Outcome = (typeof OUTCOMES)[number];
 
 export type RouterResult = {
@@ -35,10 +36,17 @@ export type RouterResult = {
   outcome: Outcome;
   facts: Record<string, unknown>;
   reason: string;
+  /** Router v3: how sure the type is (0–1), null if the model gave none. */
+  confidence?: number | null;
+  /** Router v3: ISO code of the input language. */
+  language?: string;
+  /** Router v4: outcome "unklar" – who is responsible is not said. mangel → „Wessen Firma ist das?“, behinderung → „Wer ist zuständig?“. */
+  unclear?: "mangel" | "behinderung" | null;
 };
 
 export type GapQuestion = { field: string; question: string; example: string };
-export type GapsResult = { complete: boolean; questions: GapQuestion[] };
+/** language/intro/unknown_label: Rückfragen-Seite in the language of the input (teil3, Teil 1). */
+export type GapsResult = { complete: boolean; questions: GapQuestion[]; language?: string; intro?: string; unknown_label?: string };
 
 export type Deviation = {
   activity: string;
@@ -63,3 +71,10 @@ export type SummaryResult = {
   deadlines: { date: string; what: string }[];
   risks: string[];
 };
+
+/** Answer value for a Rückfrage marked „Weiß ich nicht“ (the letter prompt rephrases around it). */
+export const UNKNOWN = "Weiß ich nicht";
+
+/** Fields of a Bautagesbericht (route /api/daily-report, prompts/daily-report.xml). */
+export const DAILY_REPORT_KEYS = ["personal", "geraete", "arbeiten", "lieferungen", "anordnungen", "behinderungen", "sonstiges"] as const;
+export type DailyReportResult = Record<(typeof DAILY_REPORT_KEYS)[number], string>;

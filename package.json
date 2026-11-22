@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:letters": "node scripts/run-tests.mjs"
+    "test:letters": "node scripts/run-tests.mjs",
+    "test:router": "node scripts/test-router.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.12.0",

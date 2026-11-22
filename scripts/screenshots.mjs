@@ -78,6 +78,13 @@ window.__type = (sel, value) => {
   el.dispatchEvent(new Event("input", { bubbles: true }));
   return true;
 };
+window.__select = (sel, value) => {
+  const el = document.querySelector(sel);
+  if (!el) throw new Error("no select: " + sel);
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(el, value);
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+};
 window.__has = (text) => document.body.innerText.toLowerCase().includes(text.toLowerCase());
 // The situation box opens on click („Hier schreiben …“).
 window.__write = (value) => { if (!document.querySelector("#situation")) __click("Hier schreiben"); return true; };
@@ -166,7 +173,9 @@ async function run() {
       await shot("01-hauptseite");
     });
     await step("tagesbericht", async () => {
-      await js(`__click("Tagesbericht")`);
+      await js(`__click("Tagesberichte")`);
+      await sleep(200);
+      await js(`__click("Fremden Bericht einfügen")`);
       await sleep(200);
       await shot("02-tagesbericht-leer");
       await js(`__click("Beispiel laden")`);
@@ -203,6 +212,21 @@ async function run() {
       if (!(await js(`__has("9.280 €")`))) throw new Error("5 Tage ergeben nicht 9.280 €");
       await js(`__type("#cost-days", "1")`);
     });
+    await step("angabe-fehlt", async () => {
+      // Safety net: a [bracket] in the letter → „Angabe fehlt“ field, Freigeben locked, value replaces the bracket.
+      await js(`__click("Bearbeiten")`);
+      await sleep(150);
+      await js(`__type("#edit-body", document.querySelector("#edit-body").value + "\\n\\nAnsprechpartner ist [Name des Elektroplaners].")`);
+      await js(`__click("Fertig")`);
+      await waitFor("Angabe fehlt: Name des Elektroplaners");
+      if (!(await js(`[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "Freigeben").disabled`))) throw new Error("Freigeben nicht gesperrt");
+      await js(`window.scrollTo(0, 0)`);
+      await shot("06-angabe-fehlt");
+      await js(`__type("[id^=hole-]", "Herr Brandl")`);
+      await js(`__click("Einsetzen")`);
+      await waitFor("Ansprechpartner ist Herr Brandl.");
+      if (await js(`__has("Angabe fehlt")`)) throw new Error("Angabe fehlt noch sichtbar");
+    });
     await step("freigabe", async () => {
       await js(`__click("Freigeben")`);
       await sleep(150);
@@ -213,7 +237,7 @@ async function run() {
     });
     await step("verlauf", async () => {
       await js(`__click("Fristen & Verlauf")`);
-      await waitFor("Anstehende Fristen");
+      await waitFor("Neues Ereignis");
       await js(`window.scrollTo(0, 0)`);
       await shot("11-verlauf");
       await js(`__click("Frist zur Abhilfe")`);
@@ -221,22 +245,83 @@ async function run() {
       await shot("12-verlauf-schreiben");
       await js(`__click("Zurück zu Fristen")`);
       await sleep(150);
+      // New event dated yesterday must land in yesterday's Tagesbericht.
+      await js(`__click("Neues Ereignis")`);
+      await sleep(150);
+      await js(`__select("#ev-kind", "lieferung")`);
+      await js(`__type("#ev-title", "Betonstahl BSt 500 geliefert, 4,2 t")`);
+      await js(`(() => { const d = new Date(); d.setDate(d.getDate() - 1); const p = (n) => String(n).padStart(2, "0"); return __type("#ev-date", d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate())); })()`);
+      await shot("18-neues-ereignis");
+      await js(`[...document.querySelectorAll("form[aria-label='Neues Ereignis'] button[type=submit]")][0].click()`);
+      await waitFor("Betonstahl BSt 500");
+      await shot("19-zeitachse", true);
+      await js(`__click("Tagesberichte")`);
+      await sleep(200);
+      await js(`(() => { const d = new Date(); d.setDate(d.getDate() - 1); return __click(d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })); })()`);
+      await waitFor("Betonstahl BSt 500");
+      await shot("20-tagesbericht-gestern");
+      await js(`__click("Alle Tagesberichte")`);
+      await js(`__click("Fristen & Verlauf")`);
+      await sleep(200);
       await js(`__click("Verlauf löschen")`);
       await sleep(150);
       await shot("13-verlauf-loeschen");
       await js(`__click("Ja, löschen")`);
-      await waitFor(live ? "Noch keine freigegebenen" : "Beispiele aus der Demo");
+      await waitFor(live ? "Noch keine Ereignisse" : "Fristen & Verlauf");
       await shot("14-verlauf-leer");
     });
     if (live) continue;
-    await step("keine-anzeige", async () => {
+    await step("heute", async () => {
       await open();
       await js(`__write()`);
       await sleep(100);
-      await js(`__type("#situation", "Kran heute 2 Stunden ausgefallen, keine Auswirkung auf den Bauablauf, Puffer reicht.")`);
-      await js(`__click("Analysieren")`);
-      await waitFor("Trotzdem Entwurf erstellen");
-      await shot("08-keine-anzeige");
+      await js(`__type("#situation", "Beton für die Fundamente Achse A geliefert, 8 m³, eingebaut.")`);
+      await js(`__click("Speichern")`);
+      await waitFor("Im Tagesbericht gespeichert");
+      await js(`__write()`);
+      await sleep(100);
+      await js(`__type("#situation", "Bewehrung Bodenplatte kann nicht anfangen, Pläne vom Tragwerksplaner des AG fehlen seit heute früh. 4 von 6 Leuten ohne Arbeit.")`);
+      // Photo: a generated JPEG through the hidden file input.
+      await js(`(async () => {
+        const c = document.createElement("canvas"); c.width = 1600; c.height = 1200;
+        const g = c.getContext("2d"); g.fillStyle = "#8a8a8a"; g.fillRect(0, 0, 1600, 1200); g.fillStyle = "#2B5B84"; g.fillRect(200, 300, 1200, 500);
+        const blob = await new Promise((r) => c.toBlob(r, "image/jpeg"));
+        const dt = new DataTransfer(); dt.items.add(new File([blob], "baustelle.jpg", { type: "image/jpeg" }));
+        const input = document.querySelector("input[type=file]"); input.files = dt.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        return true;
+      })()`);
+      await waitFor("Foto entfernen");
+      await js(`__click("Speichern")`);
+      await waitFor("empfohlen");
+      await shot("08-heute");
+      await js(`__click("Schreiben entwerfen")`);
+      await waitFor("Eine Angabe fehlt");
+      await shot("08-heute-rueckfrage");
+      if (await js(`!!document.querySelector("input[id=q0]")`)) await js(`__type("input[id=q0]", "24.11.2026, 12:00 Uhr")`);
+      await js(`__click("Schreiben erstellen")`);
+      await waitFor("Anlage: Foto vom");
+      await js(`__click("Zurück zu Heute") || true`).catch(() => {});
+      await js(`__click("Neue Situation")`);
+      await sleep(300);
+    });
+    await step("tagesbericht-tag", async () => {
+      await js(`__click("Tagesberichte")`);
+      await sleep(300);
+      await shot("15-tagesberichte");
+      await js(`__click(new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" }))`);
+      await waitFor("Bericht aus Einträgen erstellen");
+      await js(`__click("Bericht aus Einträgen erstellen")`);
+      await waitFor("Behinderungen & Mängel");
+      await js(`window.scrollTo(0, 0)`);
+      await shot("16-tagesbericht-tag", true);
+      await js(`__click("Abzeichnen")`);
+      await sleep(150);
+      await js(`__click("Abzeichnen bestätigen")`);
+      await waitFor("Abgezeichnet ·");
+      await js(`__click("Mit Bauzeitenplan prüfen")`);
+      await waitFor("Anzeige entwerfen");
+      await shot("17-tagesbericht-plan", true);
     });
     await step("zusammenfassen", async () => {
       await open();
@@ -248,6 +333,26 @@ async function run() {
       await waitFor("Fristen und Termine");
       await js(`window.scrollTo(0, 0)`);
       await shot("09-zusammenfassen");
+      await js(`__click("Als Tagesbericht speichern")`);
+      await waitFor("Im Tagesbericht vom");
+      await shot("09-zusammenfassen-gespeichert", true);
+      await js(`__click("Zum Tagesbericht")`);
+      await waitFor("Zusammenfassung");
+      await shot("09-zusammenfassen-tagesbericht");
+    });
+    await step("beispieldaten", async () => {
+      await js("localStorage.clear(); true");
+      await open();
+      await js(`__click("Beispieldaten laden")`);
+      await waitFor("Behinderungsanzeige empfohlen");
+      await shot("21-heute-beispiel", true);
+      await js(`__click("Tagesberichte")`);
+      await waitFor("Abgezeichnet");
+      await shot("22-tagesberichte-beispiel");
+      await js(`__click("Fristen & Verlauf")`);
+      await waitFor("Bewehrungspläne Bodenplatte (Zusage");
+      await shot("23-verlauf-beispiel", true);
+      await js("localStorage.clear(); true");
     });
     await step("fehler", async () => {
       await open();
@@ -255,8 +360,8 @@ async function run() {
       await js(`__write()`);
       await sleep(100);
       await js(`__type("#situation", "Bewehrungspläne fehlen")`);
-      await js(`__click("Analysieren")`);
-      await waitFor("Erneut versuchen");
+      await js(`__click("Speichern")`);
+      await waitFor("KI nicht erreichbar");
       await shot("10-fehler");
     });
   }

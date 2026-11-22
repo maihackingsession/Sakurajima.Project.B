@@ -38,7 +38,7 @@ const first15 = rows.filter((r) => Number(r.id.slice(1)) <= 15);
 const c15 = first15.filter((r) => det(r) === r.expected).length;
 const good15 = first15.filter((r) => R[r.id][2].startsWith("brauchbar")).length;
 let md = `# Testlauf Phase 4 – ${new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" })}\n\n`;
-md += `Live-URL: https://sakurajima-project-b.vercel.app · Router + Rückfragen: claude-haiku-5-5 · Schreiben: claude-sonnet-5-5\n\n`;
+md += `Live-URL: https://baufrist.vercel.app · Router + Rückfragen: claude-haiku-5-5 · Schreiben: claude-sonnet-5-5\n\n`;
 md += `## Zusammenfassung\n\n`;
 md += `- **Typ korrekt: ${correct}/${rows.length}** (inkl. 2× „Keine Anzeige nötig“ und 2× „Eigener Bereich“; einziger Abweichler s01 „Bagger ausgefallen“ → „eigener Bereich – bitte prüfen“, fachlich vertretbar)\n`;
 md += `- **Erfundene Fakten gesamt: ${invented}** (Daten, Namen, Zahlen, Plannummern, Adressen, Mengen, die weder in Eingabe/Antworten noch in den Projektdaten stehen)\n`;

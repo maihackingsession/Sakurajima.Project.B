@@ -2,6 +2,7 @@
   "bauvorhaben": "Neubau Bürogebäude Forschungscampus Garching",
   "baustelle": "Lichtenbergstraße 8, 85748 Garching bei München",
   "ort": "Garching",
+  "koordinaten": { "lat": 48.265, "lon": 11.671, "hinweis": "Garching Forschungszentrum, für das Wetter (Open-Meteo)" },
   "vertragsnummer": "BV-2026-0417",
   "vertragsgrundlage": "VOB/B",
   "auftraggeber": {

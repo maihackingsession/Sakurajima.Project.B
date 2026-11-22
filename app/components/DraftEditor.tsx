@@ -3,6 +3,9 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import project from "@/data/project.json";
+import { mengenCalc } from "@/lib/mengen";
+import { MOTION, reducedMotion } from "@/lib/motion";
+import { mailtoLink } from "@/lib/settings";
 import { LETTER_LABELS, type Letter, type LetterType } from "@/lib/types";
 import { checklist, euro, numberFact, placeholders } from "../lib/checks";
 import {
@@ -12,12 +15,15 @@ import {
   paragraphs,
   plainText,
   senderLine,
-  signature,
+  signatureLines,
   stripDraftLines,
   type Appendix,
 } from "../lib/export";
 import { deadlineOf, saveToVerlauf } from "../lib/verlauf";
+import { getSettings, useSettings } from "../lib/store";
 import { btnPrimary, h1, issueTitle, kicker, linkBtn, meta } from "../lib/ui";
+import MengenBox from "./MengenBox";
+import VoiceField from "./VoiceField";
 
 /** Review status of a draft. Only the user changes it. Approvals are remembered in this browser only. */
 export type Approval = { status: "entwurf" } | { status: "freigegeben"; by: string; at: string };
@@ -29,22 +35,6 @@ export type FlowInfo = Appendix & { aiSeconds: number | null };
 export function approvalTime(iso: string) {
   const d = new Date(iso);
   return `${d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}, ${d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr`;
-}
-
-function remember(key: string, value: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Private mode / blocked storage: approval still works for this session.
-  }
-}
-function recall<T>(key: string, fallback: T): T {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? (JSON.parse(v) as T) : fallback;
-  } catch {
-    return fallback;
-  }
 }
 
 /** Prints the open draft (not a letter opened from the Verlauf; see globals.css). */
@@ -115,23 +105,27 @@ export default function DraftEditor(props: Props) {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [asking, setAsking] = useState(false);
-  const [approver, setApprover] = useState(() => recall("baufrist:freigeber", project.bauleiter.name));
+  const settings = useSettings();
+  const [approver, setApprover] = useState(() => getSettings().ich.name);
 
   const isDraft = approval.status !== "freigegeben";
   const stampRef = useRef<HTMLDivElement>(null);
+  const standstill = useRef(0);
   // When approved, bring the stamp into view (it lands on the letter).
   useEffect(() => {
-    if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
   }, [isDraft]);
-  const checks = checklist(letterType, draft, facts, eventDate, !!flow.report);
+  const mengen = letterType === "mengenaenderung" ? mengenCalc(flow.input, facts, flow.answers) : null;
+  const checks = checklist(letterType, draft, facts, eventDate, !!flow.report, mengen);
   const open = checks.filter((c) => !c.ok).length;
   const appendix: Appendix = { input: flow.input, answers: flow.answers, createdAt: flow.createdAt, report: flow.report };
 
-  const set = (key: EditKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    onChange({ ...draft, [key]: e.target.value });
+  const set = (key: EditKey) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(key, e.target.value);
+  function setValue(key: EditKey, value: string) {
+    onChange({ ...draft, [key]: value });
     // Editing an approved letter voids the approval.
     if (approval.status === "freigegeben") onApprovalChange(NEW_APPROVAL);
-  };
+  }
 
   function approve(e: React.FormEvent) {
     e.preventDefault();
@@ -140,7 +134,6 @@ export default function DraftEditor(props: Props) {
     const at = new Date().toISOString();
     onChange({ ...draft, subject: stripDraftLines(draft.subject), body: stripDraftLines(draft.body) });
     onApprovalChange({ status: "freigegeben", by: name, at });
-    remember("baufrist:freigeber", name);
     // Fristen & Verlauf: only type, recipient, subject, approval, deadline and the letter text (this browser only).
     const body = stripDraftLines(draft.body);
     saveToVerlauf({
@@ -151,6 +144,7 @@ export default function DraftEditor(props: Props) {
       approvedAt: at,
       approvedBy: name,
       deadline: deadlineOf(body),
+      stillstand: letterType === "behinderung" ? standstill.current : undefined,
       text: { salutation: draft.salutation, body, closing: draft.closing },
     });
     setAsking(false);
@@ -161,7 +155,7 @@ export default function DraftEditor(props: Props) {
     setExporting(true);
     setError("");
     try {
-      await exportDocx(draft, title, isDraft, letterDate, appendix);
+      await exportDocx(draft, title, isDraft, letterDate, settings, appendix);
     } catch {
       setError("Word-Export fehlgeschlagen. Bitte erneut versuchen.");
     } finally {
@@ -172,7 +166,7 @@ export default function DraftEditor(props: Props) {
   async function copy() {
     setError("");
     try {
-      await copyText(plainText(draft));
+      await copyText(plainText(draft, settings));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -190,10 +184,21 @@ export default function DraftEditor(props: Props) {
     ...(draft.legal_basis ? [{ label: "Rechtsgrundlage", detail: draft.legal_basis }] : []),
     ...(draft.deadline_hint ? [{ label: "Frist / Form", detail: draft.deadline_hint }] : []),
   ];
-  const statusText = isDraft ? "Entwurf" : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
+  const statusText = isDraft
+    ? holeList.length > 0 ? `Entwurf · ${holeList.length === 1 ? "1 Angabe fehlt" : `${holeList.length} Angaben fehlen`}` : "Entwurf"
+    : `Freigegeben · ${approval.by}, ${approvalTime(approval.at)}`;
+
+  /** „Angabe fehlt“: the typed value replaces the [bracket] right in the text (no AI call). */
+  function fillHole(hole: string, value: string) {
+    const v = value.trim();
+    if (!v) return;
+    const fill = (s: string) => s.split(hole).join(v);
+    onChange({ ...draft, recipient: fill(draft.recipient), subject: fill(draft.subject), body: fill(draft.body) });
+    if (approval.status === "freigegeben") onApprovalChange(NEW_APPROVAL);
+  }
 
   return (
-    <section className="fade-in">
+    <section className="rise-in">
       {/* Intro */}
       <p className={kicker}>{title.split(" (")[0]}{basis ? ` · ${basis}` : ""}</p>
       <h1 className={`${h1} !mb-[10px] !text-[clamp(32px,4.2vw,46px)]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
@@ -218,7 +223,7 @@ export default function DraftEditor(props: Props) {
               required
             />
             {open > 0 && <span className="text-[13px] font-bold text-[var(--urgent)]">Offen: {open} {open === 1 ? "Punkt" : "Punkte"} der Prüfliste</span>}
-            <button type="submit" className={`${btnPrimary} min-h-[46px] px-[26px]`} disabled={!approver.trim()}>Freigabe bestätigen</button>
+            <button type="submit" className={`${btnPrimary} min-h-[46px] px-[26px]`} disabled={!approver.trim() || holeList.length > 0}>Freigabe bestätigen</button>
             <button type="button" className={linkBtn} onClick={() => setAsking(false)}>Abbrechen</button>
           </form>
         ) : (
@@ -227,15 +232,32 @@ export default function DraftEditor(props: Props) {
             <button className={linkBtn} onClick={word} disabled={exporting}>{exporting ? "Word …" : "Word"}</button>
             <button className={linkBtn} onClick={printSheet}>PDF</button>
             <button className={linkBtn} onClick={copy}>{copied ? "Kopiert ✓" : "Kopieren"}</button>
-            {isDraft && <button className={`${btnPrimary} min-h-[46px] px-[26px]`} onClick={() => setAsking(true)}>Freigeben</button>}
+            {isDraft && <button className={`${btnPrimary} min-h-[46px] px-[26px]`} onClick={() => setAsking(true)} disabled={holeList.length > 0} title={holeList.length > 0 ? "Erst alle fehlenden Angaben einsetzen" : undefined}>Freigeben</button>}
           </div>
         )}
       </div>
       {error && <p role="alert" className="mt-3 font-sans text-[14px] font-bold text-[var(--urgent)]">{error}</p>}
+      {holeList.length > 0 && (
+        <div className="mt-4" aria-label="Fehlende Angaben">
+          {holeList.map((h) => <MissingField key={h} hole={h} onFill={(v) => fillHole(h, v)} />)}
+        </div>
+      )}
+
+      {!isDraft && (
+        <div className="after-approve mt-5 border-b border-[var(--rule)] pb-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={printSheet}>PDF herunterladen</button>
+            <a className={linkBtn} href={mailtoLink(settings, letterType !== "maengel", draft.subject, letterDate)}>Per E-Mail senden</a>
+          </div>
+          <p className="mt-2 font-sans text-[13px] text-[var(--grey)]">Das PDF bitte selbst an die E-Mail anhängen – es wird nichts automatisch versendet.</p>
+        </div>
+      )}
+
+      {mengen && <MengenBox calc={mengen} />}
 
       {/* The letter in a thin black box. */}
       <article
-        className="relative mt-7 border border-[var(--ink)] p-[clamp(24px,5vw,52px)]"
+        className="sheet-in relative mt-7 overflow-x-clip border border-[var(--ink)] p-[clamp(24px,5vw,52px)]"
         aria-label="Schreiben"
         onDoubleClick={() => !editing && setEditing(true)}
       >
@@ -244,14 +266,14 @@ export default function DraftEditor(props: Props) {
           <div aria-hidden className="mx-auto mt-[10px] h-[2px] w-16 bg-[var(--accent)]" />
         </div>
         <div className="text-[17.5px] leading-[1.65]">
-          <p className="mb-[22px] border-b border-[var(--rule)] pb-2 font-sans text-[12px] text-[var(--grey)]">{senderLine}</p>
+          <p className="mb-[22px] border-b border-[var(--rule)] pb-2 font-sans text-[12px] text-[var(--grey)]">{senderLine(settings)}</p>
           <div className="mb-7 flex flex-wrap justify-between gap-3">
             {editing ? (
               <textarea aria-label="Empfänger" rows={4} className={`${editField} sm:max-w-[60%]`} value={draft.recipient} onChange={set("recipient")} />
             ) : (
               <p className="whitespace-pre-line"><Highlighted text={draft.recipient} /></p>
             )}
-            <p className="self-end whitespace-nowrap">{dateLine(letterDate)}</p>
+            <p className="self-end whitespace-nowrap">{dateLine(settings, letterDate)}</p>
           </div>
           <div className="mb-5 font-bold">
             {editing ? (
@@ -268,7 +290,7 @@ export default function DraftEditor(props: Props) {
             )}
           </div>
           {editing ? (
-            <textarea aria-label="Text" rows={16} className={editField} value={draft.body} onChange={set("body")} />
+            <VoiceField id="edit-body" label="Text" multiline rows={16} className={editField} value={draft.body} onChange={(v) => setValue("body", v)} />
           ) : (
             paragraphs(draft.body).map((p, i) => (
               <p key={i} className="mb-[14px] whitespace-pre-line"><Highlighted text={p} /></p>
@@ -280,19 +302,19 @@ export default function DraftEditor(props: Props) {
             ) : (
               <p>{draft.closing}</p>
             )}
-            <p className="whitespace-pre-line">{signature.join("\n")}</p>
+            <p className="whitespace-pre-line">{signatureLines(settings).join("\n")}</p>
           </div>
         </div>
         {!isDraft && (
-          <div ref={stampRef} role="img" aria-label={`Freigegeben am ${approvalTime(approval.at)} von ${approval.by}`} className="stamp absolute top-[52%] right-[8%] border-[3px] border-[var(--urgent)] bg-white/70 px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]">
-            <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
-            <p className="mt-[6px] font-sans text-[12px] font-bold whitespace-nowrap uppercase">{stampLine(approval.at, approval.by)}</p>
+          <div ref={stampRef} role="img" aria-label={`Freigegeben am ${approvalTime(approval.at)} von ${approval.by}`} className="stamp absolute top-[52%] right-[3%] border-[3px] border-[var(--urgent)] bg-white/70 px-3 min-[600px]:right-[8%] min-[600px]:px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]">
+            <p className="font-sans text-[20px] leading-none font-extrabold tracking-[.08em] min-[600px]:text-[26px]">FREIGEGEBEN</p>
+            <p className="mt-[6px] font-sans text-[10px] font-bold whitespace-nowrap min-[600px]:text-[12px] uppercase">{stampLine(approval.at, approval.by)}</p>
           </div>
         )}
       </article>
 
       {/* Prüfliste, collapsed by default. */}
-      <section className="mt-12 border-t-2 border-[var(--ink)]" aria-label="Prüfliste">
+      <section className="rise-in stagger-1 mt-12 border-t-2 border-[var(--ink)]" aria-label="Prüfliste">
         <button
           onClick={() => setChecksOpen((v) => !v)}
           aria-expanded={checksOpen}
@@ -313,7 +335,9 @@ export default function DraftEditor(props: Props) {
         )}
       </section>
 
-      {letterType === "behinderung" && <CostSection facts={facts} />}
+      {letterType === "behinderung" && <CostSection facts={facts} onAmount={(v) => {
+        standstill.current = v;
+      }} />}
 
       <div className="mt-10 flex flex-wrap gap-x-6">
         <button className={linkBtn} onClick={onBack}>Zurück zu den Angaben</button>
@@ -323,6 +347,28 @@ export default function DraftEditor(props: Props) {
       {typeof document !== "undefined" &&
         createPortal(<PrintSheet draft={draft} isDraft={isDraft} date={letterDate} appendix={appendix} />, document.body)}
     </section>
+  );
+}
+
+/** One leftover [bracket]: a field whose value replaces it in the letter. */
+function MissingField({ hole, onFill }: { hole: string; onFill: (value: string) => void }) {
+  const [value, setValue] = useState("");
+  const label = hole.slice(1, -1).replace(/s*einsetzen$/i, "");
+  const id = `hole-${label.replace(/[^p{L}p{N}]+/gu, "-")}`;
+  return (
+    <form
+      className="border-b border-[var(--rule)] py-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onFill(value);
+      }}
+    >
+      <label htmlFor={id} className="block font-sans text-[12px] font-bold tracking-[.06em] text-[var(--urgent)] uppercase">Angabe fehlt: {label}</label>
+      <div className="flex flex-wrap items-end gap-x-5">
+        <div className="min-w-0 flex-1"><VoiceField id={id} className="line-field !text-[19px]" value={value} onChange={setValue} placeholder="Hier eintragen …" onEnter={() => onFill(value)} /></div>
+        <button type="submit" className={linkBtn} disabled={!value.trim()}>Einsetzen</button>
+      </div>
+    </form>
   );
 }
 
@@ -349,12 +395,16 @@ function stampLine(iso: string, by: string) {
   return `${day} · ${time} · ${name}`;
 }
 
-/** Animated euro amount (0.9 s ease-out count-up; instant under reduced motion). */
-function CountUp({ value }: { value: number }) {
+/**
+ * Animated euro amount: on every change 0.6 s ease-out from the old to the new value; instant under reduced motion.
+ * `null` (a field is empty while typing) shows „– €“ but keeps the old value, so the next number counts from there.
+ */
+function CountUp({ value }: { value: number | null }) {
   const [shown, setShown] = useState(0);
   const from = useRef(0);
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (value === null) return;
+    const reduce = reducedMotion();
     const start = from.current;
     if (reduce || start === value) {
       from.current = value;
@@ -364,7 +414,7 @@ function CountUp({ value }: { value: number }) {
     let raf = 0;
     const t0 = performance.now();
     const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / 900);
+      const p = Math.min(1, (t - t0) / MOTION.slow);
       const v = start + (value - start) * (1 - Math.pow(1 - p, 3));
       setShown(v);
       from.current = v;
@@ -373,11 +423,11 @@ function CountUp({ value }: { value: number }) {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [value]);
-  return <>{euro(Math.round(shown))}</>;
+  return <>{value === null ? "– €" : euro(Math.round(shown))}</>;
 }
 
 /** Standstill cost estimate (Behinderung only). Pure arithmetic; unknown values stay empty. Never in the letter. */
-function CostSection({ facts }: { facts: Record<string, unknown> }) {
+function CostSection({ facts, onAmount }: { facts: Record<string, unknown>; onAmount: (v: number) => void }) {
   const [workers, setWorkers] = useState(numberFact(facts.arbeitskraefte_ohne_produktive_arbeit));
   const [hours, setHours] = useState(String(project.kosten.arbeitsstunden_pro_tag));
   const [rate, setRate] = useState(String(project.kosten.verrechnungssatz_eur_h));
@@ -387,15 +437,18 @@ function CostSection({ facts }: { facts: Record<string, unknown> }) {
   const total = perDay * n(days);
   const ok = Number.isFinite(perDay) && perDay >= 0;
   const amount = Number.isFinite(total) ? total : perDay;
+  useEffect(() => {
+    onAmount(ok && Number.isFinite(total) ? total : 0);
+  }, [ok, total, onAmount]);
   const num = "min-h-10 border-0 border-b border-[var(--ink)] bg-transparent text-center font-serif text-[19px] font-bold focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none";
   const input = (id: string, label: string, value: string, setter: (v: string) => void, w: string) => (
     <input id={id} aria-label={label} type="number" inputMode="decimal" min="0" className={`${num} ${w}`} value={value} onChange={(e) => setter(e.target.value)} />
   );
   return (
-    <section className="mt-12 border-t-2 border-[var(--ink)] pt-[10px]" aria-labelledby="h-kosten" aria-live="polite">
+    <section className="rise-in stagger-2 mt-12 border-t-2 border-[var(--ink)] pt-[10px]" aria-labelledby="h-kosten" aria-live="polite">
       <h2 id="h-kosten" className="font-sans text-[13px] font-extrabold tracking-[.04em] uppercase">Stillstand</h2>
       <p className="mt-3 mb-[6px] font-serif text-[clamp(56px,8vw,88px)] leading-[1.05] font-bold tracking-[-.03em] whitespace-nowrap">
-        {ok ? <CountUp value={amount} /> : "– €"}
+        <CountUp value={ok ? amount : null} />
       </p>
       <p className="text-[19px] leading-[2.1]">
         {input("cost-workers", "Arbeitskräfte", workers, setWorkers, "w-[52px]")} Leute ×{" "}
@@ -410,16 +463,18 @@ function CostSection({ facts }: { facts: Record<string, unknown> }) {
 
 /** Hidden on screen; the only thing visible when printing (see globals.css). */
 export function PrintSheet({ draft, isDraft, date, appendix, sheet = "entwurf" }: { draft: Letter; isDraft: boolean; date: string; appendix?: Appendix; sheet?: "entwurf" | "verlauf" }) {
+  const s = useSettings();
+  const signature = signatureLines(s);
   return (
     <div data-sheet={sheet} className="print-sheet hidden bg-white font-sans text-[11pt] leading-snug text-black">
       {isDraft && <div aria-hidden className="print-watermark">ENTWURF</div>}
       <div className="text-right">
         <p className="text-[13pt] font-bold">{signature[0]}</p>
-        <p className="text-[9pt]">{senderLine.split(" · ").slice(1).join(", ")}</p>
+        <p className="text-[9pt]">{senderLine(s).split(" · ").slice(1).join(", ")}</p>
       </div>
-      <p className="mt-10 border-b border-neutral-500 pb-0.5 text-[8pt]">{senderLine}</p>
+      <p className="mt-10 border-b border-neutral-500 pb-0.5 text-[8pt]">{senderLine(s)}</p>
       <p className="mt-2 whitespace-pre-line">{draft.recipient}</p>
-      <p className="mt-12 text-right">{dateLine(date)}</p>
+      <p className="mt-12 text-right">{dateLine(s, date)}</p>
       <p className="mt-8 whitespace-pre-line font-bold">{draft.subject}</p>
       <p className="mt-8">{draft.salutation}</p>
       {paragraphs(draft.body).map((p, i) => (

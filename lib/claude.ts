@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fillDates, formatDate, today } from "./dates";
+import { normalizeSettings, personalize, projectContext, type Settings } from "./settings";
 
 // One helper for every specialist prompt (docs/process/HANDOVER.md §4: plain functions, no frameworks).
 // Without ANTHROPIC_API_KEY it returns mocks from data/mocks/ (Demo-Modus).
@@ -63,7 +64,24 @@ type Options = {
   fast?: boolean;
   /** Beispielmodus (?beispiel=1): prepared answers instead of Claude, even with an API key. */
   mock?: boolean;
+  /** Checks the parsed reply; a returned message triggers the one retry with that message, then an error. */
+  validate?: (reply: unknown) => string | null;
+  /** Einstellungen from the browser: {project_context} and the names in Demo-Modus answers. */
+  settings?: Settings;
 };
+
+/** Every string in a mock answer with the preset names swapped for the settings. */
+function personalizeDeep(v: unknown, s: Settings): unknown {
+  if (typeof v === "string") return personalize(v, s);
+  if (Array.isArray(v)) return v.map((x) => personalizeDeep(x, s));
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, personalizeDeep(x, s)]));
+  return v;
+}
+
+/** Server log for a failed AI call: route and error type only (never the key, never the user text). */
+function logAiError(name: string, kind: string, status?: number) {
+  console.error(`[ki] route=${name} fehler=${kind}${status ? ` status=${status}` : ""}`);
+}
 
 /**
  * Loads prompts/<name>.xml, fills {placeholders} and returns the parsed JSON reply.
@@ -79,13 +97,14 @@ export async function runPrompt<T>(
     await new Promise((r) => setTimeout(r, 900));
     const variant = opts.mockVariant && path.join(ROOT, "data", "mocks", `${name}-${opts.mockVariant}.json`);
     const file = variant && (await exists(variant)) ? variant : path.join(ROOT, "data", "mocks", `${name}.json`);
-    const mock = JSON.parse(fillDates(await readFile(file, "utf8")));
+    const raw = JSON.parse(fillDates(await readFile(file, "utf8")));
+    const mock = opts.settings ? personalizeDeep(raw, opts.settings) : raw;
     return (opts.mockTransform ? opts.mockTransform(mock) : mock) as T;
   }
 
   const template = await readFile(path.join(ROOT, "prompts", `${name}.xml`), "utf8");
   const values: Record<string, unknown> = {
-    project_context: await readData("project.json"),
+    project_context: opts.settings ? projectContext(opts.settings) : await readData("project.json"),
     today: formatDate(today()),
     ...input,
   };
@@ -121,41 +140,61 @@ export async function runPrompt<T>(
       }
       text = response.content.map((b) => (b.type === "text" ? b.text : "")).join("");
     } catch (error) {
-      if (error instanceof PromptError) throw error;
-      if (error instanceof Anthropic.AuthenticationError) throw new PromptError("API-Schlüssel ungültig.", 500);
-      if (error instanceof Anthropic.RateLimitError) throw new PromptError("Zu viele Anfragen. Bitte kurz warten.", 429);
-      if (error instanceof Anthropic.APIConnectionTimeoutError) throw new PromptError("Die KI hat zu lange gebraucht. Bitte erneut versuchen.", 504);
+      if (error instanceof PromptError) {
+        logAiError(name, error.status === 422 ? "refusal" : "max_tokens");
+        throw error;
+      }
+      if (error instanceof Anthropic.AuthenticationError) {
+        logAiError(name, "auth", 401);
+        throw new PromptError("API-Schlüssel ungültig.", 500);
+      }
+      if (error instanceof Anthropic.RateLimitError) {
+        logAiError(name, "rate_limit", 429);
+        throw new PromptError("Zu viele Anfragen. Bitte kurz warten.", 429);
+      }
+      if (error instanceof Anthropic.APIConnectionTimeoutError) {
+        logAiError(name, "timeout");
+        throw new PromptError("Die KI hat zu lange gebraucht. Bitte erneut versuchen.", 504);
+      }
       if (error instanceof Anthropic.APIError) {
-        console.error("Claude API error", error.status, error.message);
+        logAiError(name, "api_error", error.status);
         throw new PromptError("Fehler bei der KI-Anfrage. Bitte erneut versuchen.");
       }
+      logAiError(name, "connection");
       throw error;
     }
 
+    // Invalid JSON or a reply that fails `validate`: one retry with the reason, then an error.
+    let problem: string | null;
     try {
-      return parseJson(text) as T;
+      const reply = parseJson(text);
+      problem = opts.validate?.(reply) ?? null;
+      if (!problem) return reply as T;
     } catch {
-      messages.push(
-        { role: "assistant", content: text || "(leer)" },
-        { role: "user", content: "Deine Antwort war kein gültiges JSON. Antworte jetzt ausschließlich mit dem JSON-Objekt im verlangten Format, ohne weiteren Text." },
-      );
+      problem = "Deine Antwort war kein gültiges JSON.";
     }
+    if (attempt === 0) console.warn(`[ki] route=${name} wiederholung=ungueltige_antwort`);
+    messages.push(
+      { role: "assistant", content: text || "(leer)" },
+      { role: "user", content: `${problem} Antworte jetzt ausschließlich mit dem JSON-Objekt im verlangten Format, ohne weiteren Text.` },
+    );
   }
+  logAiError(name, "invalid_json");
   throw new PromptError("Die Antwort der KI war kein gültiges JSON. Bitte erneut versuchen.");
 }
 
 /** Wraps a POST handler: JSON in, JSON out, always `{error}` in German on failure. */
-export type RouteContext = { mock: boolean };
+export type RouteContext = { mock: boolean; settings: Settings };
 
 export function jsonRoute<B>(handler: (body: B, ctx: RouteContext) => Promise<unknown>) {
   return async (request: Request) => {
-    const ctx = { mock: request.headers.get("x-beispiel") === "1" };
     let body: B;
     try {
       body = (await request.json()) as B;
     } catch {
       return Response.json({ error: "Ungültige Anfrage." }, { status: 400 });
     }
+    const ctx: RouteContext = { mock: request.headers.get("x-beispiel") === "1", settings: normalizeSettings((body as { settings?: unknown })?.settings) };
     try {
       return Response.json(await handler(body, ctx));
     } catch (error) {
