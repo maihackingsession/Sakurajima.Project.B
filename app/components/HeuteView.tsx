@@ -15,7 +15,7 @@ import { PhotoButton, Thumb } from "./Photo";
 import VoiceField, { useDictation } from "./VoiceField";
 import WeatherLine from "./WeatherLine";
 
-export type EntryDraft = { text: string; letterType: LetterType; facts: Record<string, unknown>; reason: string; eventDate: string; attachment?: string };
+export type EntryDraft = { text: string; letterType: LetterType; facts: Record<string, unknown>; reason: string; eventDate: string; attachment?: string; language?: string };
 
 /** „Foto vom 21.11.2026, 07:20 Uhr“ for the letter's Anlage line. */
 const photoLabel = (date: string, time: string) => `Foto vom ${formatDate(dayDate(date))}, ${time} Uhr`;
@@ -41,7 +41,7 @@ export async function checkEntry(entry: Entry) {
     // Only the entry's own text and date go to the router – never other entries or sample data.
     const r = await postJson<RouterResult>("/api/route", { input: entry.text, date: formatDate(dayDate(entry.date)) });
     const notice = r.intent === "letter" && r.outcome === "anzeige" && isLetterType(r.letter_type);
-    updateEntry(entry.id, { check: { status: "done", letterType: notice ? (r.letter_type as LetterType) : null, reason: r.reason, facts: r.facts ?? {} } });
+    updateEntry(entry.id, { check: { status: "done", letterType: notice ? (r.letter_type as LetterType) : null, reason: r.reason, facts: r.facts ?? {}, language: r.language } });
   } catch {
     updateEntry(entry.id, { check: { status: "error" } });
   }
@@ -50,7 +50,7 @@ export async function checkEntry(entry: Entry) {
 /** Draft data for an entry with a recommendation. */
 export function draftOf(e: Entry): EntryDraft | null {
   if (e.check?.status !== "done" || !e.check.letterType) return null;
-  return { text: e.text, letterType: e.check.letterType, facts: e.check.facts, reason: e.check.reason, eventDate: formatDate(dayDate(e.date)), attachment: e.photoId ? photoLabel(e.date, e.time) : undefined };
+  return { text: e.text, letterType: e.check.letterType, facts: e.check.facts, reason: e.check.reason, eventDate: formatDate(dayDate(e.date)), attachment: e.photoId ? photoLabel(e.date, e.time) : undefined, language: e.check.language };
 }
 
 /** Status line under an entry: „wird geprüft …“, the red recommendation, or „Im Tagesbericht gespeichert“. */

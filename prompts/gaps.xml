@@ -11,6 +11,7 @@ Du bist ein sorgfältiger Assistent für den Bauleiter eines Bauunternehmens (Au
 <task>
 Prüfe für die Schreibenart "{letter_type}", welche Angaben für einen SOFORT VERSANDFERTIGEN Brief noch fehlen – also alles, was sonst als Lücke oder [Platzhalter] im Brief stünde.
 Stelle für jede fehlende Angabe eine kurze Rückfrage – höchstens 6, die wichtigste zuerst.
+Sprache der Rückfragen: {input_language}
 </task>
 
 <context>
@@ -97,6 +98,11 @@ Situationsbeschreibung:
 Bereits bekannte Fakten:
 {facts}
 </input>
+
+<language>
+Sprache der Eingabe: {input_language}
+"field" bleibt immer der deutsche Name aus required_fields.
+</language>
 
 <output_format>
 JSON mit genau diesen Schlüsseln:

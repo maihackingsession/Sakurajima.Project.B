@@ -15,7 +15,7 @@ import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 
 /** Where a draft came from: an entry on „Heute“ or a deviation found in a Tagesbericht. */
-export type DraftSource = { facts?: Record<string, unknown>; eventDate?: string; report?: string; reason?: string; attachment?: string };
+export type DraftSource = { facts?: Record<string, unknown>; eventDate?: string; report?: string; reason?: string; attachment?: string; language?: string };
 
 /** Adds „Anlage: Foto vom …“ (the photo itself never goes to the AI). */
 function withAttachment(body: string, attachment?: string) {
@@ -100,8 +100,9 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     return data;
   }
 
-  async function checkGaps(type: LetterType, text: string, knownFacts: Record<string, unknown>) {
-    const gaps = await timed<GapsResult>("/api/gaps", { letter_type: type, input: text, facts: knownFacts });
+  async function checkGaps(type: LetterType, text: string, knownFacts: Record<string, unknown>, language = source.language) {
+    // The router already detected the input language; the gaps prompt writes its questions in it.
+    const gaps = await timed<GapsResult>("/api/gaps", { letter_type: type, input: text, facts: knownFacts, language });
     setQuestions(gaps.questions);
     setLang({ code: gaps.language || "de", intro: gaps.intro || "", unknownLabel: gaps.unknown_label || UNKNOWN });
     setAnswers({});
@@ -126,7 +127,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     setApproval(NEW_APPROVAL);
     setCreatedAt("");
     setStep("input");
-    void run("prepare", () => checkGaps(type, text, from.facts ?? {}));
+    void run("prepare", () => checkGaps(type, text, from.facts ?? {}, from.language));
   }
 
   function changeType(type: LetterType) {
@@ -191,7 +192,7 @@ export default function LetterFlow({ ref, onTab, onStartScreen }: Props) {
     <div ref={topRef} className="scroll-mt-24">
       {step === "input" && (
         <>
-          <HeuteView onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment })} onTab={onTab} />
+          <HeuteView onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment, language: d.language })} onTab={onTab} />
           {errorView}
         </>
       )}

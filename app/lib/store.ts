@@ -109,7 +109,7 @@ export const EVENT_KINDS: EntryKind[] = ["notiz", "anordnung", "lieferung", "beh
 export type EntryCheck =
   | { status: "pending" }
   | { status: "error" }
-  | { status: "done"; letterType: LetterType | null; reason: string; facts: Record<string, unknown> };
+  | { status: "done"; letterType: LetterType | null; reason: string; facts: Record<string, unknown>; language?: string };
 
 export type Entry = {
   id: string;
