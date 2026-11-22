@@ -27,7 +27,7 @@ export type Letter = {
 };
 
 /** Router verdict for a letter situation: notice needed, no notice needed, or cause possibly in our own area. */
-export const OUTCOMES = ["anzeige", "keine_anzeige", "eigener_bereich"] as const;
+export const OUTCOMES = ["anzeige", "keine_anzeige", "eigener_bereich", "unklar"] as const;
 export type Outcome = (typeof OUTCOMES)[number];
 
 export type RouterResult = {
@@ -40,6 +40,8 @@ export type RouterResult = {
   confidence?: number | null;
   /** Router v3: ISO code of the input language. */
   language?: string;
+  /** Router v4: outcome "unklar" – who is responsible is not said. mangel → „Wessen Firma ist das?“, behinderung → „Wer ist zuständig?“. */
+  unclear?: "mangel" | "behinderung" | null;
 };
 
 export type GapQuestion = { field: string; question: string; example: string };

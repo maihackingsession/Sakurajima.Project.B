@@ -42,7 +42,7 @@ Use only facts from the input, the answers and the project data. Never take fact
 - Bei "behinderung" ist die "Frist zur Abhilfe" (bis wann der Auftraggeber die Ursache beseitigen soll) fast immer offen – frage danach, wenn sie fehlt UND der Auftraggeber die Ursache beseitigen kann (fehlende Pläne, Freigaben, Zufahrt, Vorgewerk des AG). Bei Witterung (Frost, Regen) oder eigenem Gerät/Personal nie nach einer Frist zur Abhilfe und nie nach dem Verantwortungsbereich fragen.
 - Wenn die Ursache offensichtlich im Bereich des Auftraggebers liegt (z. B. fehlende Pläne des AG-Planers, Anordnung des AG), nicht nach dem Verantwortungsbereich fragen.
 - Fragen kurz und konkret, in der Sie-Form, ohne Fachjargon, in der SPRACHE DER EINGABE (deutsche Eingabe → deutsche Fragen; polnische Eingabe → polnische Fragen usw.).
-- "example" ist eine kurze, realistische Beispielantwort in derselben Sprache (wird als Platzhalter im Eingabefeld gezeigt). Daten als TT.MM.JJJJ.
+- "example" ist eine kurze, NEUTRALE Beispielantwort in derselben Sprache (wird als Platzhalter im Eingabefeld gezeigt): ein Datum, eine Uhrzeit oder ein allgemeines Muster. Nenne darin nie Bauteile, Pläne, Firmen oder Personen, die nicht in Eingabe oder Projektdaten stehen (z. B. nie "Bodenplatte"). Daten als TT.MM.JJJJ.
 - "field" ist der deutsche Name der Pflichtangabe aus required_fields (exakt übernehmen).
 - "complete" ist true, wenn nichts mehr fehlt; dann ist "questions" leer.
 - "language": ISO-Code der Sprache der Eingabe (de, pl, tr, ro, en …).
@@ -54,12 +54,12 @@ Use only facts from the input, the answers and the project data. Never take fact
 
 <example>
 Schreibenart: behinderung
-Eingabe: "Bewehrung Bodenplatte kann nicht anfangen, Pläne vom Tragwerksplaner des AG fehlen seit heute. 4 von 6 Leuten ohne Arbeit, 2 umgesetzt."
+Eingabe: "Fenstereinbau kann nicht anfangen, die vom Bauherrn bestellten Fenster fehlen seit heute. 4 Leute ohne Arbeit."
 Ausgabe:
 {
   "complete": false,
   "questions": [
-    { "field": "Frist zur Abhilfe", "question": "Bis wann müssen die Bewehrungspläne spätestens bei Ihnen sein?", "example": "23.11.2026, 12:00 Uhr" }
+    { "field": "Frist zur Abhilfe", "question": "Bis wann müssen die Fenster spätestens auf der Baustelle sein?", "example": "23.11.2026, 12:00 Uhr" }
   ]
 }
 
@@ -76,7 +76,7 @@ Ausgabe:
 }
 
 Schreibenart: maengel
-Eingabe (polnisch): "Huber nie zagęścił podłoża w BA1, próba płytowa niezaliczona."
+Eingabe (polnisch): "Nasz podwykonawca nie zagęścił podłoża, próba płytowa niezaliczona."
 Ausgabe:
 {
   "complete": false,
@@ -85,7 +85,7 @@ Ausgabe:
   "unknown_label": "Nie wiem",
   "questions": [
     { "field": "Feststellungsdatum", "question": "Kiedy stwierdzono wadę?", "example": "20.11.2026" },
-    { "field": "Frist", "question": "Do kiedy firma Huber ma usunąć wadę?", "example": "27.11.2026" }
+    { "field": "Frist", "question": "Do kiedy podwykonawca ma usunąć wadę?", "example": "27.11.2026" }
   ]
 }
 </example>

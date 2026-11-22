@@ -8,7 +8,7 @@ import { postJson } from "../lib/api";
 import { loadDemo } from "../lib/demo";
 import { isDefaultSettings } from "@/lib/settings";
 import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, savePhoto, updateEntry, useEntries, useSettings, useToday, type Entry } from "../lib/store";
-import { btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, recBtn, sectionLabel, shortType } from "../lib/ui";
+import { btnOutline, btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, recBtn, sectionLabel, shortType } from "../lib/ui";
 import { useDueItems } from "../lib/useVerlauf";
 import { useFocus } from "./Focus";
 import type { Tab } from "./Header";
@@ -43,7 +43,8 @@ export async function checkEntry(entry: Entry) {
     // Only the entry's own text and date go to the router – never other entries or sample data.
     const r = await postJson<RouterResult>("/api/route", { input: entry.text, date: formatDate(dayDate(entry.date)) });
     const notice = r.intent === "letter" && r.outcome === "anzeige" && isLetterType(r.letter_type);
-    updateEntry(entry.id, { check: { status: "done", letterType: notice ? (r.letter_type as LetterType) : null, reason: r.reason, facts: r.facts ?? {}, language: r.language } });
+    const unclear = r.outcome === "unklar" && (r.unclear === "mangel" || r.unclear === "behinderung") ? r.unclear : undefined;
+    updateEntry(entry.id, { check: { status: "done", letterType: notice ? (r.letter_type as LetterType) : null, reason: r.reason, facts: r.facts ?? {}, language: r.language, ...(unclear ? { unclear } : {}) } });
   } catch {
     updateEntry(entry.id, { check: { status: "error" } });
   }
@@ -66,13 +67,72 @@ export function EntryStatus({ entry, onDraft }: { entry: Entry; onDraft: (d: Ent
         KI nicht erreichbar – bitte erneut versuchen. <button className={`${linkBtn} text-[13px]`} onClick={() => void checkEntry(entry)}>Erneut versuchen</button>
       </p>
     );
+  if (c.unclear) return <UnclearQuestion entry={entry} kind={c.unclear} />;
   const d = draftOf(entry);
-  if (!d) return <p className="mt-1 font-sans text-[13px] text-[var(--grey)]">Im Tagesbericht gespeichert</p>;
+  const chosen = c.answer ? <span className="font-sans text-[13px] text-[var(--grey)]">{c.answer} · </span> : null;
+  if (!d)
+    return (
+      <p className="fade-in mt-1 font-sans text-[13px] text-[var(--grey)]">
+        {chosen}{c.hint ? <span className="font-bold text-[var(--ink)]">{c.hint}</span> : "Im Tagesbericht gespeichert"}
+      </p>
+    );
   return (
-    <p className="mt-1 flex flex-wrap items-center gap-x-4">
+    <p className="fade-in mt-1 flex flex-wrap items-center gap-x-4">
+      {chosen}
       <span className={kickerUrgent}>{shortType(LETTER_LABELS[d.letterType])} empfohlen</span>
       <button className={`${linkBtn} font-bold`} onClick={() => onDraft(d)}>Schreiben entwerfen →</button>
     </p>
+  );
+}
+
+/** Who is responsible? Exactly one question with two buttons under the entry; the answer sets the recommendation. */
+const UNCLEAR = {
+  mangel: {
+    question: "Wessen Firma ist das?",
+    options: [
+      { label: "Unser Nachunternehmer", letterType: "maengel" as LetterType, reason: "Mangel unseres Nachunternehmers (selbst angegeben)." },
+      { label: "Firma des Bauherrn", letterType: null, reason: "Firma des Bauherrn (selbst angegeben) – keine Mängelanzeige von uns.", hint: "Mangel dem Bauherrn melden" },
+    ],
+  },
+  behinderung: {
+    question: "Wer ist zuständig?",
+    options: [
+      { label: "Bauherr", letterType: "behinderung" as LetterType, reason: "Zuständig ist der Bauherr (selbst angegeben)." },
+      { label: "Wir selbst", letterType: null, reason: "Eigener Bereich (selbst angegeben) – keine Anzeige." },
+    ],
+  },
+} as const;
+
+function UnclearQuestion({ entry, kind }: { entry: Entry; kind: "mangel" | "behinderung" }) {
+  const q = UNCLEAR[kind];
+  const [picked, setPicked] = useState("");
+  function choose(o: (typeof q.options)[number]) {
+    if (entry.check?.status !== "done" || picked) return;
+    const check = entry.check;
+    setPicked(o.label);
+    // The chosen answer stays visible briefly before the recommendation appears.
+    setTimeout(() => {
+      updateEntry(entry.id, {
+        check: { status: "done", letterType: o.letterType, reason: o.reason, facts: check.facts, language: check.language, answer: o.label, ...("hint" in o ? { hint: o.hint } : {}) },
+      });
+    }, 150);
+  }
+  return (
+    <div className="fade-in mt-2" role="group" aria-label={q.question}>
+      <p className="font-serif text-[19px] font-semibold">{q.question}</p>
+      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-2">
+        {q.options.map((o) => (
+          <button
+            key={o.label}
+            onClick={() => choose(o)}
+            aria-pressed={picked === o.label}
+            className={`${btnOutline} press min-h-11 ${picked === o.label ? "!bg-[var(--ink)] !text-white" : ""}`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

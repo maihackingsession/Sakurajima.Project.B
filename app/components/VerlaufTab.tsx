@@ -216,7 +216,7 @@ function EventForm({ onDone }: { onDone: () => void }) {
       </div>
       <div className="mt-5">
         <label htmlFor="ev-title" className={label}>Titel</label>
-        <VoiceField id="ev-title" value={title} onChange={setTitle} placeholder={kind === "frist" ? "z. B. Bewehrungspläne vom AG" : "z. B. Anordnung Zusatzbewehrung"} />
+        <VoiceField id="ev-title" value={title} onChange={setTitle} placeholder={kind === "frist" ? "z. B. Pläne vom Bauherrn" : "z. B. Anordnung des Bauherrn"} />
       </div>
       <div className="mt-5">
         <label htmlFor="ev-text" className={label}>Beschreibung</label>

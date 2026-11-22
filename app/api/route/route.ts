@@ -5,9 +5,9 @@ import { LETTER_TYPES, type LetterType, type RouterResult } from "@/lib/types";
 export const maxDuration = 60;
 
 /** Router output (prompts/router.xml v3): one strict enum, "keine" = no notice. */
-const ROUTER_TYPES = [...LETTER_TYPES, "keine"] as const;
+const ROUTER_TYPES = [...LETTER_TYPES, "unklar", "keine"] as const;
 type RouterType = (typeof ROUTER_TYPES)[number];
-type RouterReply = { type: RouterType; confidence?: unknown; reason?: unknown; language?: unknown; facts?: unknown };
+type RouterReply = { type: RouterType; unklar_art?: unknown; confidence?: unknown; reason?: unknown; language?: unknown; facts?: unknown };
 
 /** Sample/project facts that must never appear in a reason unless the input says them (FIX_PROMPT_ROUTER 2.3). */
 const LEAK_WORDS = [/bodenplatte/i, /bewehrungspl[aä]n/i, /kraus/i, /lindner/i, /berger/i, /jagtap/i, /schneider/i];
@@ -30,14 +30,20 @@ const projectMeta = (s: Settings) => `Projekt: ${s.projekt.bezeichnung}. "Wir" =
 function guess(text: string): RouterReply {
   const t = text.toLowerCase();
   const language = /[ąćęłńśźż]|\bnie\b/.test(t) ? "pl" : "de";
-  const r = (type: RouterType, reason: string): RouterReply => ({ type, reason, confidence: 0.5, language, facts: {} });
+  const r = (type: RouterType, reason: string, unklar_art?: string): RouterReply => ({ type, reason, confidence: 0.5, language, facts: {}, ...(unklar_art ? { unklar_art } : {}) });
   if (/\b(?:lv|vertragsmenge)\b\D{0,6}\d/.test(t) && /tatsächlich|aufmaß|ausgeführt|voraussichtlich|werden es/.test(t) && !/angeordnet/.test(t))
     return r("mengenaenderung", "Die Menge einer LV-Position weicht ohne Anordnung deutlich von der Vertragsmenge ab.");
   if (/unser(?:e|en|em)? (?:eigene[rn]? )?(?:kran|bagger|kolonne|leute|polier)|selbst falsch|krank/.test(t)) return r("keine", "Ursache im eigenen Bereich – keine Anzeige an den Auftraggeber.");
-  if (/nachunternehmer|subunternehmer/.test(t) && /mangel|mängel|schief|hohl|offen|riss|fehlerhaft|nicht ordentlich/.test(t)) return r("maengel", "Unser Nachunternehmer hat mangelhaft gearbeitet.");
+  if (/nachunternehmer|subunternehmer|\bsub\b|von uns beauftragt/.test(t) && /mangel|mängel|schief|hohl|offen|riss|fehlerhaft|nicht ordentlich/.test(t)) return r("maengel", "Unser Nachunternehmer hat mangelhaft gearbeitet.");
+  const ours = /\bunser(?:e|en|em|er)?\b|von uns beauftragt|\bsub\b/.test(t);
+  const client = /bauherr|auftraggeber|\bag\b|architekt|planer|stadt|behörde/.test(t);
+  if (!ours && !client && /schief|hohl|riss|fehlerhaft|falsch|stimmt nicht|mangel|mängel/.test(t) && !/plan|widersprech/.test(t))
+    return r("unklar", "Ein Mangel wird gemeldet, aber nicht, wessen Firma es ist.", "mangel");
+  if (!ours && !client && /nicht gekommen|nicht geliefert|ausgefallen|kommt nicht|fehlt|fehlen/.test(t))
+    return r("unklar", "Eine Störung wird gemeldet, aber nicht, wer zuständig ist.", "behinderung");
   if (/angeordnet|zusätzlich|statt|nicht im lv|nachtrag|not in our contract|will .* jetzt/.test(t)) return r("mehrkosten", "Der Auftraggeber verlangt eine zusätzliche oder geänderte Leistung.");
   if (/bedenken|ungeeignet|zu flach|zu feucht|feuchte|widersprechen|halten wir/.test(t)) return r("bedenken", "Bedenken gegen die vorgesehene Ausführung.");
-  if (/nicht fertig|gesperrt|nicht geliefert|fehlen|können nicht|kann nicht|nie przekazał|nie dotarły|stoi|warten/.test(t)) return r("behinderung", "Die Arbeit kann aus Gründen außerhalb unseres Bereichs nicht wie geplant laufen.");
+  if (/nicht fertig|gesperrt|nicht geliefert|nicht gekommen|fehlen|können nicht|kann nicht|nie przekazał|nie dotarły|stoi|warten/.test(t)) return r("behinderung", "Die Arbeit kann aus Gründen außerhalb unseres Bereichs nicht wie geplant laufen.");
   return r("keine", "Normaler Baufortschritt – keine Anzeige nötig.");
 }
 
@@ -64,14 +70,16 @@ export const POST = jsonRoute<{ input?: unknown; date?: unknown }>(async (body, 
     if (still.length) console.warn(`[ki] route=router warnung=fremde_fakten woerter=${still.join(",")}`);
   }
 
-  const isNotice = reply.type !== "keine";
+  const unclear = reply.type === "unklar" ? (reply.unklar_art === "behinderung" ? "behinderung" : "mangel") : null;
+  const isNotice = reply.type !== "keine" && reply.type !== "unklar";
   const facts = reply.facts && typeof reply.facts === "object" && !Array.isArray(reply.facts) ? (reply.facts as Record<string, unknown>) : {};
   const confidence = Number(reply.confidence);
   return {
     intent: "letter",
     letter_type: isNotice ? (reply.type as LetterType) : null,
-    outcome: isNotice ? "anzeige" : "keine_anzeige",
-    facts: isNotice ? facts : {},
+    outcome: isNotice ? "anzeige" : unclear ? "unklar" : "keine_anzeige",
+    unclear,
+    facts: isNotice || unclear ? facts : {},
     reason: typeof reply.reason === "string" ? reply.reason : "",
     confidence: Number.isFinite(confidence) ? Math.min(1, Math.max(0, confidence)) : null,
     language: typeof reply.language === "string" ? reply.language : "",

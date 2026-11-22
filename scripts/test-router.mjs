@@ -1,4 +1,4 @@
-// Router test (FIX_PROMPT_ROUTER Schritt 3, + case 17 Mengenänderung): runs tests/router-cases.json once each through POST /api/route
+// Router test (FIX_PROMPT_ROUTER Schritt 3, + case 17 Mengenänderung, + 18–21 unklare Zuständigkeit): runs tests/router-cases.json once each through POST /api/route
 // (the same server function the app uses) and writes a Markdown table.
 //
 // Usage:  npm run test:router                        (default http://localhost:3000, needs the real key)
@@ -38,8 +38,9 @@ for (const c of cases) {
     });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
-    result = data.outcome === "keine_anzeige" ? "keine" : data.letter_type ?? "keine";
-    reason = data.reason ?? "";
+    result = data.outcome === "unklar" ? `unklar` : data.outcome === "keine_anzeige" ? "keine" : data.letter_type ?? "keine";
+    if (data.outcome === "unklar") reason = `[${data.unclear}] `;
+    reason += data.reason ?? "";
   } catch (e) {
     reason = String(e.message ?? e);
   }
@@ -56,7 +57,7 @@ const leaks = rows.filter((r) => r.leaked.length).length;
 const md = [
   `# Router-Test – ${new Date().toLocaleString("de-DE")}`,
   "",
-  `Server: ${base} (Version ${health.version}) · Router: prompts/router.xml v3 (+ Mengenänderung) · echte KI`,
+  `Server: ${base} (Version ${health.version}) · Router: prompts/router.xml v4 (+ unklar) · echte KI`,
   "",
   `**Bestanden: ${passed}/${rows.length}** · Leakage: ${leaks}`,
   "",

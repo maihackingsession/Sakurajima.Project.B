@@ -110,7 +110,19 @@ export const EVENT_KINDS: EntryKind[] = ["notiz", "anordnung", "lieferung", "beh
 export type EntryCheck =
   | { status: "pending" }
   | { status: "error" }
-  | { status: "done"; letterType: LetterType | null; reason: string; facts: Record<string, unknown>; language?: string };
+  | {
+      status: "done";
+      letterType: LetterType | null;
+      reason: string;
+      facts: Record<string, unknown>;
+      language?: string;
+      /** Router „unklar“: one question with two buttons decides (no further AI call). */
+      unclear?: "mangel" | "behinderung";
+      /** The button the user chose for the question, e.g. „Firma des Bauherrn“. */
+      answer?: string;
+      /** Grey hint instead of a letter, e.g. „Mangel dem Bauherrn melden“. */
+      hint?: string;
+    };
 
 export type Entry = {
   id: string;
