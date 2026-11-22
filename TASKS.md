@@ -320,3 +320,16 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 - baufrist-fokus-einstellungen-prompt.md: erneut nicht im Ordner (auch nicht in Desktop/Downloads) → weiterhin weggelassen.
 - [x] Rückfragen in der Sprache der Eingabe repariert: Mit echter KI kamen polnische Eingaben vorher als deutsche Fragen zurück. Jetzt geht die vom Router erkannte Sprache (`language`) über Entry → LetterFlow → /api/gaps, steht als `{input_language}` oben in gaps.xml und direkt nach der Eingabe; ohne Router-Sprache: polnische Buchstaben → pl, sonst erkennt die KI selbst. Sicherheitsnetz: language "de" trotz anderer Eingabesprache → 1 Wiederholung. Echter Test (1 Aufruf, keine Wiederholung): 3 Fragen auf Polnisch, intro und „Nie wiem“ polnisch, `field` deutsch.
 - [x] Router-Tests neu (echte KI, 22.11.): 16 Fälle + #17 Mengenänderung → **17/17, 0 Leakage**, keine Wiederholung (17 Aufrufe). tests/results/router-22-11.md
+
+## Final-2 (baufrist-final2-prompt.md, branch final-2)
+- [ ] A Fokusmodus + Einstellungen (baufrist-fokus-einstellungen-prompt.md)
+- [ ] B Unklare Zuständigkeit (Router `unklar`, eine Frage mit zwei Knöpfen, Router-Tests → tests/results/router-final2.md)
+- [ ] C Kleine Fehler (Kopfzeilen-Datum, „Beispielmodus beenden“)
+- [ ] D Logo = Kran (CraneMark, Favicon)
+- [ ] E Fristen & Verlauf als Kalender
+- [ ] F Einfacher (Eintrag, Freigeben → PDF/E-Mail, Unterlagen, Bauzeitenplan …)
+- [ ] H Volle Seiten (Kennzahlen, Seitenspalte, leere Zustände, Fußzeile, baufrist.vercel.app)
+- [ ] G Ruhige Bewegung (lib/motion.ts)
+
+Entscheidungen:
+- **final-2 von teil-final abgezweigt, nicht von main.** main ist noch Version 1 (d77389c) ohne Router v3, Mengenänderung, Rückfragen-Sprache; Teil B baut direkt auf Router v3 auf. teil-final enthält alles, was main nach dem (vom Nutzer noch offenen) Merge hätte. main nicht angefasst.
