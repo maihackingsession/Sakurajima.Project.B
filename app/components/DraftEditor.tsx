@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import project from "@/data/project.json";
 import { mengenCalc } from "@/lib/mengen";
+import { mailtoLink } from "@/lib/settings";
 import { LETTER_LABELS, type Letter, type LetterType } from "@/lib/types";
 import { checklist, euro, numberFact, placeholders } from "../lib/checks";
 import {
@@ -236,6 +237,16 @@ export default function DraftEditor(props: Props) {
       {holeList.length > 0 && (
         <div className="mt-4" aria-label="Fehlende Angaben">
           {holeList.map((h) => <MissingField key={h} hole={h} onFill={(v) => fillHole(h, v)} />)}
+        </div>
+      )}
+
+      {!isDraft && (
+        <div className="after-approve mt-5 border-b border-[var(--rule)] pb-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <button className={`${btnPrimary} w-full min-[600px]:w-auto`} onClick={printSheet}>PDF herunterladen</button>
+            <a className={linkBtn} href={mailtoLink(settings, letterType !== "maengel", draft.subject, letterDate)}>Per E-Mail senden</a>
+          </div>
+          <p className="mt-2 font-sans text-[13px] text-[var(--grey)]">Das PDF bitte selbst an die E-Mail anhängen – es wird nichts automatisch versendet.</p>
         </div>
       )}
 

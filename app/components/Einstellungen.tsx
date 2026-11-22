@@ -181,6 +181,7 @@ export default function Einstellungen({ onSaved }: { onSaved: () => void }) {
             <Field id="s-ag-plz" name="PLZ" value={s.bauherr.plz} onChange={set("bauherr", "plz")} />
             <Field id="s-ag-ort" name="Ort" value={s.bauherr.ort} onChange={set("bauherr", "ort")} />
           </div>
+          <Field id="s-ag-mail" name="E-Mail (für „Per E-Mail senden“)" type="email" value={s.bauherr.email} onChange={set("bauherr", "email")} />
         </Group>
 
         <Group title="Weitere Beteiligte">

@@ -7,7 +7,7 @@ import { isLetterType, LETTER_LABELS, LETTER_TYPES, type LetterType, type Router
 import { postJson } from "../lib/api";
 import { loadDemo } from "../lib/demo";
 import { isDefaultSettings } from "@/lib/settings";
-import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, savePhoto, updateEntry, useEntries, useSettings, useToday, type Entry } from "../lib/store";
+import { addEntry, clock, dayDate, entriesOfDay, getEntries, isoDay, savePhoto, updateEntry, useEntries, useBeispiel, useSettings, useToday, type Entry } from "../lib/store";
 import { btnOutline, btnPrimary, greyLink, h1, kicker, kickerUrgent, linkBtn, recBtn, sectionLabel, shortType } from "../lib/ui";
 import { useDueItems } from "../lib/useVerlauf";
 import { useFocus } from "./Focus";
@@ -153,6 +153,8 @@ export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
   const today = useToday();
   const head = headDate(today);
   const settings = useSettings();
+  // Demo links („Beispiel einfügen“, „Beispieldaten laden“) only in Beispielmodus.
+  const beispiel = useBeispiel();
   const all = useEntries();
   const todays = entriesOfDay(all, today).reverse();
   const due = useDueItems().slice(0, 3);
@@ -274,9 +276,9 @@ export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
         )}
         <div className="mt-1 flex flex-wrap gap-x-6">
           {isOpen && <button className={`${greyLink} text-[13px]`} onClick={discard}>Verwerfen</button>}
-          <button className={`${greyLink} text-[13px]`} onClick={example}>Beispiel einfügen</button>
+          {beispiel && <button className={`${greyLink} text-[13px]`} onClick={example}>Beispiel einfügen</button>}
           <button className={`${greyLink} text-[13px]`} onClick={() => setChooseType((v) => !v)} aria-expanded={chooseType}>Schreibenart selbst wählen</button>
-          {all.length === 0 && <button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>}
+          {beispiel && all.length === 0 && <button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>}
         </div>
         {chooseType && (
           <div className="open-in mt-3">

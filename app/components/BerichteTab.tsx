@@ -20,6 +20,7 @@ import {
   updateReport,
   useEntries,
   useReports,
+  useBeispiel,
   useSettings,
   useWeatherSnapshot,
   type DailyReport,
@@ -34,6 +35,7 @@ import type { DraftSource } from "./LetterFlow";
 import { EntryText } from "./HeuteView";
 import { Thumb } from "./Photo";
 import { useFocus } from "./Focus";
+import Empty from "./Empty";
 import { ErrorBox } from "./Status";
 import VoiceField from "./VoiceField";
 import WeatherLine, { loadWeather } from "./WeatherLine";
@@ -64,6 +66,7 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
     setDay(openDay.day);
   }
 
+  const beispiel = useBeispiel();
   const days = [...new Set([...entries.map((e) => e.date), ...reports.map((r) => r.date)])].sort().reverse();
 
   if (day) return <DayView day={day} onBack={() => setDay(null)} onDraft={onDraft} />;
@@ -72,20 +75,12 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
     <div className="fade-in">
       <p className={kicker}>Bautagebuch</p>
       <h1 className={h1}>Tagesberichte</h1>
-      <button className={greyLink} onClick={() => setForeign((v) => !v)} aria-expanded={foreign}>
-        {foreign ? "Fremden Bericht schließen" : "Fremden Bericht einfügen"}
-      </button>
-      {foreign && (
-        <div className="open-in mt-4 mb-6">
-          <DeviationTab embedded onDraft={onDraft} />
-        </div>
-      )}
 
       {days.length === 0 ? (
-        <p className="mt-8 flex flex-wrap items-center gap-x-5 text-[var(--grey)]">
-          Noch keine Einträge.
-          <button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button>
-        </p>
+        <div className="mt-8">
+          <Empty text="Noch keine Tagesberichte." />
+          {beispiel && <p className="text-center"><button className={`${greyLink} text-[13px]`} onClick={loadDemo}>Beispieldaten laden</button></p>}
+        </div>
       ) : (
         <ul className="mt-8 border-t-2 border-[var(--ink)]">
           {days.map((d) => (
@@ -93,6 +88,17 @@ export default function BerichteTab({ onDraft, openDay }: Props) {
           ))}
         </ul>
       )}
+
+      <div className="mt-10">
+        <button className={`${greyLink} text-[13px]`} onClick={() => setForeign((v) => !v)} aria-expanded={foreign}>
+          {foreign ? "Fremden Bericht schließen" : "Fremden Bericht einfügen"}
+        </button>
+        {foreign && (
+          <div className="open-in mt-4 mb-6">
+            <DeviationTab embedded onDraft={onDraft} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

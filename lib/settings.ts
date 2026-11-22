@@ -11,7 +11,7 @@ export type Settings = {
   bauleitung: { selbst: boolean; name: string; telefon: string };
   absender: { firma: string; strasse: string; plz: string; ort: string };
   projekt: { bezeichnung: string; vertragsnummer: string; baustelle: string; wetterOrt: string; lat: number; lon: number };
-  bauherr: { firma: string; anrede: Anrede; titel: string; vorname: string; nachname: string; strasse: string; plz: string; ort: string };
+  bauherr: { firma: string; anrede: Anrede; titel: string; vorname: string; nachname: string; strasse: string; plz: string; ort: string; email: string };
   beteiligte: Beteiligter[];
 };
 
@@ -40,7 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
     lat: project.koordinaten.lat,
     lon: project.koordinaten.lon,
   },
-  bauherr: { firma: ag.name, anrede: "Herr", titel: "Prof.", vorname: "", nachname: "Jagtap", strasse: ag.strasse, plz: agOrt.plz, ort: agOrt.ort },
+  bauherr: { firma: ag.name, anrede: "Herr", titel: "Prof.", vorname: "", nachname: "Jagtap", strasse: ag.strasse, plz: agOrt.plz, ort: agOrt.ort, email: "" },
   beteiligte: [
     { rolle: "Tragwerksplaner", name: project.tragwerksplaner_ag.ansprechpartner, firma: project.tragwerksplaner_ag.name },
     { rolle: "Architekt", name: project.architekt_ag.name, firma: "" },
@@ -110,6 +110,23 @@ export function clientSalutation(s: Settings) {
   const b = s.bauherr;
   if (!b.nachname.trim() || !b.anrede) return "Sehr geehrte Damen und Herren,";
   return `${b.anrede === "Herr" ? "Sehr geehrter Herr" : "Sehr geehrte Frau"} ${join(b.titel, b.nachname)},`;
+}
+
+/** „Per E-Mail senden“: mailto link with the client's address (letters to the client), subject and a short German text. */
+export function mailtoLink(s: Settings, toClient: boolean, subject: string, date: string) {
+  const subj = subject.split("\n")[0].trim();
+  const me = signer(s);
+  const body = [
+    toClient ? clientSalutation(s) : "Sehr geehrte Damen und Herren,",
+    "",
+    `anbei erhalten Sie unser Schreiben „${subj}“ vom ${date} als PDF.`,
+    "",
+    "Mit freundlichen Grüßen",
+    me.name,
+    s.absender.firma,
+  ].join("\n");
+  const to = toClient ? s.bauherr.email.trim() : "";
+  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
 }
 
 /** Project data for the prompts ({project_context}): settings + the rest of data/project.json (subcontractors, costs). */

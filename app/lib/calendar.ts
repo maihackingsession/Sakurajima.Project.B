@@ -64,11 +64,13 @@ export function marksOf(items: DayItem[] = []): Mark[] {
 /** „Samstag, 21. November, 1 Frist fällig, 2 Einträge“ for screen readers. */
 export function dayLabel(day: string, items: DayItem[] = []) {
   const head = dayDate(day).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
-  const n = (m: Mark) => items.filter((i) => i.mark === m).length;
+  const fristen = items.filter((i) => i.mark === "frist").length;
+  const letters = items.filter((i) => i.mark !== "frist" && i.letter).length;
+  const entries = items.filter((i) => i.mark !== "frist" && i.entry).length;
   const parts = [
-    n("frist") && `${n("frist")} ${n("frist") === 1 ? "Frist" : "Fristen"} fällig`,
-    n("schreiben") && `${n("schreiben")} ${n("schreiben") === 1 ? "Schreiben oder Ereignis" : "Schreiben oder Ereignisse"}`,
-    n("eintrag") && `${n("eintrag")} ${n("eintrag") === 1 ? "Eintrag" : "Einträge"}`,
+    fristen && `${fristen} ${fristen === 1 ? "Frist" : "Fristen"} fällig`,
+    letters && `${letters} Schreiben`,
+    entries && `${entries} ${entries === 1 ? "Eintrag" : "Einträge"}`,
   ].filter(Boolean);
   return [head, ...parts].join(", ");
 }

@@ -5,7 +5,7 @@ import type { SummaryResult } from "@/lib/types";
 import { errorText, postJson } from "../lib/api";
 import { loadSamples } from "../lib/samples";
 import { btnPrimary, greyLink, h1, kicker, linkBtn, sectionLabel } from "../lib/ui";
-import { addEntry, clock, dayDate, isoDay } from "../lib/store";
+import { addEntry, clock, dayDate, isoDay, useBeispiel } from "../lib/store";
 import { formatDate } from "@/lib/dates";
 import CraneLoader, { atLeast } from "./CraneLoader";
 import { ErrorBox } from "./Status";
@@ -37,6 +37,7 @@ function summaryText(r: SummaryResult) {
 }
 
 export default function SummaryTab({ initialText = "", onOpenDay }: { initialText?: string; onOpenDay?: (day: string) => void }) {
+  const beispiel = useBeispiel();
   const [saveDay, setSaveDay] = useState("");
   const [savedDay, setSavedDay] = useState("");
   const [text, setText] = useState(initialText);
@@ -77,8 +78,8 @@ export default function SummaryTab({ initialText = "", onOpenDay }: { initialTex
   return (
     <div className="fade-in">
       <section>
-        <p className={kicker}>Protokoll · Bautagebuch · E-Mails</p>
-        <h1 className={h1}>Zusammenfassen</h1>
+        <p className={kicker}>Protokolle · E-Mails</p>
+        <h1 className={h1}>Unterlagen</h1>
         <div>
           <VoiceField
             id="docs"
@@ -91,8 +92,8 @@ export default function SummaryTab({ initialText = "", onOpenDay }: { initialTex
           />
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
             {text.trim() && (result ? <button className={linkBtn} onClick={summarise}>Neu zusammenfassen</button> : <button className={`${btnPrimary} open-in`} onClick={summarise}>Zusammenfassen</button>)}
-            <button className={greyLink} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>
-            <button className={greyLink} onClick={() => load("email")}>Beispiel laden: E-Mails</button>
+            {beispiel && <button className={greyLink} onClick={() => load("protokoll")}>Beispiel laden: Protokoll</button>}
+            {beispiel && <button className={greyLink} onClick={() => load("email")}>Beispiel laden: E-Mails</button>}
           </div>
           {error && <div className="mt-8"><ErrorBox message={error} onRetry={summarise} /></div>}
         </div>

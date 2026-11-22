@@ -103,7 +103,7 @@ export const KIND_LABEL: Record<EntryKind, string> = {
   frist: "Frist",
   zusammenfassung: "Zusammenfassung",
 };
-/** Kinds the user can pick for „Neues Ereignis“. */
+/** Kinds the user can pick for „Eintrag für anderen Tag“. */
 export const EVENT_KINDS: EntryKind[] = ["notiz", "anordnung", "lieferung", "behinderung", "mangel", "frist"];
 
 /** Background check by the existing router: is a notice needed? */
