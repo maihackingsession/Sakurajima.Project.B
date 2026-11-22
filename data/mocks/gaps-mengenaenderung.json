@@ -1,0 +1,10 @@
+{
+  "complete": false,
+  "language": "de",
+  "intro": "Für das Schreiben fehlen noch diese Angaben.",
+  "unknown_label": "Weiß ich nicht",
+  "questions": [
+    { "field": "Einheitspreisvertrag", "question": "Ist die Position nach Einheitspreis abgerechnet (Einheitspreisvertrag)?", "example": "ja" },
+    { "field": "Anordnung des Auftraggebers", "question": "Hat der Auftraggeber zu dieser Position etwas angeordnet oder geändert?", "example": "nein" }
+  ]
+}

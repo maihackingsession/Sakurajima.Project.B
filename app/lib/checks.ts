@@ -1,5 +1,6 @@
 // "Prüfliste vor Versand" and "Was kostet der Stillstand?" – plain code, no AI.
 import { parseGermanDate, urgency } from "@/lib/dates";
+import type { MengenCalc } from "@/lib/mengen";
 import type { Letter, LetterType } from "@/lib/types";
 
 export type Check = { label: string; ok: boolean; note?: string };
@@ -25,7 +26,7 @@ export function placeholders(text: string) {
   return text.match(/\[[^\]\n]{2,}\]/g) ?? [];
 }
 
-export function checklist(letterType: LetterType, letter: Letter, facts: Record<string, unknown>, eventDate: string, hasReport: boolean): Check[] {
+export function checklist(letterType: LetterType, letter: Letter, facts: Record<string, unknown>, eventDate: string, hasReport: boolean, mengen?: MengenCalc | null): Check[] {
   const body = letter.body;
   // A paragraph that still has a placeholder does not count as "present".
   const filled = (re: RegExp) => body.split(/\n\s*\n/).some((p) => re.test(p) && placeholders(p).length === 0);
@@ -51,6 +52,19 @@ export function checklist(letterType: LetterType, letter: Letter, facts: Record<
       { label: "Vor Ausführung angekündigt", ok: filled(/vor (?:beginn der )?ausführung/i) },
       { label: "Kosten folgen / Nachtragsangebot", ok: filled(/nachtrag|gesondert beziffer/i) },
       { label: "Nachweise", ok: evidence(/protokoll|anlage|baubesprechung|schreiben vom|e-mail vom/i) },
+    ];
+  }
+  if (letterType === "mengenaenderung") {
+    // Calculation by code (lib/mengen.ts); text checks per paragraph like the other types.
+    const c = mengen;
+    return [
+      { label: "Einheitspreisvertrag", ok: c?.unitPrice === true, note: c?.unitPrice === null ? "nicht bestätigt" : undefined },
+      { label: "LV-Position genannt", ok: filled(/pos(?:ition)?\.?\s*\d|lv-position/i) },
+      { label: "Vertragsmenge und Ist-Menge", ok: !!c?.contract && !!c?.actual && filled(/vertragsmenge|mengenansatz/i) },
+      { label: "Abweichung > 10 % (berechnet)", ok: c?.kind === "mehr" || c?.kind === "minder", note: c?.percent != null ? `${c.percent > 0 ? "+" : ""}${c.percent.toLocaleString("de-DE")} %` : undefined },
+      { label: "Neuer Preis verlangt", ok: filled(/verlangen[^.]*(?:einheitspreis|preis)|neue[ns]? einheitspreis/i) },
+      { label: "Keine Anordnung des AG", ok: c?.ordered === false, note: c?.ordered ? "sonst § 2 Abs. 5/6" : undefined },
+      { label: "Kalkulation / Nachtrag angekündigt", ok: filled(/kalkulation|nachtrag/i) },
     ];
   }
   if (letterType === "maengel") {

@@ -1,13 +1,13 @@
 Protokoll Baubesprechung Nr. 4
 Bauvorhaben: Neubau Bürogebäude Forschungscampus Garching
 Datum: {T-1}, 10:00–11:30 Uhr, Baucontainer
-Teilnehmer: Frau Dr. Lindner (AG), Herr Vogel (Architekt), Herr Kraus (Ing.-Büro Kraus, Tragwerksplanung), Herr Berger (Musterbau, Bauleitung), Herr Schneider (Rohbau Schneider)
+Teilnehmer: Herr Prof. Jagtap (AG), Herr Vogel (Architekt), Herr Kraus (Ing.-Büro Kraus, Tragwerksplanung), Yuzhi Shao (Musterbau, Bauleitung), Herr Schneider (Rohbau Schneider)
 
 TOP 1 Stand Erd- und Gründungsarbeiten
-Aushub und Grundleitungen fertig, Sauberkeitsschicht Bodenplatte heute eingebaut. Zufahrt Nord seit {T-3:kurz} wegen Leitungsarbeiten der Stadtwerke gesperrt, Anlieferung nur über Behelfszufahrt Süd (bis 7,5 t). Frau Dr. Lindner klärt mit den Stadtwerken, wann die Zufahrt wieder frei ist. Termin offen.
+Aushub und Grundleitungen fertig, Sauberkeitsschicht Bodenplatte heute eingebaut. Zufahrt Nord seit {T-3:kurz} wegen Leitungsarbeiten der Stadtwerke gesperrt, Anlieferung nur über Behelfszufahrt Süd (bis 7,5 t). Herr Prof. Jagtap klärt mit den Stadtwerken, wann die Zufahrt wieder frei ist. Termin offen.
 
 TOP 2 Ausführungsplanung Bodenplatte
-Bewehrungspläne Bodenplatte fehlen noch. Herr Kraus sagt Lieferung bis morgen, {T:kurz}, zu. Herr Berger weist darauf hin, dass das Bewehren der Bodenplatte laut Bauzeitenplan am {T:kurz} beginnt und ohne Pläne nicht möglich ist.
+Bewehrungspläne Bodenplatte fehlen noch. Herr Kraus sagt Lieferung bis morgen, {T:kurz}, zu. Yuzhi Shao weist darauf hin, dass das Bewehren der Bodenplatte laut Bauzeitenplan am {T:kurz} beginnt und ohne Pläne nicht möglich ist.
 
 TOP 3 Änderungen
 Herr Vogel ordnet einen zusätzlichen Pumpensumpf mit Hebeanlage im UG, Achse B/3 an. Musterbau erstellt ein Nachtragsangebot bis {T+7}.
@@ -19,4 +19,4 @@ TOP 5 Mängel
 Verbau Nordseite Achse C–D: Hinterfüllung fehlt. Erdbau Huber muss nacharbeiten. Frist noch festzulegen.
 
 Nächste Baubesprechung: {T+6}, 10:00 Uhr, Baucontainer.
-Protokoll: T. Berger
+Protokoll: Y. Shao

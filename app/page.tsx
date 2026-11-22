@@ -2,54 +2,53 @@
 
 import { useRef, useState } from "react";
 import type { LetterType } from "@/lib/types";
-import DeviationTab from "./components/DeviationTab";
+import BerichteTab, { type OpenDay } from "./components/BerichteTab";
 import Header, { type Tab } from "./components/Header";
 import LetterFlow, { type DraftSource, type LetterFlowHandle } from "./components/LetterFlow";
 import SummaryTab from "./components/SummaryTab";
 import VerlaufTab from "./components/VerlaufTab";
 
 export default function Home() {
-  const [tab, setTab] = useState<Tab>("situation");
+  const [tab, setTab] = useState<Tab>("heute");
   // Start screen uses the big nameplate; every other screen the smaller one.
   const [onStart, setOnStart] = useState(true);
   const letterFlow = useRef<LetterFlowHandle>(null);
-  // Text handed over from the router; the key remounts the target tab with it.
-  const [incoming, setIncoming] = useState<{ tab: Tab; text: string; id: number } | null>(null);
+  const [openDay, setOpenDay] = useState<OpenDay>(null);
+
+  /** Opens the Tagesbericht of a day (from Fristen & Verlauf or Zusammenfassen). */
+  function showDay(day: string) {
+    setOpenDay({ day, n: Date.now() });
+    go("berichte");
+  }
 
   function go(t: Tab) {
     setTab(t);
     window.scrollTo({ top: 0 });
   }
 
-  function redirect(target: "bericht" | "zusammenfassen", text: string) {
-    setIncoming({ tab: target, text, id: Date.now() });
-    go(target);
-  }
-
-  function draftFromDeviation(text: string, letterType: LetterType, source: DraftSource) {
-    go("situation");
+  /** „Anzeige entwerfen“ / „Schreiben entwerfen“ from another tab: Rückfragen → Schreiben on „Heute“. */
+  function draft(text: string, letterType: LetterType, source: DraftSource) {
+    go("heute");
     letterFlow.current?.start(text, letterType, source);
   }
 
-  const handed = (t: Tab) => (incoming?.tab === t ? incoming : null);
-
   return (
     <>
-      <Header tab={tab} onTab={go} compact={tab !== "situation" || !onStart} />
+      <Header tab={tab} onTab={go} compact={tab !== "heute" || !onStart} />
 
       <main className="mx-auto box-border w-full max-w-[720px] px-6 pt-10 pb-14 min-[600px]:pt-12">
         {/* Tabs stay mounted (hidden) so switching does not lose input. */}
-        <div hidden={tab !== "situation"}>
-          <LetterFlow ref={letterFlow} onRedirect={redirect} onTab={go} onStartScreen={setOnStart} />
+        <div hidden={tab !== "heute"}>
+          <LetterFlow ref={letterFlow} onTab={go} onStartScreen={setOnStart} />
         </div>
-        <div hidden={tab !== "bericht"}>
-          <DeviationTab key={handed("bericht")?.id ?? "bericht"} initialText={handed("bericht")?.text} onDraft={draftFromDeviation} />
+        <div hidden={tab !== "berichte"}>
+          <BerichteTab onDraft={draft} openDay={openDay} />
         </div>
         <div hidden={tab !== "verlauf"}>
-          <VerlaufTab />
+          <VerlaufTab onOpenDay={showDay} />
         </div>
         <div hidden={tab !== "zusammenfassen"}>
-          <SummaryTab key={handed("zusammenfassen")?.id ?? "zusammenfassen"} initialText={handed("zusammenfassen")?.text} />
+          <SummaryTab onOpenDay={showDay} />
         </div>
 
         <footer className="mt-12 border-t border-[var(--ink)] pt-3 text-center font-sans text-[13px] text-[var(--grey)]">

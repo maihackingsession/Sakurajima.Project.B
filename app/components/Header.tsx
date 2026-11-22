@@ -5,11 +5,11 @@ import project from "@/data/project.json";
 import { isBeispiel } from "../lib/api";
 import { Logo } from "./Status";
 
-export type Tab = "situation" | "bericht" | "verlauf" | "zusammenfassen";
+export type Tab = "heute" | "berichte" | "verlauf" | "zusammenfassen";
 
 const TABS: { id: Tab; label: string; short: string }[] = [
-  { id: "situation", label: "Neuer Eintrag", short: "Eintrag" },
-  { id: "bericht", label: "Tagesbericht", short: "Tagesbericht" },
+  { id: "heute", label: "Heute", short: "Heute" },
+  { id: "berichte", label: "Tagesberichte", short: "Berichte" },
   { id: "verlauf", label: "Fristen & Verlauf", short: "Fristen" },
   { id: "zusammenfassen", label: "Zusammenfassen", short: "Zusammenfassen" },
 ];
@@ -39,7 +39,9 @@ export default function Header({ tab, onTab, compact = false }: { tab: Tab; onTa
       .catch(() => {});
   }, []);
 
-  const mode = (beispiel || serverMock) && <span className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)] uppercase">Beispielmodus</span>;
+  // No API key on the server → Demo-Modus; ?beispiel=1 → presenter fallback. Both answer from data/mocks.
+  const label = serverMock ? "Demo-Modus – Beispielantworten" : beispiel ? "Beispielmodus – Beispielantworten" : "";
+  const mode = label && <span className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)] uppercase">{label}</span>;
 
   return (
     <header>

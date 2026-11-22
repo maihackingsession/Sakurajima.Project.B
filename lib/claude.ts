@@ -63,7 +63,14 @@ type Options = {
   fast?: boolean;
   /** Beispielmodus (?beispiel=1): prepared answers instead of Claude, even with an API key. */
   mock?: boolean;
+  /** Checks the parsed reply; a returned message triggers the one retry with that message, then an error. */
+  validate?: (reply: unknown) => string | null;
 };
+
+/** Server log for a failed AI call: route and error type only (never the key, never the user text). */
+function logAiError(name: string, kind: string, status?: number) {
+  console.error(`[ki] route=${name} fehler=${kind}${status ? ` status=${status}` : ""}`);
+}
 
 /**
  * Loads prompts/<name>.xml, fills {placeholders} and returns the parsed JSON reply.
@@ -121,26 +128,46 @@ export async function runPrompt<T>(
       }
       text = response.content.map((b) => (b.type === "text" ? b.text : "")).join("");
     } catch (error) {
-      if (error instanceof PromptError) throw error;
-      if (error instanceof Anthropic.AuthenticationError) throw new PromptError("API-Schlüssel ungültig.", 500);
-      if (error instanceof Anthropic.RateLimitError) throw new PromptError("Zu viele Anfragen. Bitte kurz warten.", 429);
-      if (error instanceof Anthropic.APIConnectionTimeoutError) throw new PromptError("Die KI hat zu lange gebraucht. Bitte erneut versuchen.", 504);
+      if (error instanceof PromptError) {
+        logAiError(name, error.status === 422 ? "refusal" : "max_tokens");
+        throw error;
+      }
+      if (error instanceof Anthropic.AuthenticationError) {
+        logAiError(name, "auth", 401);
+        throw new PromptError("API-Schlüssel ungültig.", 500);
+      }
+      if (error instanceof Anthropic.RateLimitError) {
+        logAiError(name, "rate_limit", 429);
+        throw new PromptError("Zu viele Anfragen. Bitte kurz warten.", 429);
+      }
+      if (error instanceof Anthropic.APIConnectionTimeoutError) {
+        logAiError(name, "timeout");
+        throw new PromptError("Die KI hat zu lange gebraucht. Bitte erneut versuchen.", 504);
+      }
       if (error instanceof Anthropic.APIError) {
-        console.error("Claude API error", error.status, error.message);
+        logAiError(name, "api_error", error.status);
         throw new PromptError("Fehler bei der KI-Anfrage. Bitte erneut versuchen.");
       }
+      logAiError(name, "connection");
       throw error;
     }
 
+    // Invalid JSON or a reply that fails `validate`: one retry with the reason, then an error.
+    let problem: string | null;
     try {
-      return parseJson(text) as T;
+      const reply = parseJson(text);
+      problem = opts.validate?.(reply) ?? null;
+      if (!problem) return reply as T;
     } catch {
-      messages.push(
-        { role: "assistant", content: text || "(leer)" },
-        { role: "user", content: "Deine Antwort war kein gültiges JSON. Antworte jetzt ausschließlich mit dem JSON-Objekt im verlangten Format, ohne weiteren Text." },
-      );
+      problem = "Deine Antwort war kein gültiges JSON.";
     }
+    if (attempt === 0) console.warn(`[ki] route=${name} wiederholung=ungueltige_antwort`);
+    messages.push(
+      { role: "assistant", content: text || "(leer)" },
+      { role: "user", content: `${problem} Antworte jetzt ausschließlich mit dem JSON-Objekt im verlangten Format, ohne weiteren Text.` },
+    );
   }
+  logAiError(name, "invalid_json");
   throw new PromptError("Die Antwort der KI war kein gültiges JSON. Bitte erneut versuchen.");
 }
 

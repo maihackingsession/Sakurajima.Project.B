@@ -143,8 +143,8 @@ Antwort:
 ```json
 {
   "subject": "Behinderungsanzeige gem. § 6 Abs. 1 VOB/B – Fehlende Bewehrungspläne Bodenplatte\nNeubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417",
-  "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Frau Dr. Andrea Lindner\nBoltzmannstraße 15\n85748 Garching bei München",
-  "salutation": "Sehr geehrte Frau Dr. Lindner,",
+  "recipient": "Campus Garching Projektgesellschaft mbH\nz. Hd. Herrn Prof. Jagtap\nBoltzmannstraße 15\n85748 Garching bei München",
+  "salutation": "Sehr geehrter Herr Prof. Jagtap,",
   "body": "hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind.\n\n… Wir bitten Sie, uns die freigegebenen Bewehrungspläne bis spätestens 23.11.2026, 12:00 Uhr zu übergeben. …",
   "closing": "Mit freundlichen Grüßen",
   "legal_basis": "§ 6 Abs. 1 VOB/B (Anzeige), § 6 Abs. 2 VOB/B (Fristverlängerung), § 6 Abs. 6 VOB/B (Mehrkosten) – bitte prüfen",

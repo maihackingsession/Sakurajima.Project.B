@@ -2,11 +2,12 @@
   "bauvorhaben": "Neubau Bürogebäude Forschungscampus Garching",
   "baustelle": "Lichtenbergstraße 8, 85748 Garching bei München",
   "ort": "Garching",
+  "koordinaten": { "lat": 48.265, "lon": 11.671, "hinweis": "Garching Forschungszentrum, für das Wetter (Open-Meteo)" },
   "vertragsnummer": "BV-2026-0417",
   "vertragsgrundlage": "VOB/B",
   "auftraggeber": {
     "name": "Campus Garching Projektgesellschaft mbH",
-    "ansprechpartner": "Frau Dr. Andrea Lindner, Projektleitung Bauherr",
+    "ansprechpartner": "Herr Prof. Jagtap, Projektleitung Bauherr",
     "strasse": "Boltzmannstraße 15",
     "plz_ort": "85748 Garching bei München"
   },
@@ -27,7 +28,7 @@
     "email": "bauleitung@musterbau.example"
   },
   "bauleiter": {
-    "name": "Thomas Berger",
+    "name": "Yuzhi Shao",
     "funktion": "Bauleiter",
     "telefon": "0171 2345678"
   },

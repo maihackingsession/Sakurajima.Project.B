@@ -193,7 +193,7 @@ Checked: no English/technical words in the UI (except the label „Beispielmodus
 - f) HANDOVER §3 cleanup: DONE (81f0a68) – rechecked in Phase 2
 
 ### Phase 1 — Content fixes: done
-- Signature once: prompts/letter.xml rule (body ends before the closing, never greeting/closing/signature); `stripSignoff()` (lib/text.ts) in /api/letter and in the Verlauf example. The Beispielmodus Mängelanzeige body ends with „Mit freundlichen Grüßen / Musterbau GmbH / Thomas Berger / Bauleiter“ – stripped, signature block shown once.
+- Signature once: prompts/letter.xml rule (body ends before the closing, never greeting/closing/signature); `stripSignoff()` (lib/text.ts) in /api/letter and in the Verlauf example. The Beispielmodus Mängelanzeige body ends with „Mit freundlichen Grüßen / Musterbau GmbH / Yuzhi Shao / Bauleiter“ – stripped, signature block shown once.
 - Prüfliste per type (app/lib/checks.ts, code only): Behinderung 8 points, Bedenken 6, Mehrkosten 5, Mängel 4. All four Beispielmodus letters: all ✓ (checked by script).
 - Bedenkenanzeige prompt: facts with evidence, risk, suggested alternative to check (drückendes Wasser / WU-Beton), deadline, no start before decision → Behinderung + cost reservation, last line „Anlagen: …“.
 - Names: added `architekt_ag` (Herr Vogel, already in the Protokoll sample, mock letters and the letter example) to data/project.json so every person in the demo data is in project.json. No other changes needed: client, Bauleiter, place (Garching, from project.json in the date line) and contract number BV-2026-0417 are identical everywhere.
@@ -234,3 +234,89 @@ Checked: no horizontal scroll, key content + main button above the fold at 1280�
 
 ### Design Zeitung (Richtung 2) — merged (18:54)
 - design-zeitung reviewed by the team and merged into main (fast-forward, 0bd692a). Checked locally in Demo-Modus without API key at 375/768/1280: no horizontal scroll, no radius/shadow, no text < 12 px, 0 console errors. Previous design: tag `freeze-final` (54f39a6).
+
+## Version 2 (branch features-v2) — HANDOVER §3 items 14–24
+- [x] 1. Names: Herr Prof. Jagtap (AG), Yuzhi Shao (Bauleiter) everywhere
+- [x] 2. Rückfragen complete, „Weiß ich nicht“, no [Klammern]; „Angabe fehlt“ safety net
+- [x] 3. VoiceField in every text input
+- [x] 4. „Heute“ start screen (save first, check in background)
+- [x] 5. Tagesberichte (list, day view, /api/daily-report, plan check, PDF, Abzeichnen)
+- [x] 6. Wetter via Open-Meteo (/api/weather), cached, manual fallback
+- [x] 7. Fristen & Verlauf: „Neues Ereignis“, timeline by day, shared store
+- [x] 8. Zusammenfassen → „Als Tagesbericht speichern“
+- [x] 9. Demo data without API
+- [x] 10. (optional) Photo per entry
+
+## Router-Diagnose 21.11. (branch router-fix, FIX_PROMPT_ROUTER.md Schritt 1, keine Code-Änderung)
+
+**a) Wie der Typ entschieden wird**
+- Prompt `prompts/router.xml` (93 Zeilen, v2): intent letter/deviation/summary, letter_type behinderung/mehrkosten/bedenken/maengel/null, outcome anzeige/keine_anzeige/eigener_bereich, facts, reason. Definition „behinderung“ schließt Witterung und Geräteausfall ein (:13), outcome-Regel „Im Zweifel anzeige“ (:22). Von 3 Few-shot-Beispielen sind **alle 3 letter_type behinderung** (:50-79), das erste ist die Demo-Geschichte (Bewehrungspläne Bodenplatte, Tragwerksplaner).
+- Aufruf: `app/api/route/route.ts:23-49` → `runPrompt("router", …, {effort: "low", fast: true})`. Einziger Client-Aufrufer in V2: `checkEntry()` `app/components/HeuteView.tsx:38-47` (nach „Speichern“ auf Heute, im Hintergrund; „Erneut prüfen“). „Analysieren“ gibt es in V2 nicht mehr. „Mit Bauzeitenplan prüfen“ (`BerichteTab.tsx:166`) und „Fremden Bericht einfügen“ (`DeviationTab.tsx:56`) rufen `/api/deviation`, nicht den Router; „Anzeige entwerfen“ übernimmt `suggested_letter` aus der Abweichung und überspringt den Router.
+- Default/Fallback: ungültiges `intent` → "letter", ungültiges `outcome` → **"anzeige"** (`route.ts:41,45`), ungültiger `letter_type` → null. „Keine Anzeige nötig“ ist möglich (outcome keine_anzeige), aber nur als Unterfall eines letter_type. Im Demo-Modus fällt `guess()` (`route.ts:7-21`) bei vielen Wörtern („fehl“, „wart“, „kann nicht“) auf behinderung.
+- Parsing: kein strenges JSON – `parseJson()` (`lib/claude.ts:43-53`) entfernt ```-Zäune und nimmt das erste {…}; Enums werden danach im Code geprüft (s. o.), ungültige Werte werden still ersetzt statt wiederholt.
+
+**b) Was außer dem Text in den KI-Kontext geht**
+- Router: `{project_context}` = ganzes `data/project.json` (`lib/claude.ts:88`, router.xml:31) ⚠ enthält Ingenieurbüro Kraus, Jagtap, Rohbau Schneider, Huber, Vogel, Maier; `{today}`; 3 Few-shot-Beispiele ⚠ Bewehrungspläne Bodenplatte. Kein Bauzeitenplan, keine anderen Einträge.
+- Gaps: project.json ⚠ (Kraus, Jagtap, Schneider), required_fields.json, facts vom Router, Beispiel ⚠ „Bewehrung Bodenplatte … Pläne vom Tragwerksplaner“ (gaps.xml:50-55).
+- Letter: project.json ⚠, facts, answers, Beispiele ⚠ Bodenplatte/Bewehrungspläne/Ingenieurbüro Kraus (letter.xml:91-99, 117-125).
+- Deviation: project.json ⚠ + ganzer `data/plan.json` ⚠ (Bodenplatte bewehren, Bewehrungspläne, Kraus).
+- Demo-Modus/Router-Mock: `data/mocks/router.json` ⚠ – facts (Bewehrungspläne, Kraus, Bodenplatte) und reason („Fehlende Pläne … Bewehrung“) werden für **jede** als behinderung geratene Eingabe zurückgegeben (`route.ts:36-37`).
+- Demo-Einträge (`app/lib/demo.ts`): liegen im selben Store `baufrist:eintraege` wie echte (Flag `example`), Eintrag 2 trägt eine fertige Prüfung mit der Mock-reason und den Mock-facts ⚠ Kraus/Bodenplatte. „Beispiel einfügen“ auf Heute (`HeuteView.tsx:124-128`) speichert einen Text aus tests/situations.json als normalen Eintrag (ohne Flag).
+
+**c) Fallback-Pfade auf Beispielantworten**
+| Bedingung | Mock? | Nutzer informiert? | Log? |
+|---|---|---|---|
+| ANTHROPIC_API_KEY fehlt (`lib/claude.ts:20-22,78`) | ja, alle KI-Routen | nur kleines graues „Beispielmodus“ im Kopf (Header.tsx:42, nach /api/health) | nein |
+| `?beispiel=1` → Header `x-beispiel: 1` (`app/lib/api.ts:12`, `lib/claude.ts:152`) | ja, auch mit Schlüssel | „Beispielmodus“ im Kopf | nein |
+| API-Fehler, Timeout, Rate-Limit, 401 (`lib/claude.ts:123-133`) | nein – Fehler | Heute: grau „Prüfung nicht möglich. Erneut prüfen“ (HeuteView.tsx:60-65); LetterFlow: ErrorBox + „Erneut versuchen“ | console.error nur bei APIError, ohne Route |
+| ungültiges JSON (2 Versuche, `:135-144`) | nein – Fehler | wie oben | nein |
+| leere Antwort | wird als „kein JSON“ behandelt → Fehler | wie oben | nein |
+| Client-catch (`postJson`) | nein | Fehlertext | nein |
+→ Mit Schlüssel gibt es **keinen stillen** Fallback auf Mocks; „keine echte KI“ entsteht nur durch fehlenden Schlüssel (z. B. Vercel-Preview ohne Env-Var) oder `?beispiel=1` – beide nur am kleinen grauen Wort erkennbar.
+
+**d) Modell und Parameter** (alle ohne System-Prompt – alles in einer User-Nachricht; Antwortformat JSON-Text, tolerant geparst; Timeout 55 s + 1 SDK-Retry `lib/claude.ts:96`; max_tokens 8000 Default `:111`; temperature nicht gesetzt – Sonnet/Haiku 5.5 lehnen Nicht-Default mit 400 ab, `:101`)
+| Route | Modell | effort | Prompt |
+|---|---|---|---|
+| /api/route | Haiku (ANTHROPIC_FAST_MODEL, `route.ts:30`) | low | router.xml |
+| /api/gaps | Haiku (`gaps/route.ts:19`) | low | gaps.xml |
+| /api/letter | Sonnet (ANTHROPIC_MODEL, `lib/claude.ts:10`) + server-side fallback beta | medium | letter.xml |
+| /api/deviation | Sonnet | medium | deviation.xml |
+| /api/daily-report | Sonnet | low | daily-report.xml |
+| /api/summary | Sonnet | medium | summary.xml |
+
+**e) Client**
+- Kein hart codiertes Label: „… EMPFOHLEN“ kommt aus `LETTER_LABELS[check.letterType]` (HeuteView.tsx:70), Tagesbericht-Karten aus `suggested_letter`. `LetterFlow` startet mit State „behinderung“ (LetterFlow.tsx:51), wird aber bei jedem Start überschrieben.
+- „Schreibenart selbst wählen“ überschreibt korrekt (HeuteView.tsx:142-147: Prüfung = gewählter Typ, kein Router-Aufruf).
+- Kein Wiederverwenden alter Ergebnisse: Prüfung hängt an der Entry-ID, POSTs werden nicht gecacht; `prepare()` setzt Entwurf/Typ/Fakten neu, Fragen/Antworten werden in `checkGaps` neu gesetzt.
+- Demo-Daten mischen sich in echte Einträge (gleicher Store, gleiche Listen „Heute festgehalten“/Tagesberichte), inkl. fertiger „BEHINDERUNGSANZEIGE EMPFOHLEN“ mit Kraus/Bodenplatte-Begründung.
+
+**Zusammenfassung (wahrscheinlichste Ursachen)**
+1. Fast alles wird Behinderung, weil der Router-Prompt nur Behinderungs-Beispiele zeigt, Witterung/Geräteausfall ausdrücklich als Behinderung definiert und „im Zweifel anzeige“ sagt, es keinen echten „keine“-Typ gibt und der Demo-Modus-`guess()` bei häufigen Wörtern auf Behinderung fällt.
+2. Bodenplatte/Bewehrungspläne/Kraus tauchen auf, weil der Router das ganze project.json (mit Kraus, Schneider …) und ein Demo-Beispiel mit Bewehrungsplänen bekommt, der Router-Mock diese Fakten und Begründung für jede Behinderung zurückgibt und die Demo-Einträge dieselbe Begründung im echten Store zeigen.
+3. „Keine echte KI“ entsteht, wenn der Server keinen Schlüssel hat (Preview/lokal) oder `?beispiel=1` aktiv ist – dann antworten alle Routen aus data/mocks, erkennbar nur am kleinen grauen „Beispielmodus“; echte Fehler erscheinen auf Heute nur als graues „Prüfung nicht möglich“.
+
+## Router-Fix 21.11. (branch router-fix, FIX_PROMPT_ROUTER 2.1–2.3 + Schritt 3) – done
+- 2.1 Router v3 (`prompts/router.xml`, v2 in `prompts/archive/router.v2.xml`): strenges JSON `{type, confidence, reason, language, facts}`, `type` ∈ behinderung/mehrkosten/bedenken/maengel/keine, im Code geprüft (`validate` in runPrompt → 1 Wiederholung → Fehler), nie Behinderung als Standard. Entscheidungsregeln in Prioritätsreihenfolge, je 1 neutrales Beispiel pro Typ. Haiku, effort low, max_tokens 1000. **temperature 0 nicht gesetzt**: Sonnet/Haiku 5.5 lehnen Nicht-Default-Werte mit 400 ab. Antwort an den Client bleibt `RouterResult` (keine → outcome keine_anzeige, grau „Im Tagesbericht gespeichert“).
+- 2.2 Demo-Antworten nur ohne Schlüssel (oder bewusst mit `?beispiel=1`); Kopfzeile „Demo-Modus – Beispielantworten“ bzw. „Beispielmodus – Beispielantworten“. Heute: roter Hinweis „KI nicht erreichbar – bitte erneut versuchen“ + „Erneut versuchen“, Eintrag bleibt. Server-Log `[ki] route=… fehler=…` (nie Schlüssel/Text).
+- 2.3 Router bekommt nur Text, Eintragsdatum und Projekt-Rollen (kein project.json, kein Plan, keine Beispiele/anderen Einträge). Deviation bekommt nur Planvorgänge im Fenster −3/+10 Tage um die Berichtsdaten. gaps.xml/letter.xml: „Use only facts from the input, the answers and the project data. Never take facts from examples.“ Demo-Modus-Router ohne vorbereitete Bodenplatte-Fakten. „Beispiel einfügen“-Texte werden als `example` markiert. LetterFlow setzt Rückfragen/Antworten/Freigabe bei jedem neuen Eintrag zurück. Leakage-Prüfung der reason (Bodenplatte, Bewehrungsplan, Kraus, Lindner, Berger, Jagtap, Schneider) → 1 Wiederholung, dann Warnung im Log.
+- Schritt 3: `npm run test:router [-- <URL>] [--only=1,2]`, `tests/router-cases.json`, Ergebnis `tests/results/router-21-11.md`: **16/16, 0 Leakage** (1. Durchgang, keine Wiederholung). Echte API-Aufrufe: 17 (1 Schlüsseltest + 16).
+- Offen: 2.4 Tageszusammenfassung (später).
+
+## Nachtschicht 21./22.11. (branch teil-final) – Entscheidungen
+- **Merge router-fix → main: nicht ausgeführt.** Der Befehl (fast-forward + push) wurde vom Berechtigungssystem von Claude Code blockiert; ohne Freigabe nicht umgangen. main bleibt auf d77389c (live = Version 1).
+- **teil-final von router-fix abgezweigt** (statt von main) – gleicher Inhalt, den main nach dem Merge gehabt hätte.
+- **baufrist-fokus-einstellungen-prompt.md fehlt** (nicht im Projektordner, nicht in Desktop/Downloads/Documents) → weggelassen. Teil 3 sagt „Namen aus den Einstellungen“ – ohne Einstellungen kommen sie weiter aus data/project.json.
+- baufrist-teil3-prompt.md lag nur in Downloads → in den Projektordner kopiert (nicht committet).
+- **Wetter auf Heute:** lokal lud es; Ursachen im Deployment: (1) Produktion (main) hat /api/weather gar nicht, (2) Server-Fetch zu Open-Meteo kann von Vercel aus scheitern/hängen (fetch-Cache mit `next.revalidate`), (3) der Client merkte sich einen Fehlschlag für die ganze Sitzung. Fix: gemeinsames `lib/weather.ts`, Route immer dynamisch ohne Fetch-Cache + Log `[wetter] fehler=…`, Client vergisst Fehlschläge und fragt sonst Open-Meteo direkt aus dem Browser (CORS erlaubt). Getestet in Headless-Edge: normal und mit blockiertem /api/weather.
+
+## Teil 3 (baufrist-teil3-prompt.md, branch teil-final) – done
+- [x] Teil 1 Rückfragen in der Sprache des Nutzers: gaps.xml liefert `language`, `intro`, `unknown_label`; Rückfragen-Seite zeigt Erklärsatz + „Weiß ich nicht“-Schalter übersetzt (keine Übersetzungstabellen im Code); Schreiben bleibt Deutsch. Demo: polnische Eingabe „Plany zbrojenia płyty fundamentowej nadal nie dotarły, 4 pracowników stoi.“ → data/mocks/gaps-behinderung-pl.json → deutsches Schreiben.
+- [x] Teil 2 Stillstand zählt bei jeder Änderung: 0,6 s ease-out vom alten zum neuen Wert; ein kurz leeres Feld setzt nicht mehr auf 0 zurück. Getestet: 1 → 5 Tage, 1.856 € → (mitten 7.746 €) → 9.280 €.
+- [x] Teil 3 Mengenänderung § 2 Abs. 3: neuer Typ `mengenaenderung` überall (LETTER_TYPES, Router-Regel 2 + Beispiel, Deviation-Enum, required_fields, letter.xml-Fachregel, Prüfliste 7 Punkte, Fristlabel, Demo-Eintrag + Mocks). Rechnung im Code `lib/mengen.ts` + Anzeige `app/components/MengenBox.tsx` (Rückfragen-Seite und über dem Schreiben). ≤ 10 % → kein Schreiben, kein EP-Vertrag → roter Hinweis, Anordnung des AG → „Als Mehrkostenanzeige weiter“. /api/letter rechnet serverseitig erneut und lehnt gesperrte Fälle ab.
+- Entscheidungen: Namen/Adressen weiter aus data/project.json (Einstellungen fehlen, s. o.). Router-Prompt bewusst nur um Regel 2 „mengenaenderung“ + 1 Beispiel ergänzt, die übrigen Regeln aus dem Router-Fix unverändert; die 16 Router-Tests wurden aus Budgetgründen nicht komplett neu gelaufen (s. BERICHT-NACHT.md).
+- Getestet im Demo-Modus (ohne Schlüssel) in Headless-Edge: Mengenänderung (Empfehlung, +37,5 %, 330 m³ über 1.320 m³, Prüfliste 7/7, keine Klammern), ≤ 10 % (kein Schreiben), Polnisch, Zählanimation, Beispieldaten; `scripts/screenshots.mjs` bei 1280/375/768: 0 Befunde, 0 Konsolenfehler (Fehler-Schritt auf neuen Text „KI nicht erreichbar“ angepasst).
+
+## 22.11. (branch teil-final)
+- baufrist-fokus-einstellungen-prompt.md: erneut nicht im Ordner (auch nicht in Desktop/Downloads) → weiterhin weggelassen.
+- [x] Rückfragen in der Sprache der Eingabe repariert: Mit echter KI kamen polnische Eingaben vorher als deutsche Fragen zurück. Jetzt geht die vom Router erkannte Sprache (`language`) über Entry → LetterFlow → /api/gaps, steht als `{input_language}` oben in gaps.xml und direkt nach der Eingabe; ohne Router-Sprache: polnische Buchstaben → pl, sonst erkennt die KI selbst. Sicherheitsnetz: language "de" trotz anderer Eingabesprache → 1 Wiederholung. Echter Test (1 Aufruf, keine Wiederholung): 3 Fragen auf Polnisch, intro und „Nie wiem“ polnisch, `field` deutsch.
+- [x] Router-Tests neu (echte KI, 22.11.): 16 Fälle + #17 Mengenänderung → **17/17, 0 Leakage**, keine Wiederholung (17 Aufrufe). tests/results/router-22-11.md

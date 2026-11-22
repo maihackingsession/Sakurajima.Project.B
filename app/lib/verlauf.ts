@@ -5,6 +5,7 @@ import maengel from "@/data/mocks/letter-maengel.json";
 import { addDays, daysBetween, fillDates, formatDate, parseGermanDate, today } from "@/lib/dates";
 import { stripSignoff } from "@/lib/text";
 import type { Letter, LetterType } from "@/lib/types";
+import { letterCollection } from "./store";
 
 export type VerlaufEntry = {
   id: string;
@@ -21,56 +22,11 @@ export type VerlaufEntry = {
   example?: boolean;
 };
 
-const KEY = "baufrist:verlauf";
-const EVENT = "baufrist:verlauf";
-const EMPTY: VerlaufEntry[] = [];
-
-let cachedRaw: string | null = null;
-let cached: VerlaufEntry[] = EMPTY;
-
-function readRaw() {
-  try {
-    return localStorage.getItem(KEY);
-  } catch {
-    return null;
-  }
-}
-
-/** Snapshot for useSyncExternalStore (same array as long as storage is unchanged). */
-export function getVerlauf(): VerlaufEntry[] {
-  const raw = readRaw();
-  if (raw !== cachedRaw) {
-    cachedRaw = raw;
-    try {
-      const parsed = raw ? JSON.parse(raw) : [];
-      cached = Array.isArray(parsed) ? parsed : EMPTY;
-    } catch {
-      cached = EMPTY;
-    }
-  }
-  return cached;
-}
-
-export const getVerlaufServer = () => EMPTY;
-
-export function subscribeVerlauf(onChange: () => void) {
-  window.addEventListener(EVENT, onChange);
-  window.addEventListener("storage", onChange);
-  return () => {
-    window.removeEventListener(EVENT, onChange);
-    window.removeEventListener("storage", onChange);
-  };
-}
-
-function write(entries: VerlaufEntry[]) {
-  try {
-    if (entries.length) localStorage.setItem(KEY, JSON.stringify(entries));
-    else localStorage.removeItem(KEY);
-  } catch {
-    // Private mode / blocked storage: the approval still works, the Verlauf just stays empty.
-  }
-  window.dispatchEvent(new Event(EVENT));
-}
+// Storage lives in store.ts (one place for all browser storage).
+const letters = letterCollection<VerlaufEntry>();
+export const getVerlauf = letters.get;
+export const useSavedLetters = letters.use;
+const write = letters.set;
 
 /** Saves an approved letter. Re-approving the same draft replaces its entry. */
 export function saveToVerlauf(entry: Omit<VerlaufEntry, "example">) {
@@ -106,6 +62,7 @@ export const DEADLINE_LABEL: Record<LetterType, string> = {
   mehrkosten: "Frist",
   bedenken: "Frist",
   maengel: "Frist zur Mängelbeseitigung",
+  mengenaenderung: "Frist",
 };
 
 /** Countdown for a deadline: "noch 3 Tage" (green), ≤ 2 days amber, past red "überfällig". */
@@ -143,7 +100,7 @@ export function exampleEntries(): VerlaufEntry[] {
       recipient: behinderung.recipient,
       subject: fill(behinderung.subject),
       approvedAt: at(0, 9, 40),
-      approvedBy: "Thomas Berger",
+      approvedBy: "Yuzhi Shao",
       deadline: fill("{T+2}"),
       text: { salutation: behinderung.salutation, body: fill(behinderung.body.replace("{FRIST}", "{T+2}, 12:00 Uhr")), closing: behinderung.closing },
       example: true,
@@ -154,7 +111,7 @@ export function exampleEntries(): VerlaufEntry[] {
       recipient: maengel.recipient,
       subject: fill(maengel.subject),
       approvedAt: at(-2, 16, 15),
-      approvedBy: "Thomas Berger",
+      approvedBy: "Yuzhi Shao",
       deadline: fill("{T+5}"),
       text: { salutation: maengel.salutation, body: fill(stripSignoff(maengel.body)), closing: maengel.closing },
       example: true,

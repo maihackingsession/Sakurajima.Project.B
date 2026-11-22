@@ -7,8 +7,8 @@
   ],
   "open_items": [
     { "task": "Bewehrungspläne Bodenplatte liefern", "owner": "Tragwerksplaner (Ing.-Büro Kraus)", "due": "{T}" },
-    { "task": "Nachtragsangebot Hebeanlage einreichen", "owner": "Musterbau GmbH (Herr Berger)", "due": "{T+7}" },
-    { "task": "Freigabe Zufahrt Nord mit Stadtwerken klären", "owner": "AG (Frau Dr. Lindner)", "due": "offen" },
+    { "task": "Nachtragsangebot Hebeanlage einreichen", "owner": "Musterbau GmbH (Y. Shao)", "due": "{T+7}" },
+    { "task": "Freigabe Zufahrt Nord mit Stadtwerken klären", "owner": "AG (Herr Prof. Jagtap)", "due": "offen" },
     { "task": "Verbau Nordseite nacharbeiten", "owner": "Erdbau Huber", "due": "offen" }
   ],
   "deadlines": [

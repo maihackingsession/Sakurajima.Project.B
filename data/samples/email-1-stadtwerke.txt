@@ -1,9 +1,9 @@
 Von: Martin Seidl <m.seidl@stadtwerke-garching.example>
-An: Thomas Berger <bauleitung@musterbau.example>
+An: Yuzhi Shao <bauleitung@musterbau.example>
 Datum: {T-2}, 16:42
 Betreff: Sperrung Zufahrt Nord – Lichtenbergstraße
 
-Sehr geehrter Herr Berger,
+Guten Tag Yuzhi Shao,
 
 wie heute telefonisch besprochen: Die Leitungsarbeiten (Fernwärme) im Auftrag der Campus Garching Projektgesellschaft dauern voraussichtlich noch bis einschließlich {T+7}. Bis dahin bleibt die Zufahrt Nord gesperrt. Eine Behelfszufahrt über die Südseite ist für Fahrzeuge bis 7,5 t möglich.
 

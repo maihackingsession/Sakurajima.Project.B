@@ -39,11 +39,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist [betroffene Leistung einsetzen].
 
@@ -61,7 +61,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -87,11 +87,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte.
 
@@ -109,7 +109,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -137,11 +137,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen sind die Betonierarbeiten [betroffene Leistung/Bauteil einsetzen], insbesondere die Decke über dem Untergeschoss.
 
@@ -159,7 +159,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -186,11 +186,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 Sie haben als Auftraggeber [Datum der Anordnung einsetzen] [Person/Art der Anordnung einsetzen, z. B. in der Baubesprechung] angeordnet, in der Fassade Nord andere Fenster vorzusehen und die Öffnungen zu vergrößern. Die Planung wurde damit gegenüber dem bisherigen Stand geändert.
 
@@ -204,7 +204,7 @@ Wir bitten Sie, die Anordnung schriftlich zu bestätigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -230,11 +230,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 der Elektroplaner des Auftraggebers hat am 20.11.2026 angeordnet, in der Bodenplatte zusätzlich Leerrohre für Ladesäulen herzustellen. Betroffen ist die Bodenplatte des Bauvorhabens.
 
@@ -246,7 +246,7 @@ Wir bitten Sie, die Anordnung schriftlich zu bestätigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -283,11 +283,11 @@ Neubau Bürogebäude Forschungscampus Garching, Vertrag BV-2026-0417
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 hiermit zeigen wir Ihnen gem. § 6 Abs. 1 VOB/B an, dass wir in der Ausführung der uns übertragenen Leistungen behindert sind. Betroffen ist die Bewehrung der Bodenplatte (Fundament).
 
@@ -307,7 +307,7 @@ Das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
 Mit freundlichen Grüßen
 
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 
@@ -348,7 +348,7 @@ Wir fordern Sie auf, den Mangel bis zum [Frist zur Beseitigung einsetzen] fachge
 Nach fruchtlosem Fristablauf behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen. Weitere Rechte behalten wir uns vor.
 
 Mit freundlichen Grüßen
-Thomas Berger
+Yuzhi Shao
 Bauleiter
 Musterbau GmbH
 

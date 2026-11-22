@@ -17,7 +17,7 @@ Bewertung bitte in der letzten Spalte eintragen: **brauchbar / Nacharbeit / fals
 | s05 | Frost, kein Betonieren möglich, Decke UG verschiebt sich | Behinderungsanzeige | Behinderungsanzeige | Seit welchem Datum ist das Betonieren der Decke UG wegen des Frosts nicht möglich?<br>Liegt die Ursache beim Auftraggeber (z. B. Vorgaben, Freigaben, Bauzeitenplan) oder hat sie keinen Bezug zu einer Partei, also reines Wetterereignis?<br>Wie lange wird sich die Decke UG voraussichtlich verschieben?<br>Wie stark war der Frost, und welche Temperaturen wurden gemessen oder gemeldet? |  |
 | s06 | In der Baubesprechung am 19.11.2026 hat Architekt Vogel angeordnet, im UG Achse B/3 zusätzlich einen Pumpensumpf mit Hebeanlage einzubauen. Das ist nicht im LV. Wir wollen am 24.11. mit den Arbeiten anfangen. | Mehrkostenanzeige | Mehrkostenanzeige | Hat Architekt Vogel die Anordnung nur mündlich gegeben, oder gibt es dazu ein Protokoll, eine E-Mail oder einen Plan? Und: Handelt Herr Vogel im Auftrag des Auftraggebers?<br>Was genau gehört zur Zusatzleistung (z. B. Aushub, Betonarbeiten, Pumpe, Elektroanschluss) und wer soll sie ausführen?<br>Gibt es Angaben zu Größe oder Typ des Pumpensumpfs und der Hebeanlage (Maße, Fabrikat, Plan)?<br>Bitte bestätigen Sie den Beginn: Ist der 24.11.2026 gemeint? |  |
 | s07 | AG will jetzt doch andere Fenster, größere Öffnungen in der Fassade Nord, Schalung muss geändert werden | Mehrkostenanzeige | Mehrkostenanzeige | Wann und wie hat der Auftraggeber die Änderung angeordnet, und wer genau hat sie mitgeteilt?<br>Welche Änderung ist genau gewünscht, also welche Fenster und wie groß sollen die Öffnungen werden?<br>Welche Schalungsarbeiten müssen geändert werden, und ist schon geschalt oder betoniert?<br>Ab wann sollen die geänderten Arbeiten ausgeführt werden oder haben sie schon begonnen? |  |
-| s08 | Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026. | Mehrkostenanzeige | Mehrkostenanzeige | – |  |
+| s08 | Der Bauherr Herr Prof. Jagtap hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026. | Mehrkostenanzeige | Mehrkostenanzeige | – |  |
 | s09 | zusätzlich noch leerrohre für ladesäulen in der bodenplatte, hat der elektroplaner vom bauherrn gestern so gesagt | Mehrkostenanzeige | Mehrkostenanzeige | Wie heißt der Elektroplaner des Bauherrn, und wer war bei der mündlichen Anordnung gestern (20.11.2026) dabei?<br>Wann sollen die zusätzlichen Leerrohre eingebaut werden, oder sind sie schon eingebaut?<br>Wie viele Leerrohre und Ladesäulen sind es, und wo in der Bodenplatte sollen sie liegen?<br>Welche vertragliche Leistung wird dadurch geändert, und wer baut die Rohre ein (Rohbau Schneider oder Elektro Wagner)? |  |
 | s10 | Laut Ausführungsplanung ist die Bodenplatte nur für Bodenfeuchte ausgelegt. Beim Aushub am 18.11.2026 haben wir in 3,2 m Tiefe Schichtenwasser festgestellt. Wir halten die geplante Abdichtung für nicht ausreichend, es drohen Wassereintritte im UG. | Bedenkenanzeige | Bedenkenanzeige | – |  |
 | s11 | Der vorgeschriebene Beton C25/30 passt nicht zur Expositionsklasse für die Tiefgarage, Planer sagt aber so lassen | Bedenkenanzeige | Bedenkenanzeige | Welche Expositionsklasse gilt für die Tiefgarage laut Planung oder Norm, und welche Mindestfestigkeitsklasse wäre dafür nötig?<br>Welche Schäden oder Risiken befürchten Sie, wenn der Beton wie vorgeschrieben eingebaut wird?<br>Welche Bauteile der Tiefgarage sind betroffen, und wurde der Beton dort schon eingebaut oder noch nicht?<br>Wann und in welcher Form hat der Planer angeordnet, es so zu belassen, und wer war das namentlich? |  |
@@ -45,11 +45,11 @@ Bewertung bitte in der letzten Spalte eintragen: **brauchbar / Nacharbeit / fals
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu ergänzen]
 
@@ -65,7 +65,7 @@ Wir behalten uns ausdrücklich vor, eine Verlängerung der Ausführungsfristen g
 
 Die Wiederaufnahme der Arbeiten bzw. das Ende der Behinderung werden wir Ihnen gesondert anzeigen.
 
-Für Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 zur Verfügung.
+Für Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao, unter 0171 2345678 zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -87,11 +87,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 ENTWURF – zur Prüfung durch den Bauleiter, noch nicht versendet.
 
@@ -107,7 +107,7 @@ Wir fordern Sie auf, die Zufahrt Nord schnellstmöglich wieder freizugeben oder 
 
 Das Ende der Behinderung bzw. die Wiederaufnahme der Arbeiten werden wir Ihnen gesondert anzeigen.
 
-Für Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 gerne zur Verfügung.
+Für Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao, unter 0171 2345678 gerne zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -134,11 +134,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]
 
@@ -183,11 +183,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu ergänzen]
 
@@ -233,11 +233,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]
 
@@ -251,7 +251,7 @@ Wir behalten uns ausdrücklich vor, eine Verlängerung der Ausführungsfristen g
 
 Das Ende der Behinderung beziehungsweise die Wiederaufnahme der Arbeiten werden wir Ihnen gesondert anzeigen.
 
-Für Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 gerne zur Verfügung.
+Für Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao, unter 0171 2345678 gerne zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -279,11 +279,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vor Versand durch den Bauleiter zu prüfen]
 
@@ -321,11 +321,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu ergänzen]
 
@@ -352,7 +352,7 @@ Mit freundlichen Grüßen
 
 ### s08 – Mehrkostenanzeige
 
-**Eingabe:** Die Bauherrin Frau Dr. Lindner hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.
+**Eingabe:** Der Bauherr Herr Prof. Jagtap hat uns am 16.11.2026 schriftlich angewiesen, die Baugrube wegen der geänderten Tiefgaragenplanung um 40 cm tiefer auszuheben. Betroffen sind Aushub BA 1 und BA 2 sowie der Verbau. Ausführung ab 23.11.2026.
 
 **Erkannt:** Mehrkostenanzeige – Der Auftraggeber ordnet schriftlich eine geänderte, zusätzliche Leistung (tieferer Aushub) an, die nicht im Vertrag enthalten ist, daher Mehrkostenanzeige.
 
@@ -361,11 +361,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vom Bauleiter vor Versendung zu prüfen und zu bearbeiten]
 
@@ -375,7 +375,7 @@ Die angeordnete Vertiefung der Baugrube stellt eine Änderung der vertraglich ve
 
 Die Mehrkosten werden wir gesondert beziffern und Ihnen ein Nachtragsangebot unterbreiten. Wir bitten Sie, dieses nach Zugang zeitnah zu prüfen und zu beauftragen, damit eine Einigung über den neuen Preis möglichst vor Ausführung der Leistungen erfolgen kann.
 
-Bei Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger (Tel. 0171 2345678), gerne zur Verfügung.
+Bei Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao (Tel. 0171 2345678), gerne zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -403,11 +403,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 ENTWURF ZUR PRÜFUNG – nicht versendet.
 
@@ -439,11 +439,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vor Versand durch den Bauleiter zu prüfen und zu ergänzen]
 
@@ -459,7 +459,7 @@ Wir bitten Sie, die Planung im Hinblick auf die festgestellten Wasserverhältnis
 
 Wir weisen vorsorglich darauf hin, dass wir bei einer Ausführung nach Ihrer Anweisung trotz der angezeigten Bedenken nach § 13 Abs. 3 VOB/B von der Haftung für daraus entstehende Mängel frei werden. Zudem weisen wir darauf hin, dass sich aus einer Planänderung bzw. aus Verzögerungen Auswirkungen auf Vergütung und Bauzeit ergeben können; wir behalten uns entsprechende Ansprüche ausdrücklich vor.
 
-Für Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 zur Verfügung.
+Für Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao, unter 0171 2345678 zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -487,11 +487,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vom Bauleiter vor Versand zu prüfen und zu ergänzen]
 
@@ -531,11 +531,11 @@ Mit freundlichen Grüßen
 **Empfänger:**
 
 > Campus Garching Projektgesellschaft mbH
-> z. Hd. Frau Dr. Andrea Lindner, Projektleitung Bauherr
+> z. Hd. Herrn Prof. Jagtap, Projektleitung Bauherr
 > Boltzmannstraße 15
 > 85748 Garching bei München
 
-Sehr geehrte Frau Dr. Lindner,
+Sehr geehrter Herr Prof. Jagtap,
 
 [ENTWURF – vor Versand durch den Bauleiter zu prüfen und ggf. anzupassen]
 
@@ -551,7 +551,7 @@ Wir bitten Sie, die Planung zu überprüfen und uns bis zum [Frist einsetzen, re
 
 Vorsorglich weisen wir darauf hin, dass wir bei einer Ausführung nach Ihrer Anweisung trotz der angezeigten Bedenken für daraus entstehende Mängel nach Maßgabe von § 13 Abs. 3 VOB/B nicht haften. Sollte sich durch die Klärung oder eine geänderte Planung der Beginn der Arbeiten verschieben oder es zu Mehrkosten kommen, behalten wir uns ausdrücklich vor, hierzu gesondert Stellung zu nehmen.
 
-Für Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger (Tel. 0171 2345678), gerne zur Verfügung.
+Für Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao (Tel. 0171 2345678), gerne zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -591,7 +591,7 @@ Bitte bestätigen Sie uns kurzfristig schriftlich, dass Sie die Mängelbeseitigu
 
 Sollte die Frist fruchtlos verstreichen, behalten wir uns vor, den Mangel nach den vertraglichen und gesetzlichen Regelungen auf Ihre Kosten durch Dritte beseitigen zu lassen (Ersatzvornahme). Weitere Rechte, insbesondere Schadensersatzansprüche für Schäden und Folgekosten, die aus dem Mangel entstehen, behalten wir uns ausdrücklich vor.
 
-Für Rückfragen steht Ihnen unser Bauleiter, Herr Thomas Berger, unter 0171 2345678 zur Verfügung.
+Für Rückfragen steht Ihnen unser Bauleiter, Herr Yuzhi Shao, unter 0171 2345678 zur Verfügung.
 
 Mit freundlichen Grüßen
 
@@ -677,7 +677,7 @@ Wir fordern Sie auf, den Mangel bis spätestens [Frist als konkretes Datum einse
 
 Sollte die Frist fruchtlos verstreichen, behalten wir uns vor, den Mangel auf Ihre Kosten durch Dritte beseitigen zu lassen (Ersatzvornahme) sowie weitere Rechte, insbesondere Schadensersatzansprüche, geltend zu machen. Auch für Folgen und Verzögerungen im Bauablauf, die aus dem Mangel entstehen, behalten wir uns Ansprüche ausdrücklich vor.
 
-Bei Rückfragen erreichen Sie unseren Bauleiter, Herrn Thomas Berger, unter 0171 2345678.
+Bei Rückfragen erreichen Sie unseren Bauleiter, Herrn Yuzhi Shao, unter 0171 2345678.
 
 Mit freundlichen Grüßen
 
