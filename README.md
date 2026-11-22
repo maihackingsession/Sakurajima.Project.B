@@ -1,8 +1,8 @@
 # Baufrist – Bauleiter-Assistent
 
-*Ein Assistent für den Bauleiter – kein Ersatz.* Hackathon project (TUM.ai × BBIV, Challenge B).
+*Ein Assistent für den Bauleiter – kein Ersatz.* Hackathon project for **Challenge B** (TUM.ai × BBIV): an AI assistant that turns what happens on a construction site into the formal notices German contract law (VOB/B) requires, before the deadlines pass.
 
-Live: https://sakurajima-project-b.vercel.app · Offline demo: https://sakurajima-project-b.vercel.app/?beispiel=1
+**Live:** https://baufrist.vercel.app · **Offline demo (no AI calls):** https://baufrist.vercel.app/?beispiel=1
 
 ## What it does
 
@@ -23,12 +23,22 @@ Tagesbericht / text / voice
 
 Mermaid diagram: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 
-- **Two models.** Router and Rückfragen run on `claude-haiku-5-5` (fast). The letter, the Tagesbericht check and the summariser run on `claude-sonnet-5-5`. You can change both in `.env.local`.
+- **Two models** (`lib/claude.ts`, per route in `app/api/*/route.ts`):
+
+  | Step | Route | Prompt | Model | Effort |
+  |---|---|---|---|---|
+  | Erkennen (which notice?) | `/api/route` | `router.xml` | `claude-haiku-5-5` (`ANTHROPIC_FAST_MODEL`) | low |
+  | Rückfragen (missing facts) | `/api/gaps` | `gaps.xml` | `claude-haiku-5-5` (`ANTHROPIC_FAST_MODEL`) | low |
+  | Schreiben (letter) | `/api/letter` | `letter.xml` | `claude-sonnet-5-5` (`ANTHROPIC_MODEL`) | medium |
+  | Tagesbericht vs. Bauzeitenplan | `/api/deviation` | `deviation.xml` | `claude-sonnet-5-5` (`ANTHROPIC_MODEL`) | medium |
+  | Zusammenfassen (minutes, e-mails) | `/api/summary` | `summary.xml` | `claude-sonnet-5-5` (`ANTHROPIC_MODEL`) | medium |
+
+  Prüfliste, cost estimate, deadlines, approval and export use no AI.
 - **Prompts are XML files** in `/prompts` (`router`, `gaps`, `letter`, `deviation`, `summary`). Every prompt returns JSON, and each API route checks and normalises that JSON before it reaches the UI.
 - **There are no agent frameworks.** Each step is one function and one Claude call.
 - **There is no database.** Project data and the schedule are JSON files in `/data`. Approvals and „Fristen & Verlauf“ (approved letters with deadlines) are stored only in the user's browser (localStorage).
 - **Plain code, no AI:** urgency ("heute" / "seit X Tagen"), the Prüfliste per letter type (Behinderung 8 points, Bedenken 6, Mehrkosten 5, Mängel 4), the standstill cost estimate, draft/approval status, the signature block and export.
-- **Beispielmodus (sample mode).** `?beispiel=1` answers every step from `data/mocks/` with no AI call and shows a visible label "Beispielmodus (offline)". It is the presenter's fallback. Without `ANTHROPIC_API_KEY`, the whole app runs this way.
+- **Beispielmodus (sample mode).** Open https://baufrist.vercel.app/?beispiel=1: every step is answered from `data/mocks/` with no AI call, and a visible label "Beispielmodus (offline)" is shown. It is the presenter's fallback. Without `ANTHROPIC_API_KEY`, the whole app runs this way.
 - **Demo dates are relative to today.** Files in `/data` use `{T}`, `{T+5}` and similar tokens, so the demo story always happens "today".
 
 ## Tech stack
@@ -50,11 +60,13 @@ npm run dev        # http://localhost:3000
 Without a key, the app runs in Beispielmodus. To use real Claude calls, create `.env.local` in the project root. The file is gitignored; never commit it.
 
 ```
-ANTHROPIC_API_KEY=<your key>
-# optional
-ANTHROPIC_MODEL=claude-sonnet-5-5
-ANTHROPIC_FAST_MODEL=claude-haiku-5-5
+ANTHROPIC_API_KEY=
+# optional (defaults shown in the table above)
+ANTHROPIC_MODEL=
+ANTHROPIC_FAST_MODEL=
 ```
+
+The same names are in `.env.example`. `/api/health` shows whether the app runs in Beispielmodus (`mock: true`); it never shows the key.
 
 Restart `npm run dev` after adding the key. On Vercel, set the same variables under Project → Settings → Environment Variables and redeploy.
 
@@ -89,6 +101,7 @@ The "brauchbar" ratings are a first pass by the AI. The column for the rating by
 - One AI step takes a few seconds. The Tagesbericht check takes about 9 s.
 - Voice input uses browser dictation and has not been tested on real iPad or Android devices.
 - Without internet, only the Beispielmodus works.
+- Letters are always editable drafts. Baufrist never sends anything; export and sending are done by the site manager.
 
 ## Docs
 
