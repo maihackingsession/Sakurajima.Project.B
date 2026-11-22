@@ -16,6 +16,8 @@ import { RecDot } from "./Status";
 import { PhotoButton, Thumb } from "./Photo";
 import VoiceField, { useDictation } from "./VoiceField";
 import WeatherLine from "./WeatherLine";
+import Empty from "./Empty";
+import { KeyFigures, LastApproved, NextUp, ThisWeek } from "./HeuteBlocks";
 
 export type EntryDraft = { text: string; letterType: LetterType; facts: Record<string, unknown>; reason: string; eventDate: string; attachment?: string; language?: string };
 
@@ -27,6 +29,10 @@ type Props = {
   onDraft: (d: EntryDraft) => void;
   onTab: (tab: Tab) => void;
   onSettings: () => void;
+  /** Week strip: open Fristen & Verlauf on a day. */
+  onShowDay: (day: string) => void;
+  /** „Zuletzt freigegeben“: open a letter in Fristen & Verlauf. */
+  onOpenLetter: (id: string) => void;
 };
 
 const headDate = (day: string) => {
@@ -148,7 +154,7 @@ export function EntryText({ text }: { text: string }) {
   );
 }
 
-export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
+export default function HeuteView({ onDraft, onTab, onSettings, onShowDay, onOpenLetter }: Props) {
   // Same source as the masthead date: the browser's today, re-read every minute.
   const today = useToday();
   const head = headDate(today);
@@ -225,8 +231,27 @@ export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
 
   const select = "min-h-11 border-0 border-b border-[var(--ink)] bg-transparent pr-2 font-sans text-[15px] font-semibold";
 
+  const dueBlock = (id: string) =>
+    due.length > 0 && (
+      <section className="fade-in mt-12" aria-labelledby={id}>
+        <h2 id={id} className={sectionLabel}>Fällig</h2>
+        <ul>
+          {due.map((d) => (
+            <li key={d.id}>
+              <button onClick={() => onTab("verlauf")} className="block w-full border-b border-[var(--rule)] py-4 text-left hover:text-[var(--accent)]">
+                <span className="block font-serif text-[19px] leading-[1.3] font-semibold">{d.title}</span>
+                <span className={`mt-2 block font-sans text-[12px] tracking-[.04em] uppercase ${d.urgent ? "font-bold text-[var(--urgent)]" : "font-semibold text-[var(--grey)]"}`}>{d.status}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button className={linkBtn} onClick={() => onTab("verlauf")}>Alle Fristen →</button>
+      </section>
+    );
+
   return (
-    <div>
+    <div className={isOpen ? "" : "min-[1100px]:grid min-[1100px]:grid-cols-[minmax(0,640px)_300px] min-[1100px]:gap-x-[35px]"}>
+      <div className="min-w-0">
       <section className="fade-in" aria-labelledby="h-heute">
         {isDefaultSettings(settings) && (
           <p className="-mt-4 mb-5 font-sans text-[13px] text-[var(--grey)]">
@@ -291,7 +316,7 @@ export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
       </section>
 
       {todays.length > 0 && (
-        <section className="fade-in mt-14" aria-labelledby="h-festgehalten">
+        <section className="fade-in mt-12" aria-labelledby="h-festgehalten">
           <h2 id="h-festgehalten" className={sectionLabel}>Heute festgehalten</h2>
           <ul>
             {todays.map((e) => (
@@ -308,21 +333,25 @@ export default function HeuteView({ onDraft, onTab, onSettings }: Props) {
         </section>
       )}
 
-      {due.length > 0 && (
-        <section className="fade-in mt-14" aria-labelledby="h-faellig">
-          <h2 id="h-faellig" className={sectionLabel}>Fällig</h2>
-          <ul>
-            {due.map((d, i) => (
-              <li key={d.id}>
-                <button onClick={() => onTab("verlauf")} className="block w-full border-b border-[var(--rule)] py-4 text-left hover:text-[var(--accent)]">
-                  <span className={`block font-serif font-semibold ${i === 0 ? "text-[24px] leading-[1.2]" : "text-[21px] leading-[1.25]"}`}>{d.title}</span>
-                  <span className={`mt-2 block font-sans text-[12px] tracking-[.04em] uppercase ${d.urgent ? "font-bold text-[var(--urgent)]" : "font-semibold text-[var(--grey)]"}`}>{d.status}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button className={linkBtn} onClick={() => onTab("verlauf")}>Alle Fristen →</button>
-        </section>
+      {todays.length === 0 && !isOpen && <div className="mt-10"><Empty text="Heute noch nichts festgehalten." /></div>}
+
+      {/* Below 1100px everything stacks: Fällig, key figures, Als Nächstes, Diese Woche, Zuletzt freigegeben. */}
+      <div className={isOpen ? "" : "min-[1100px]:hidden"}>
+        {dueBlock("h-faellig")}
+        {today && <KeyFigures today={today} />}
+        {today && <NextUp today={today} />}
+      </div>
+      {today && <ThisWeek today={today} onDay={onShowDay} />}
+      <LastApproved onOpen={onOpenLetter} />
+      </div>
+
+      {/* Wide screens: side column with Fällig, Als Nächstes and key figures (hidden in focus mode). */}
+      {!isOpen && (
+        <aside aria-label="Überblick" className="hidden border-l border-[var(--rule)] pl-[35px] min-[1100px]:block [&>section:first-child]:mt-0">
+          {dueBlock("h-faellig-side")}
+          {today && <NextUp today={today} />}
+          {today && <KeyFigures today={today} />}
+        </aside>
       )}
     </div>
   );

@@ -109,6 +109,7 @@ export default function DraftEditor(props: Props) {
 
   const isDraft = approval.status !== "freigegeben";
   const stampRef = useRef<HTMLDivElement>(null);
+  const standstill = useRef(0);
   // When approved, bring the stamp into view (it lands on the letter).
   useEffect(() => {
     if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
@@ -142,6 +143,7 @@ export default function DraftEditor(props: Props) {
       approvedAt: at,
       approvedBy: name,
       deadline: deadlineOf(body),
+      stillstand: letterType === "behinderung" ? standstill.current : undefined,
       text: { salutation: draft.salutation, body, closing: draft.closing },
     });
     setAsking(false);
@@ -332,7 +334,9 @@ export default function DraftEditor(props: Props) {
         )}
       </section>
 
-      {letterType === "behinderung" && <CostSection facts={facts} />}
+      {letterType === "behinderung" && <CostSection facts={facts} onAmount={(v) => {
+        standstill.current = v;
+      }} />}
 
       <div className="mt-10 flex flex-wrap gap-x-6">
         <button className={linkBtn} onClick={onBack}>Zurück zu den Angaben</button>
@@ -422,7 +426,7 @@ function CountUp({ value }: { value: number | null }) {
 }
 
 /** Standstill cost estimate (Behinderung only). Pure arithmetic; unknown values stay empty. Never in the letter. */
-function CostSection({ facts }: { facts: Record<string, unknown> }) {
+function CostSection({ facts, onAmount }: { facts: Record<string, unknown>; onAmount: (v: number) => void }) {
   const [workers, setWorkers] = useState(numberFact(facts.arbeitskraefte_ohne_produktive_arbeit));
   const [hours, setHours] = useState(String(project.kosten.arbeitsstunden_pro_tag));
   const [rate, setRate] = useState(String(project.kosten.verrechnungssatz_eur_h));
@@ -432,6 +436,9 @@ function CostSection({ facts }: { facts: Record<string, unknown> }) {
   const total = perDay * n(days);
   const ok = Number.isFinite(perDay) && perDay >= 0;
   const amount = Number.isFinite(total) ? total : perDay;
+  useEffect(() => {
+    onAmount(ok && Number.isFinite(total) ? total : 0);
+  }, [ok, total, onAmount]);
   const num = "min-h-10 border-0 border-b border-[var(--ink)] bg-transparent text-center font-serif text-[19px] font-bold focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none";
   const input = (id: string, label: string, value: string, setter: (v: string) => void, w: string) => (
     <input id={id} aria-label={label} type="number" inputMode="decimal" min="0" className={`${num} ${w}`} value={value} onChange={(e) => setter(e.target.value)} />

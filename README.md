@@ -2,7 +2,7 @@
 
 *Ein Assistent für den Bauleiter – kein Ersatz.* Hackathon project (TUM.ai × BBIV, Challenge B).
 
-Live: https://sakurajima-project-b.vercel.app · Offline demo: https://sakurajima-project-b.vercel.app/?beispiel=1
+Live: https://baufrist.vercel.app · Offline demo: https://baufrist.vercel.app/?beispiel=1
 
 ## What it does
 

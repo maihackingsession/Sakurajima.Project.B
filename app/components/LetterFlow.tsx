@@ -37,6 +37,8 @@ type Props = {
   ref?: Ref<LetterFlowHandle>;
   onTab: (tab: Tab) => void;
   onSettings: () => void;
+  /** Fristen & Verlauf on a day or with a letter open (week strip, „Zuletzt freigegeben“). */
+  onShowVerlauf: (req: { day?: string; letter?: string }) => void;
   /** Tells the page whether the start screen (big nameplate) is showing. */
   onStartScreen?: (start: boolean) => void;
 };
@@ -50,7 +52,7 @@ const LOADER: Record<Exclude<Busy, "">, { label: string; steps?: string[] }> = {
   letter: { label: "Anzeige wird entworfen", steps: ["Sammle die Fakten", "Formuliere das Schreiben", "Prüfe auf Vollständigkeit"] },
 };
 
-export default function LetterFlow({ ref, onTab, onSettings, onStartScreen }: Props) {
+export default function LetterFlow({ ref, onTab, onSettings, onShowVerlauf, onStartScreen }: Props) {
   const [step, setStep] = useState<Step>("input");
   const [input, setInput] = useState("");
   const [letterType, setLetterType] = useState<LetterType>("behinderung");
@@ -207,7 +209,7 @@ export default function LetterFlow({ ref, onTab, onSettings, onStartScreen }: Pr
     <div ref={topRef} className="scroll-mt-24">
       {step === "input" && (
         <>
-          <HeuteView onSettings={onSettings} onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment, language: d.language })} onTab={onTab} />
+          <HeuteView onSettings={onSettings} onShowDay={(day) => onShowVerlauf({ day })} onOpenLetter={(letter) => onShowVerlauf({ letter })} onDraft={(d) => prepare(d.text, d.letterType, { facts: d.facts, eventDate: d.eventDate, reason: d.reason, attachment: d.attachment, language: d.language })} onTab={onTab} />
           {errorView}
         </>
       )}

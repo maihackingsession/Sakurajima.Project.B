@@ -53,7 +53,7 @@ function TypeKicker({ e }: { e: VerlaufEntry }) {
 type Item = { key: string; day: string; time: string; entry?: Entry; letter?: VerlaufEntry };
 
 /** A request from another screen to show a day (n changes on every request). */
-export type ShowDay = { day: string; n: number } | null;
+export type ShowDay = { day?: string; letter?: string; n: number } | null;
 
 type Props = { onOpenDay?: (day: string) => void; showDay?: ShowDay };
 
@@ -74,9 +74,11 @@ export default function VerlaufTab({ onOpenDay, showDay }: Props) {
   const [handled, setHandled] = useState(0);
   if (showDay && showDay.n !== handled) {
     setHandled(showDay.n);
-    setPicked(showDay.day);
-    setView("kalender");
-    setOpenId("");
+    if (showDay.day) {
+      setPicked(showDay.day);
+      setView("kalender");
+    }
+    setOpenId(showDay.letter ?? "");
   }
 
   const open = letters.find((e) => e.id === openId);

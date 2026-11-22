@@ -214,7 +214,7 @@ Rotate the builder every 3–4 hours.
 
 ## 13. Current status
 
-Live: **https://sakurajima-project-b.vercel.app** (fallback: same URL with `?beispiel=1`)
+Live: **https://baufrist.vercel.app** (fallback: same URL with `?beispiel=1`)
 
 Version 2 (§3 items 14–24) is finished on branch `features-v2` (Vercel preview); `main`/live is still Version 1 until the merge is approved. Tested in demo mode at 375/768/1280 (scripts/screenshots.mjs); 3 real API calls as a counter-check (gaps, letter with „Weiß ich nicht“, daily-report): no brackets.
 
