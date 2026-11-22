@@ -94,18 +94,18 @@ export default function Home() {
 
       {/* Heute without an open task gets a side column from 1100px on (640 + 300). */}
       <main className={`mx-auto box-border w-full max-w-[720px] px-6 pt-10 pb-14 min-[600px]:pt-12 ${!focus && tab === "heute" ? "min-[1100px]:max-w-[1023px]" : ""}`}>
-        {settings && <Einstellungen onSaved={onSaved} />}
+        {settings && <div className="tab-panel"><Einstellungen onSaved={onSaved} /></div>}
         {/* Tabs stay mounted (hidden) so switching does not lose input. */}
-        <div hidden={settings || tab !== "heute"}>
+        <div className="tab-panel" hidden={settings || tab !== "heute"}>
           <LetterFlow ref={letterFlow} onTab={go} onSettings={openSettings} onShowVerlauf={showVerlauf} onStartScreen={setOnStart} />
         </div>
-        <div hidden={settings || tab !== "berichte"}>
+        <div className="tab-panel" hidden={settings || tab !== "berichte"}>
           <BerichteTab onDraft={draft} openDay={openDay} />
         </div>
-        <div hidden={settings || tab !== "verlauf"}>
+        <div className="tab-panel" hidden={settings || tab !== "verlauf"}>
           <VerlaufTab onOpenDay={showDay} showDay={verlaufReq} />
         </div>
-        <div hidden={settings || tab !== "zusammenfassen"}>
+        <div className="tab-panel" hidden={settings || tab !== "zusammenfassen"}>
           <SummaryTab onOpenDay={showDay} />
         </div>
 

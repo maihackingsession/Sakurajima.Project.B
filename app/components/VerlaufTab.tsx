@@ -402,7 +402,7 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
       {error && <p role="alert" className="mt-3 font-sans text-[14px] font-bold text-[var(--urgent)]">{error}</p>}
 
       <div>
-        <article aria-label="Schreiben (nur lesen)" className="relative mt-7 border border-[var(--ink)] p-[clamp(24px,5vw,52px)] text-[17.5px] leading-[1.65]">
+        <article aria-label="Schreiben (nur lesen)" className="relative mt-7 overflow-x-clip border border-[var(--ink)] p-[clamp(24px,5vw,52px)] text-[17.5px] leading-[1.65]">
           <div className="mb-[30px] text-center font-sans text-[14px]">
             <p>Freigegeben</p>
             <div aria-hidden className="mx-auto mt-[10px] h-[2px] w-16 bg-[var(--accent)]" />
@@ -419,9 +419,9 @@ function SavedLetter({ entry, onBack }: { entry: VerlaufEntry; onBack: () => voi
           ))}
           <p className="mt-6">{letter.closing}</p>
           <p className="mt-1 whitespace-pre-line">{signatureLines(settings).join("\n")}</p>
-          <div className="stamp absolute top-[52%] right-[8%] border-[3px] border-[var(--urgent)] bg-white/70 px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]" aria-hidden>
-            <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
-            <p className="mt-[6px] font-sans text-[12px] font-bold whitespace-nowrap">{approvalTime(entry.approvedAt)} · {entry.approvedBy}</p>
+          <div className="stamp absolute top-[52%] right-[3%] border-[3px] border-[var(--urgent)] bg-white/70 px-3 min-[600px]:right-[8%] min-[600px]:px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]" aria-hidden>
+            <p className="font-sans text-[20px] leading-none font-extrabold tracking-[.08em] min-[600px]:text-[26px]">FREIGEGEBEN</p>
+            <p className="mt-[6px] font-sans text-[10px] font-bold whitespace-nowrap min-[600px]:text-[12px]">{approvalTime(entry.approvedAt)} · {entry.approvedBy}</p>
           </div>
         </article>
       </div>

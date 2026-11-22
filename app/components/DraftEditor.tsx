@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import project from "@/data/project.json";
 import { mengenCalc } from "@/lib/mengen";
+import { MOTION, reducedMotion } from "@/lib/motion";
 import { mailtoLink } from "@/lib/settings";
 import { LETTER_LABELS, type Letter, type LetterType } from "@/lib/types";
 import { checklist, euro, numberFact, placeholders } from "../lib/checks";
@@ -112,7 +113,7 @@ export default function DraftEditor(props: Props) {
   const standstill = useRef(0);
   // When approved, bring the stamp into view (it lands on the letter).
   useEffect(() => {
-    if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    if (!isDraft) stampRef.current?.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
   }, [isDraft]);
   const mengen = letterType === "mengenaenderung" ? mengenCalc(flow.input, facts, flow.answers) : null;
   const checks = checklist(letterType, draft, facts, eventDate, !!flow.report, mengen);
@@ -197,7 +198,7 @@ export default function DraftEditor(props: Props) {
   }
 
   return (
-    <section className="fade-in">
+    <section className="rise-in">
       {/* Intro */}
       <p className={kicker}>{title.split(" (")[0]}{basis ? ` · ${basis}` : ""}</p>
       <h1 className={`${h1} !mb-[10px] !text-[clamp(32px,4.2vw,46px)]`}>{issueTitle(draft.subject, title.split(" (")[0])}</h1>
@@ -256,7 +257,7 @@ export default function DraftEditor(props: Props) {
 
       {/* The letter in a thin black box. */}
       <article
-        className="relative mt-7 border border-[var(--ink)] p-[clamp(24px,5vw,52px)]"
+        className="sheet-in relative mt-7 overflow-x-clip border border-[var(--ink)] p-[clamp(24px,5vw,52px)]"
         aria-label="Schreiben"
         onDoubleClick={() => !editing && setEditing(true)}
       >
@@ -305,15 +306,15 @@ export default function DraftEditor(props: Props) {
           </div>
         </div>
         {!isDraft && (
-          <div ref={stampRef} role="img" aria-label={`Freigegeben am ${approvalTime(approval.at)} von ${approval.by}`} className="stamp absolute top-[52%] right-[8%] border-[3px] border-[var(--urgent)] bg-white/70 px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]">
-            <p className="font-sans text-[26px] leading-none font-extrabold tracking-[.08em]">FREIGEGEBEN</p>
-            <p className="mt-[6px] font-sans text-[12px] font-bold whitespace-nowrap uppercase">{stampLine(approval.at, approval.by)}</p>
+          <div ref={stampRef} role="img" aria-label={`Freigegeben am ${approvalTime(approval.at)} von ${approval.by}`} className="stamp absolute top-[52%] right-[3%] border-[3px] border-[var(--urgent)] bg-white/70 px-3 min-[600px]:right-[8%] min-[600px]:px-[18px] pt-[10px] pb-2 text-center text-[var(--urgent)]">
+            <p className="font-sans text-[20px] leading-none font-extrabold tracking-[.08em] min-[600px]:text-[26px]">FREIGEGEBEN</p>
+            <p className="mt-[6px] font-sans text-[10px] font-bold whitespace-nowrap min-[600px]:text-[12px] uppercase">{stampLine(approval.at, approval.by)}</p>
           </div>
         )}
       </article>
 
       {/* Prüfliste, collapsed by default. */}
-      <section className="mt-12 border-t-2 border-[var(--ink)]" aria-label="Prüfliste">
+      <section className="rise-in stagger-1 mt-12 border-t-2 border-[var(--ink)]" aria-label="Prüfliste">
         <button
           onClick={() => setChecksOpen((v) => !v)}
           aria-expanded={checksOpen}
@@ -403,7 +404,7 @@ function CountUp({ value }: { value: number | null }) {
   const from = useRef(0);
   useEffect(() => {
     if (value === null) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = reducedMotion();
     const start = from.current;
     if (reduce || start === value) {
       from.current = value;
@@ -413,7 +414,7 @@ function CountUp({ value }: { value: number | null }) {
     let raf = 0;
     const t0 = performance.now();
     const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / 600);
+      const p = Math.min(1, (t - t0) / MOTION.slow);
       const v = start + (value - start) * (1 - Math.pow(1 - p, 3));
       setShown(v);
       from.current = v;
@@ -444,7 +445,7 @@ function CostSection({ facts, onAmount }: { facts: Record<string, unknown>; onAm
     <input id={id} aria-label={label} type="number" inputMode="decimal" min="0" className={`${num} ${w}`} value={value} onChange={(e) => setter(e.target.value)} />
   );
   return (
-    <section className="mt-12 border-t-2 border-[var(--ink)] pt-[10px]" aria-labelledby="h-kosten" aria-live="polite">
+    <section className="rise-in stagger-2 mt-12 border-t-2 border-[var(--ink)] pt-[10px]" aria-labelledby="h-kosten" aria-live="polite">
       <h2 id="h-kosten" className="font-sans text-[13px] font-extrabold tracking-[.04em] uppercase">Stillstand</h2>
       <p className="mt-3 mb-[6px] font-serif text-[clamp(56px,8vw,88px)] leading-[1.05] font-bold tracking-[-.03em] whitespace-nowrap">
         <CountUp value={ok ? amount : null} />

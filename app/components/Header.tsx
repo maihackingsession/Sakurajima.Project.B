@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { dayDate, endBeispiel, useBeispiel, useSettings, useToday } from "../lib/store";
 import { useDueItems } from "../lib/useVerlauf";
 import CraneMark from "./CraneMark";
@@ -33,6 +33,24 @@ export default function Header({ tab, onTab, onSettings, compact = false }: Prop
   const today = useToday();
   const settings = useSettings();
   const due = useDueItems().filter((d) => d.urgent).length;
+  // Sliding underline under the active tab: measured position, moved with transform only.
+  const list = useRef<HTMLUListElement>(null);
+  const [ink, setInk] = useState<{ x: number; w: number; animate: boolean } | null>(null);
+  useLayoutEffect(() => {
+    const measure = (animate: boolean) => {
+      const ul = list.current;
+      const b = ul?.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!ul || !b) return;
+      const r = b.getBoundingClientRect();
+      const u = ul.getBoundingClientRect();
+      setInk((old) => ({ x: r.left - u.left, w: r.width, animate: animate && !!old }));
+    };
+    measure(true);
+    const onResize = () => measure(false);
+    window.addEventListener("resize", onResize);
+    void document.fonts?.ready.then(() => measure(false));
+    return () => window.removeEventListener("resize", onResize);
+  }, [tab]);
 
   useEffect(() => {
     fetch("/api/health", { cache: "no-store" })
@@ -45,7 +63,7 @@ export default function Header({ tab, onTab, onSettings, compact = false }: Prop
   const label = serverMock ? "Demo-Modus" : beispiel ? "Beispielmodus" : "";
 
   return (
-    <header className="masthead">
+    <header className="masthead masthead-in">
       <div aria-hidden className="h-1 bg-[var(--accent)]" />
       <div className="mx-auto max-w-[1120px] px-[18px] pt-3 min-[600px]:px-6 min-[600px]:pt-[14px]">
         <div className="flex min-h-[34px] items-center justify-between gap-4 font-sans text-[13px]">
@@ -83,7 +101,7 @@ export default function Header({ tab, onTab, onSettings, compact = false }: Prop
           </p>
         </div>
         <nav aria-label="Bereiche" className="mt-3 border-t border-b-4 border-t-[var(--rule)] border-b-[var(--ink)] [border-bottom-style:double] py-[2px] min-[600px]:mt-[18px]">
-          <ul className="tab-list flex justify-between min-[600px]:flex-wrap min-[600px]:justify-center min-[600px]:gap-x-8">
+          <ul ref={list} className="tab-list relative flex justify-between min-[600px]:flex-wrap min-[600px]:justify-center min-[600px]:gap-x-8">
             {TABS.map((t) => {
               const active = tab === t.id;
               return (
@@ -91,7 +109,7 @@ export default function Header({ tab, onTab, onSettings, compact = false }: Prop
                   <button
                     onClick={() => onTab(t.id)}
                     aria-current={active ? "page" : undefined}
-                    className={`tab min-h-11 border-b-2 font-sans text-[13px] text-[var(--ink)] min-[600px]:text-[15px] ${active ? "border-[var(--accent)] font-bold" : "border-transparent font-medium hover:border-[var(--rule)]"}`}
+                    className={`tab min-h-11 border-b-2 font-sans text-[13px] text-[var(--ink)] min-[600px]:text-[15px] ${active ? (ink ? "border-transparent font-bold" : "border-[var(--accent)] font-bold") : "border-transparent font-medium hover:border-[var(--rule)]"}`}
                   >
                     <span className="min-[600px]:hidden">{t.short}</span>
                     <span className="hidden min-[600px]:inline">{t.label}</span>
@@ -99,6 +117,7 @@ export default function Header({ tab, onTab, onSettings, compact = false }: Prop
                 </li>
               );
             })}
+            {ink && <li aria-hidden className="tab-ink" style={{ transform: `translateX(${ink.x}px) scaleX(${ink.w})`, transition: ink.animate ? undefined : "none" }} />}
           </ul>
         </nav>
       </div>

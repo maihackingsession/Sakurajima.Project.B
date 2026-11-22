@@ -36,15 +36,15 @@ export function FocusBar({ focus }: { focus: FocusEntry }) {
   return (
     <header className="focus-bar sticky top-0 z-20 bg-[var(--paper)]">
       <div aria-hidden className="h-1 bg-[var(--accent)]" />
-      <div className="mx-auto grid min-h-[52px] max-w-[1120px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 border-b border-[var(--rule)] px-[18px] font-sans text-[14px] min-[600px]:px-6">
+      <div className="mx-auto grid min-h-[52px] max-w-[1120px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 min-[600px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] border-b border-[var(--rule)] px-[18px] font-sans text-[14px] min-[600px]:px-6">
         <button onClick={focus.onBack} className="inline-flex min-h-11 items-center gap-2 justify-self-start font-semibold text-[var(--ink)] hover:text-[var(--accent)]">
           <span aria-hidden>←</span> Zurück
         </button>
-        <p className="flex min-w-0 items-center gap-2 truncate font-bold">
+        <p className="flex min-w-0 items-center justify-center gap-2 font-bold">
           <CraneMark size="sm" />
           <span className="truncate">{focus.title}</span>
         </p>
-        <p role="status" aria-live="polite" className="justify-self-end truncate text-[13px] text-[var(--grey)]">
+        <p role="status" aria-live="polite" className="max-w-[96px] justify-self-end truncate text-[13px] text-[var(--grey)] min-[600px]:max-w-none">
           {focus.status ? <span key={focus.status} className="fade-in">{focus.status}</span> : null}
         </p>
       </div>

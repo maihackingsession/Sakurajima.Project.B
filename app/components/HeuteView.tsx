@@ -66,7 +66,7 @@ export function draftOf(e: Entry): EntryDraft | null {
 export function EntryStatus({ entry, onDraft }: { entry: Entry; onDraft: (d: EntryDraft) => void }) {
   const c = entry.check;
   if (!c) return null;
-  if (c.status === "pending") return <p className="mt-1 font-sans text-[13px] text-[var(--grey)] italic" role="status">wird geprüft …</p>;
+  if (c.status === "pending") return <p className="pulse mt-1 font-sans text-[13px] text-[var(--grey)] italic" role="status">wird geprüft …</p>;
   if (c.status === "error")
     return (
       <p className="mt-1 flex flex-wrap items-center gap-x-4 font-sans text-[13px] text-[var(--urgent)]" role="alert">
@@ -320,7 +320,7 @@ export default function HeuteView({ onDraft, onTab, onSettings, onShowDay, onOpe
           <h2 id="h-festgehalten" className={sectionLabel}>Heute festgehalten</h2>
           <ul>
             {todays.map((e) => (
-              <li key={e.id} className="border-b border-[var(--rule)] py-4">
+              <li key={e.id} className="entry-in border-b border-[var(--rule)] py-4">
                 <p className="font-sans text-[12px] font-semibold tracking-[.04em] text-[var(--grey)]">{e.time} Uhr{e.kind !== "eintrag" ? ` · ${e.kind === "zusammenfassung" ? "Zusammenfassung" : e.title || ""}` : ""}</p>
                 <div className="flex items-start gap-4">
                   <div className="min-w-0 flex-1"><EntryText text={e.text} /></div>

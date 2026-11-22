@@ -215,7 +215,7 @@ export default function LetterFlow({ ref, onTab, onSettings, onShowVerlauf, onSt
       )}
 
       {step === "questions" && (
-        <section className="fade-in">
+        <section className="rise-in">
           <p className={kicker}>{shortType(typeLabel)}</p>
           <h1 className={h1}>{shortType(typeLabel)}</h1>
           {reason && <p className="-mt-2 line-clamp-2 text-[18px] text-[var(--grey)] italic">{reason}</p>}

@@ -1,19 +1,22 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { MOTION } from "@/lib/motion";
 import { dayLabel, marksOf, MARK_COLOR, type DayItem } from "../lib/calendar";
 import { dayDate, isoDay, shiftDay } from "../lib/store";
 
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+/** Markers stagger in only the first time a calendar is shown in this page load. */
+let marksShown = false;
 
 /** Small 6×6 squares under the day number: at most 3, then „+2“. */
-export function Marks({ items }: { items?: DayItem[] }) {
+export function Marks({ items, stagger = false }: { items?: DayItem[]; stagger?: boolean }) {
   const marks = marksOf(items);
   if (!marks.length) return null;
   return (
     <span aria-hidden className="mt-1 flex items-center gap-[3px]">
       {marks.slice(0, 3).map((m, i) => (
-        <span key={i} className="cal-mark inline-block h-[6px] w-[6px]" style={{ background: MARK_COLOR[m], animationDelay: `${i * 60}ms` }} />
+        <span key={i} className={`cal-mark inline-block h-[6px] w-[6px] ${stagger ? "cal-mark-in" : ""}`} style={{ background: MARK_COLOR[m], animationDelay: stagger ? `${i * MOTION.stagger}ms` : undefined }} />
       ))}
       {marks.length > 3 && <span className="font-sans text-[10px] leading-none text-[var(--grey)]">+{marks.length - 3}</span>}
     </span>
@@ -33,6 +36,10 @@ export default function Calendar({ today, selected, onSelect, byDay }: Props) {
   const [month, setMonth] = useState(() => new Date(sel.getFullYear(), sel.getMonth(), 1));
   const [dir, setDir] = useState<"" | "next" | "prev">("");
   const grid = useRef<HTMLDivElement>(null);
+  const [firstLoad] = useState(() => !marksShown);
+  useEffect(() => {
+    marksShown = true;
+  }, []);
 
   // A day selected outside the shown month (keyboard, „Heute“, week strip) shows its month.
   if (sel.getFullYear() !== month.getFullYear() || sel.getMonth() !== month.getMonth()) {
@@ -115,7 +122,7 @@ export default function Calendar({ today, selected, onSelect, byDay }: Props) {
                     >
                       {d.getDate()}
                     </span>
-                    <Marks items={items} />
+                    <Marks items={items} stagger={firstLoad} />
                   </button>
                 </div>
               );
